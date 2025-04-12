@@ -20,7 +20,7 @@ const routes: Routes = [
   { path: 'products', component: ProductsComponent },
   { path: 'bills', component: BillsComponent },
   { path: 'adb', component: AdbComponent },
-  { path: 'alb', component: AlbComponent }, 
+  { path: 'alb', component: AlbComponent },
   { path: 'reports', component: ReportsComponent },
   { path: 'vendors', component: VendorsComponent },
   { path: 'barcode', component: BarcodeComponent },

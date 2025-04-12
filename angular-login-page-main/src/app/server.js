@@ -8,7 +8,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const app = express();
-const PORT = 3000;
+const PORT = 3001;
 
 // ✅ Enable CORS
 app.use(cors({
@@ -74,6 +74,38 @@ app.post('/api/register', (req, res) => {
     });
   });
 });
+
+// ✅ Login endpoint
+app.post('/api/login', (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Email and password are required' });
+  }
+
+  db.get('SELECT * FROM users WHERE email = ?', [email], async (err, row) => {
+    if (err) {
+      console.error('Error querying database:', err);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+
+    if (!row) {
+      console.log('Invalid email or password');
+      return res.status(400).json({ message: 'Invalid email or password' });
+    }
+
+    // Compare the hashed password
+    const match = await bcrypt.compare(password, row.password);
+    if (match) {
+      console.log('Login successful');
+      res.status(200).json({ message: 'Login successful' });
+    } else {
+      console.log('Invalid email or password');
+      res.status(400).json({ message: 'Invalid email or password' });
+    }
+  });
+});
+
 
 // ✅ Start server
 app.listen(PORT, () => {

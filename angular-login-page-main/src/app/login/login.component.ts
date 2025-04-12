@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { ImageLoaderService } from '../image-loader.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -16,8 +15,7 @@ export class LoginComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private http: HttpClient,
-    private router: Router,
-    private imageLoader: ImageLoaderService
+    private router: Router
   ) {
     this.loginForm = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
@@ -31,17 +29,22 @@ export class LoginComponent implements OnInit {
 
   loadLogo() {
     const logoUrl = 'file:///C:/Users/rites/Downloads/logo.jpg';
-    this.imageLoader.loadImage(logoUrl).subscribe((blob: Blob) => {
-      this.logoUrl = URL.createObjectURL(blob);
-    });
+    this.logoUrl = logoUrl;
   }
 
   onSubmit(): void {
     if (this.loginForm.valid) {
       const loginData = this.loginForm.value;
-      this.http.post('http://localhost:3000/api/login', loginData).subscribe({
-        next: () => this.router.navigate(['/dashboard']),
-        error: () => alert('Invalid email or password')
+      this.http.post('http://localhost:3001/api/login', loginData).subscribe({
+        next: (response) => {
+          console.log('Login successful', response);
+          // Redirect to dashboard after successful login
+          this.router.navigate(['/dashboard']);
+        },
+        error: (error) => {
+          console.error('Login failed', error);
+          alert('Invalid email or password');
+        }
       });
     }
   }
