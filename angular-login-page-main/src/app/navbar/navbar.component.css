@@ -1,0 +1,63 @@
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0;
+  }
+  
+  .logo-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+  
+  .logo-img {
+    height: 50px;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    padding-left: 10px;
+  }
+  
+  .spacer {
+    flex: 1 1 auto;
+  }
+  
+  a[mat-button],
+  button[mat-button] {
+    color: white;
+    text-transform: uppercase;
+    margin: 0 5px;
+  }
+  
+  .logout-button {
+    color: white;
+    background-color: red;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    border-radius: 4px;
+  }
+  
+  .logout-button:hover {
+    background-color: darkred;
+  }
+
+  .navbar-links {
+    display: flex;
+    justify-content: space-around;
+  }
+  
+  mat-menu {
+    display: block;
+  }
+  
+  mat-menu .mat-menu-item {
+    cursor: pointer;
+  }
+  
+  mat-toolbar {
+    background-color: #3f51b5;
+    color: white;
+  }
+  
+  

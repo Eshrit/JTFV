@@ -1,0 +1,19 @@
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  .form-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+  .form-buttons {
+    display: flex;
+    gap: 10px;
+  }
+  input, select {
+    padding: 5px;
+    flex: 1;
+  }
+  

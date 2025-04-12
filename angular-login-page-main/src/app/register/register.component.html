@@ -1,0 +1,54 @@
+<div class="wrap-register">
+  <div class="container">
+    <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
+      <mat-card class="register-box">
+        <mat-card-header>
+          <img src="assets/logo.jpg" alt="Logo">
+        </mat-card-header>
+
+        <mat-card-content>
+          <mat-form-field appearance="outline">
+            <mat-label>Email</mat-label>
+            <input
+              matInput
+              type="email"
+              formControlName="email"
+              placeholder="Enter your email"
+              class="form-field"
+              required
+            />
+            <mat-error *ngIf="registerForm.get('email')?.hasError('required')">
+              Email is required
+            </mat-error>
+            <mat-error *ngIf="registerForm.get('email')?.hasError('email')">
+              Invalid email format
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Password</mat-label>
+            <input
+              matInput
+              type="password"
+              formControlName="password"
+              placeholder="Enter password"
+              class="form-field"
+              required
+            />
+            <mat-error *ngIf="registerForm.get('password')?.hasError('required')">
+              Password is required
+            </mat-error>
+            <mat-error *ngIf="registerForm.get('password')?.hasError('minlength')">
+              Minimum 6 characters
+            </mat-error>
+          </mat-form-field>
+        </mat-card-content>
+
+        <mat-card-actions>
+          <button mat-raised-button color="primary" type="submit">Register</button>
+          <button mat-raised-button color="accent" type="button" (click)="goToLogin()">Back to Login</button>
+        </mat-card-actions>
+      </mat-card>
+    </form>
+  </div>
+</div>

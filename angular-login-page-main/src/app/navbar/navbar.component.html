@@ -1,0 +1,29 @@
+<mat-toolbar color="primary" class="navbar">
+  <div class="logo-wrapper">
+    <img src="assets/logo.jpg" alt="Logo" class="logo-img" />
+  </div>
+
+  <span class="spacer"></span>
+
+  <mat-menu #merchantsMenu="matMenu">
+    <button mat-menu-item routerLink="/dashboard">Merchants Overview</button>
+    <button mat-menu-item routerLink="/add-merchants">Add Merchants</button>
+  </mat-menu>
+
+  <button mat-button [matMenuTriggerFor]="merchantsMenu">
+    <span>Merchants</span>
+    <mat-icon class="dropdown-icon">arrow_drop_down</mat-icon>
+  </button>
+
+  <a mat-button routerLink="/products">Products</a>
+  <a mat-button routerLink="/bills">Bills</a>
+  <a mat-button routerLink="/adb">Add Detailed Bill</a>
+  <a mat-button routerLink="/alb">Add LumpSum Bill</a>
+  <a mat-button routerLink="/reports">Reports</a>
+  <a mat-button routerLink="/profile">Vendors</a>
+  <a mat-button routerLink="/barcode">Barcode</a>
+
+  <span class="spacer"></span>
+
+  <button mat-button (click)="logout()" class="logout-button">Logout</button>
+</mat-toolbar>
