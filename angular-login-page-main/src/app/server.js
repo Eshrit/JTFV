@@ -41,12 +41,65 @@ const db = new sqlite3.Database('./database.db', (err) => {
     db.run(`
       CREATE TABLE IF NOT EXISTS clients (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT,
+        firstName TEXT,
+        middleName TEXT,
+        lastName TEXT,
+        phone TEXT,
+        mobile TEXT,
+        fax TEXT,
         email TEXT,
-        phone TEXT
+        clientType TEXT,
+        address1 TEXT,
+        address2 TEXT,
+        area TEXT,
+        subArea TEXT,
+        city TEXT,
+        landmark TEXT,
+        franchise TEXT,
+        dateOfEntry TEXT,
+        entryTime TEXT
       )
     `);
   }
+});
+
+app.post('/api/clients', (req, res) => {
+  const client = req.body;
+  const query = `
+    INSERT INTO clients (
+      firstName, middleName, lastName, phone, mobile, fax, email, clientType,
+      address1, address2, area, subArea, city, landmark, franchise,
+      dateOfEntry, entryTime
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+  const values = [
+    client.firstName, client.middleName, client.lastName, client.phone, client.mobile,
+    client.fax, client.email, client.clientType,
+    client.address1, client.address2, client.area, client.subArea,
+    client.city, client.landmark, client.franchise,
+    client.dateOfEntry, client.entryTime
+  ];
+
+  db.run(query, values, function (err) {
+    if (err) {
+      console.error('Error saving client:', err);
+      res.status(500).json({ message: 'Failed to save client' });
+    } else {
+      res.status(201).json({ message: 'Client saved successfully', id: this.lastID });
+    }
+  });
+});
+
+// Get all clients
+app.get('/api/clients', (req, res) => {
+  db.all('SELECT * FROM clients', [], (err, rows) => {
+    if (err) {
+      console.error('Error fetching clients:', err);
+      res.status(500).json({ message: 'Failed to fetch clients' });
+    } else {
+      res.status(200).json(rows);
+    }
+  });
 });
 
 // ✅ Register endpoint

@@ -22,12 +22,8 @@ export class AddMerchantComponent {
       };
 
       this.clientService.saveClient(clientData).subscribe({
-        next: () => {
-          this.router.navigate(['/dashboard']);
-        },
-        error: err => {
-          console.error('Failed to save client:', err);
-        }
+        next: () => this.router.navigate(['/dashboard']),
+        error: err => console.error('Failed to save client:', err)
       });
     }
   }
