@@ -13,7 +13,6 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
-import { ProductsComponent } from './products/products.component';
 import { BillsComponent } from './bills/bills.component';
 import { AdbComponent } from './adb/adb.component';
 import { AlbComponent } from './alb/alb.component';
@@ -25,6 +24,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { BarcodeComponent } from './barcode/barcode.component';
 import { RegisterComponent } from './register/register.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { AddProductsComponent } from './products/add-products/add-products.component';
+import { ProductsComponent } from './products/products.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,6 @@ import { ReactiveFormsModule } from '@angular/forms';
     LoginComponent,
     DashboardComponent,
     NavbarComponent,
-    ProductsComponent,
     BillsComponent,
     AdbComponent,
     AlbComponent,
@@ -41,7 +41,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     AddMerchantComponent,
     BarcodeComponent,
     RegisterComponent,
-    
+    AddProductsComponent,
+    ProductsComponent,
   ],
   imports: [
     BrowserModule,

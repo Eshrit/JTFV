@@ -10,7 +10,6 @@ export class NavbarComponent {
   constructor(private router: Router) {}
 
   logout() {
-    // Clear token or session here
     localStorage.clear();
     this.router.navigate(['/login']);
   }

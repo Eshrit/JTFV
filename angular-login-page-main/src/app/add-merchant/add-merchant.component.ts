@@ -9,6 +9,8 @@ import { Router } from '@angular/router';
   styleUrls: ['./add-merchant.component.css']
 })
 export class AddMerchantComponent {
+  currentDate = new Date().toLocaleDateString();
+  currentTime = new Date().toLocaleTimeString();
 
   constructor(private clientService: ClientService, private router: Router) {}
 

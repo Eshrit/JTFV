@@ -102,6 +102,55 @@ app.get('/api/clients', (req, res) => {
   });
 });
 
+// ✅ SQLite setup - Add Products Table
+db.run(`
+  CREATE TABLE IF NOT EXISTS products (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    vegName TEXT,
+    topPriority TEXT,
+    units TEXT,
+    itemType TEXT,
+    dateOfEntry TEXT,
+    entryTime TEXT
+  )
+`);
+
+// ✅ POST endpoint for adding a new product
+app.post('/api/products', (req, res) => {
+  const product = req.body;
+  const query = `
+    INSERT INTO products (
+      vegName, topPriority, units, itemType, dateOfEntry, entryTime
+    ) VALUES (?, ?, ?, ?, ?, ?)
+  `;
+  const values = [
+    product.vegName, product.topPriority, product.units, product.itemType,
+    product.dateOfEntry, product.entryTime
+  ];
+
+  db.run(query, values, function (err) {
+    if (err) {
+      console.error('Error saving product:', err);
+      res.status(500).json({ message: 'Failed to save product' });
+    } else {
+      res.status(201).json({ message: 'Product saved successfully', id: this.lastID });
+    }
+  });
+});
+
+// ✅ GET endpoint to retrieve all products
+app.get('/api/products', (req, res) => {
+  db.all('SELECT * FROM products', [], (err, rows) => {
+    if (err) {
+      console.error('Error fetching products:', err);
+      res.status(500).json({ message: 'Failed to fetch products' });
+    } else {
+      res.status(200).json(rows);
+    }
+  });
+});
+
+
 // ✅ Register endpoint
 app.post('/api/register', (req, res) => {
   const { email, password } = req.body;
