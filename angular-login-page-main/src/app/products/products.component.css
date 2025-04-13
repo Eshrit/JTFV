@@ -99,4 +99,37 @@
   button.button:hover {
     background-color: #218838;
   }
+
+  /* Action Buttons */
+.action-button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+/* Edit Button Style */
+.action-button.edit {
+  background-color: #2bb449;
+  color: #ffffff;
+}
+
+.action-button.edit:hover {
+  background-color: #2bb449;
+  transform: scale(1.05);
+}
+
+/* Delete Button Style */
+.action-button.delete {
+  background-color: #dc3545;
+  color: white;
+}
+
+.action-button.delete:hover {
+  background-color: #c82333;
+  transform: scale(1.05);
+}
+
   

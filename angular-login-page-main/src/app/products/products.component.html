@@ -34,8 +34,8 @@
           <td>{{ product.topPriority }}</td>
           <td>{{ product.units }}</td>
           <td>{{ product.itemType }}</td>
-          <td><button (click)="onEdit(product.id)">Edit</button></td>
-          <td><button (click)="onDelete(product.id)">Delete</button></td>
+          <td><button class="action-button edit" (click)="onEdit(product.id)">Edit</button></td>
+          <td><button class="action-button delete" (click)="onDelete(product.id)">Delete</button></td>
         </tr>
       </tbody>
     </table>

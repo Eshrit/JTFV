@@ -55,6 +55,6 @@ export class ProductsComponent implements OnInit {
 
   // Method to go back to the home page
   backToHome(): void {
-    this.router.navigate(['/home']);
+    this.router.navigate(['/dashboard']);
   }
 }
