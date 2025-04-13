@@ -257,6 +257,26 @@ app.put('/api/products/:id', (req, res) => {
   });
 });
 
+// ✅ DELETE endpoint for deleting a product by ID
+app.delete('/api/products/:id', (req, res) => {
+  const productId = req.params.id;
+
+  const query = `DELETE FROM products WHERE id = ?`;
+
+  db.run(query, [productId], function (err) {
+    if (err) {
+      console.error('Error deleting product:', err);
+      return res.status(500).json({ message: 'Failed to delete product' });
+    }
+
+    if (this.changes === 0) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    res.status(200).json({ message: 'Product deleted successfully' });
+  });
+});
+
 
 // ✅ Start server
 app.listen(PORT, () => {
