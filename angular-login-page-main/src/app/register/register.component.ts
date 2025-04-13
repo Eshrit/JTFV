@@ -26,7 +26,7 @@ export class RegisterComponent implements OnInit {
 
   onRegister(): void {
     if (this.registerForm.valid) {
-      this.http.post('http://localhost:3000/api/register', this.registerForm.value).subscribe({
+      this.http.post('http://localhost:3001/api/register', this.registerForm.value).subscribe({
         next: () => {
           alert('Registration successful!');
           this.router.navigate(['/login']);

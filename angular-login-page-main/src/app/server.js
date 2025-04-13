@@ -1,90 +1,166 @@
 import express from 'express';
-import { connect } from 'mongoose';
+import sqlite3 from 'sqlite3';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import bcrypt from 'bcrypt';
-import Client from './models/Client.js';
-import User from './models/user.js';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
 const app = express();
-const PORT = 3000;
+const PORT = 3001;
 
-const MONGO_URI = 'mongodb+srv://jkumarshahu6:PvEehjfGACaXRVWx@jtfv.wnfvj6x.mongodb.net/';
+// ✅ Enable CORS
+app.use(cors({
+  origin: 'http://localhost:4200',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 
-connect(MONGO_URI)
-.then(() => {
-  console.log('Connected to MongoDB');
-}).catch(err => {
-  console.error('MongoDB connection error:', err);
-});
+// ✅ Handle preflight OPTIONS
+app.options('*', cors());
 
-app.use(cors());
+// ✅ Middleware
 app.use(bodyParser.json());
 
-app.post('/api/register', async (req, res) => {
-  try {
-    const { email, password } = req.body;
+// ✅ SQLite setup
+const db = new sqlite3.Database('./database.db', (err) => {
+  if (err) {
+    console.error('Error opening database:', err);
+  } else {
+    console.log('Connected to SQLite database');
 
-    console.log('Incoming registration:', email);
+    db.run(`
+      CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        email TEXT UNIQUE,
+        password TEXT
+      )
+    `);
 
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
+    db.run(`
+      CREATE TABLE IF NOT EXISTS clients (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        firstName TEXT,
+        middleName TEXT,
+        lastName TEXT,
+        phone TEXT,
+        mobile TEXT,
+        fax TEXT,
+        email TEXT,
+        clientType TEXT,
+        address1 TEXT,
+        address2 TEXT,
+        area TEXT,
+        subArea TEXT,
+        city TEXT,
+        landmark TEXT,
+        franchise TEXT,
+        dateOfEntry TEXT,
+        entryTime TEXT
+      )
+    `);
+  }
+});
+
+app.post('/api/clients', (req, res) => {
+  const client = req.body;
+  const query = `
+    INSERT INTO clients (
+      firstName, middleName, lastName, phone, mobile, fax, email, clientType,
+      address1, address2, area, subArea, city, landmark, franchise,
+      dateOfEntry, entryTime
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+  const values = [
+    client.firstName, client.middleName, client.lastName, client.phone, client.mobile,
+    client.fax, client.email, client.clientType,
+    client.address1, client.address2, client.area, client.subArea,
+    client.city, client.landmark, client.franchise,
+    client.dateOfEntry, client.entryTime
+  ];
+
+  db.run(query, values, function (err) {
+    if (err) {
+      console.error('Error saving client:', err);
+      res.status(500).json({ message: 'Failed to save client' });
+    } else {
+      res.status(201).json({ message: 'Client saved successfully', id: this.lastID });
+    }
+  });
+});
+
+// Get all clients
+app.get('/api/clients', (req, res) => {
+  db.all('SELECT * FROM clients', [], (err, rows) => {
+    if (err) {
+      console.error('Error fetching clients:', err);
+      res.status(500).json({ message: 'Failed to fetch clients' });
+    } else {
+      res.status(200).json(rows);
+    }
+  });
+});
+
+// ✅ Register endpoint
+app.post('/api/register', (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Email and password are required' });
+  }
+
+  db.get('SELECT * FROM users WHERE email = ?', [email], async (err, row) => {
+    if (row) {
       console.log('User already exists');
       return res.status(400).json({ message: 'Email already exists' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ email, password: hashedPassword });
-    await newUser.save();
-
-    console.log('User registered:', newUser.email);
-    res.status(201).json({ message: 'User registered successfully' });
-  } catch (err) {
-    console.error('Registration error:', err);
-    res.status(500).json({ message: 'Server error' });
-  }
+    db.run('INSERT INTO users (email, password) VALUES (?, ?)', [email, hashedPassword], (err) => {
+      if (err) {
+        console.error('Error saving user:', err);
+        return res.status(500).json({ message: 'Failed to register user' });
+      }
+      console.log('User registered:', email);
+      res.status(201).json({ message: 'User registered successfully' });
+    });
+  });
 });
 
-
-app.post('/api/login', async (req, res) => {
+// ✅ Login endpoint
+app.post('/api/login', (req, res) => {
   const { email, password } = req.body;
 
-  try {
-    const user = await User.findOne({ email });
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(401).json({ message: 'Invalid email or password' });
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Email and password are required' });
+  }
+
+  db.get('SELECT * FROM users WHERE email = ?', [email], async (err, row) => {
+    if (err) {
+      console.error('Error querying database:', err);
+      return res.status(500).json({ message: 'Internal server error' });
     }
-    
 
-    res.status(200).json({ message: 'Login successful' });
-  } catch (err) {
-    console.error('Login error:', err);
-    res.status(500).json({ message: 'Internal server error' });
-  }
+    if (!row) {
+      console.log('Invalid email or password');
+      return res.status(400).json({ message: 'Invalid email or password' });
+    }
+
+    // Compare the hashed password
+    const match = await bcrypt.compare(password, row.password);
+    if (match) {
+      console.log('Login successful');
+      res.status(200).json({ message: 'Login successful' });
+    } else {
+      console.log('Invalid email or password');
+      res.status(400).json({ message: 'Invalid email or password' });
+    }
+  });
 });
 
-app.post('/api/clients', async (req, res) => {
-  try {
-    const client = new Client(req.body);
-    await client.save();
-    res.status(201).json({ message: 'Client saved successfully' });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to save client' });
-  }
-});
 
-app.get('/api/clients', async (req, res) => {
-  try {
-    const clients = await Client.find();
-    res.json(clients);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch clients' });
-  }
-});
-
+// ✅ Start server
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
