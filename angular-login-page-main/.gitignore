@@ -44,6 +44,6 @@ Thumbs.db
 
 
 #database
-*.db
+src/app/database.db
 
 
