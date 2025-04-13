@@ -208,6 +208,55 @@ app.post('/api/login', (req, res) => {
   });
 });
 
+// ✅ GET a product by ID
+app.get('/api/products/:id', (req, res) => {
+  const productId = req.params.id;
+  db.get('SELECT * FROM products WHERE id = ?', [productId], (err, row) => {
+    if (err) {
+      console.error('Error fetching product:', err);
+      res.status(500).json({ message: 'Failed to fetch product' });
+    } else if (!row) {
+      res.status(404).json({ message: 'Product not found' });
+    } else {
+      res.status(200).json(row);
+    }
+  });
+});
+
+// ✅ PUT update a product by ID
+app.put('/api/products/:id', (req, res) => {
+  const productId = req.params.id;
+  const {
+    vegName,
+    topPriority,
+    units,
+    itemType,
+    dateOfEntry,
+    entryTime
+  } = req.body;
+
+  const query = `
+    UPDATE products SET
+      vegName = ?,
+      topPriority = ?,
+      units = ?,
+      itemType = ?,
+      dateOfEntry = ?,
+      entryTime = ?
+    WHERE id = ?
+  `;
+  const values = [vegName, topPriority, units, itemType, dateOfEntry, entryTime, productId];
+
+  db.run(query, values, function (err) {
+    if (err) {
+      console.error('Error updating product:', err);
+      res.status(500).json({ message: 'Failed to update product' });
+    } else {
+      res.status(200).json({ message: 'Product updated successfully' });
+    }
+  });
+});
+
 
 // ✅ Start server
 app.listen(PORT, () => {

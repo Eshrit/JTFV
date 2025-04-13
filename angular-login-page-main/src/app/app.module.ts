@@ -5,7 +5,7 @@ import { AppComponent } from './app.component';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
-import { FormsModule} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { LoginComponent } from './login/login.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -26,6 +26,7 @@ import { RegisterComponent } from './register/register.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AddProductsComponent } from './products/add-products/add-products.component';
 import { ProductsComponent } from './products/products.component';
+import { EditProductsComponent } from './products/edit-products/edit-products.component'; // ✅ Import Edit Component
 
 @NgModule({
   declarations: [
@@ -43,6 +44,7 @@ import { ProductsComponent } from './products/products.component';
     RegisterComponent,
     AddProductsComponent,
     ProductsComponent,
+    EditProductsComponent // ✅ Declare it here
   ],
   imports: [
     BrowserModule,
@@ -57,7 +59,7 @@ import { ProductsComponent } from './products/products.component';
     MatIconModule,
     MatInputModule,
     MatFormFieldModule,
-    MatCardModule,
+    MatCardModule
   ],
   providers: [],
   bootstrap: [AppComponent]

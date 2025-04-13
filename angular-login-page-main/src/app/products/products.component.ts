@@ -37,8 +37,9 @@ export class ProductsComponent implements OnInit {
 
   // Placeholder method for editing a product (redirects to edit page)
   onEdit(productId: number): void {
-    this.router.navigate([`/edit-product/${productId}`]);  // Assuming you have a route for editing a product
+    this.router.navigate([`/edit-products/${productId}`]);  // Assuming you have a route for editing a product
   }
+
 
   // Placeholder method for deleting a product
   onDelete(productId: number): void {
