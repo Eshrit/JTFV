@@ -102,6 +102,55 @@ app.get('/api/clients', (req, res) => {
   });
 });
 
+// ✅ SQLite setup - Add Products Table
+db.run(`
+  CREATE TABLE IF NOT EXISTS products (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    vegName TEXT,
+    topPriority TEXT,
+    units TEXT,
+    itemType TEXT,
+    dateOfEntry TEXT,
+    entryTime TEXT
+  )
+`);
+
+// ✅ POST endpoint for adding a new product
+app.post('/api/products', (req, res) => {
+  const product = req.body;
+  const query = `
+    INSERT INTO products (
+      vegName, topPriority, units, itemType, dateOfEntry, entryTime
+    ) VALUES (?, ?, ?, ?, ?, ?)
+  `;
+  const values = [
+    product.vegName, product.topPriority, product.units, product.itemType,
+    product.dateOfEntry, product.entryTime
+  ];
+
+  db.run(query, values, function (err) {
+    if (err) {
+      console.error('Error saving product:', err);
+      res.status(500).json({ message: 'Failed to save product' });
+    } else {
+      res.status(201).json({ message: 'Product saved successfully', id: this.lastID });
+    }
+  });
+});
+
+// ✅ GET endpoint to retrieve all products
+app.get('/api/products', (req, res) => {
+  db.all('SELECT * FROM products', [], (err, rows) => {
+    if (err) {
+      console.error('Error fetching products:', err);
+      res.status(500).json({ message: 'Failed to fetch products' });
+    } else {
+      res.status(200).json(rows);
+    }
+  });
+});
+
+
 // ✅ Register endpoint
 app.post('/api/register', (req, res) => {
   const { email, password } = req.body;
@@ -156,6 +205,75 @@ app.post('/api/login', (req, res) => {
       console.log('Invalid email or password');
       res.status(400).json({ message: 'Invalid email or password' });
     }
+  });
+});
+
+// ✅ GET a product by ID
+app.get('/api/products/:id', (req, res) => {
+  const productId = req.params.id;
+  db.get('SELECT * FROM products WHERE id = ?', [productId], (err, row) => {
+    if (err) {
+      console.error('Error fetching product:', err);
+      res.status(500).json({ message: 'Failed to fetch product' });
+    } else if (!row) {
+      res.status(404).json({ message: 'Product not found' });
+    } else {
+      res.status(200).json(row);
+    }
+  });
+});
+
+// ✅ PUT update a product by ID
+app.put('/api/products/:id', (req, res) => {
+  const productId = req.params.id;
+  const {
+    vegName,
+    topPriority,
+    units,
+    itemType,
+    dateOfEntry,
+    entryTime
+  } = req.body;
+
+  const query = `
+    UPDATE products SET
+      vegName = ?,
+      topPriority = ?,
+      units = ?,
+      itemType = ?,
+      dateOfEntry = ?,
+      entryTime = ?
+    WHERE id = ?
+  `;
+  const values = [vegName, topPriority, units, itemType, dateOfEntry, entryTime, productId];
+
+  db.run(query, values, function (err) {
+    if (err) {
+      console.error('Error updating product:', err);
+      res.status(500).json({ message: 'Failed to update product' });
+    } else {
+      res.status(200).json({ message: 'Product updated successfully' });
+    }
+  });
+});
+
+// ✅ DELETE endpoint for deleting a product by ID
+app.delete('/api/products/:id', (req, res) => {
+  const productId = req.params.id;
+
+  const query = `DELETE FROM products WHERE id = ?`;
+
+  db.run(query, [productId], function (err) {
+    if (err) {
+      console.error('Error deleting product:', err);
+      return res.status(500).json({ message: 'Failed to delete product' });
+    }
+
+    if (this.changes === 0) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    res.status(200).json({ message: 'Product deleted successfully' });
   });
 });
 

@@ -52,6 +52,11 @@
       </select>
     </div>
 
+    <div class="form-row">
+      <input type="text" name="dateOfEntry" [value]="currentDate" disabled />
+      <input type="text" name="entryTime" [value]="currentTime" disabled />
+    </div>
+    
     <div class="form-buttons">
       <button type="submit">Save</button>
       <button type="button" (click)="backToHome()">Back To Home</button>

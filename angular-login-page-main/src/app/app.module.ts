@@ -5,7 +5,7 @@ import { AppComponent } from './app.component';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
-import { FormsModule} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { LoginComponent } from './login/login.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -13,7 +13,6 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
-import { ProductsComponent } from './products/products.component';
 import { BillsComponent } from './bills/bills.component';
 import { AdbComponent } from './adb/adb.component';
 import { AlbComponent } from './alb/alb.component';
@@ -25,6 +24,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { BarcodeComponent } from './barcode/barcode.component';
 import { RegisterComponent } from './register/register.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { AddProductsComponent } from './products/add-products/add-products.component';
+import { ProductsComponent } from './products/products.component';
+import { EditProductsComponent } from './products/edit-products/edit-products.component'; // ✅ Import Edit Component
 
 @NgModule({
   declarations: [
@@ -32,7 +34,6 @@ import { ReactiveFormsModule } from '@angular/forms';
     LoginComponent,
     DashboardComponent,
     NavbarComponent,
-    ProductsComponent,
     BillsComponent,
     AdbComponent,
     AlbComponent,
@@ -41,7 +42,9 @@ import { ReactiveFormsModule } from '@angular/forms';
     AddMerchantComponent,
     BarcodeComponent,
     RegisterComponent,
-    
+    AddProductsComponent,
+    ProductsComponent,
+    EditProductsComponent // ✅ Declare it here
   ],
   imports: [
     BrowserModule,
@@ -56,7 +59,7 @@ import { ReactiveFormsModule } from '@angular/forms';
     MatIconModule,
     MatInputModule,
     MatFormFieldModule,
-    MatCardModule,
+    MatCardModule
   ],
   providers: [],
   bootstrap: [AppComponent]

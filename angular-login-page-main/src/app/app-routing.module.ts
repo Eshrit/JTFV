@@ -3,7 +3,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { AddMerchantComponent } from './add-merchant/add-merchant.component';
-import { ProductsComponent } from './products/products.component';
 import { BillsComponent } from './bills/bills.component';
 import { AdbComponent } from './adb/adb.component';
 import { AlbComponent } from './alb/alb.component';
@@ -11,7 +10,9 @@ import { ReportsComponent } from './reports/reports.component';
 import { VendorsComponent } from './vendors/vendors.component';
 import { BarcodeComponent } from './barcode/barcode.component';
 import { RegisterComponent } from './register/register.component';
-
+import { AddProductsComponent } from './products/add-products/add-products.component';
+import { EditProductsComponent } from './products/edit-products/edit-products.component'; // New route for editing products
+import { ProductsComponent } from './products/products.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -25,6 +26,8 @@ const routes: Routes = [
   { path: 'vendors', component: VendorsComponent },
   { path: 'barcode', component: BarcodeComponent },
   { path: 'register', component: RegisterComponent },
+  { path: 'add-products', component: AddProductsComponent },
+  { path: 'edit-products/:id', component: EditProductsComponent }, // Add dynamic path for editing products
   { path: '', redirectTo: '/login', pathMatch: 'full' },
 ];
 
