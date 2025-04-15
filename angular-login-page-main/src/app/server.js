@@ -150,6 +150,80 @@ app.get('/api/products', (req, res) => {
   });
 });
 
+// Create bills table
+db.run(`
+  CREATE TABLE IF NOT EXISTS bills (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    clientName TEXT,
+    address TEXT,
+    billNumber TEXT,
+    billDate TEXT,
+    discount REAL,
+    totalAmount REAL,
+    finalAmount REAL,
+    billItems TEXT
+  )
+`);
+
+// POST endpoint to save a bill
+app.post('/api/bills', (req, res) => {
+  const {
+    clientName,
+    address,
+    billNumber,
+    billDate,
+    discount,
+    totalAmount,
+    finalAmount,
+    billItems
+  } = req.body;
+
+  const query = `
+    INSERT INTO bills (
+      clientName, address, billNumber, billDate, discount,
+      totalAmount, finalAmount, billItems
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+
+  db.run(query, [
+    clientName,
+    address,
+    billNumber,
+    billDate,
+    discount,
+    totalAmount,
+    finalAmount,
+    JSON.stringify(billItems)
+  ], function (err) {
+    if (err) {
+      console.error('Error saving bill:', err);
+      res.status(500).json({ message: 'Failed to save bill' });
+    } else {
+      res.status(201).json({ message: 'Bill saved successfully', id: this.lastID });
+    }
+  });
+});
+
+// ✅ Get the latest bill number
+app.get('/api/bills/latest', (req, res) => {
+  db.get('SELECT billNumber FROM bills ORDER BY id DESC LIMIT 1', [], (err, row) => {
+    if (err) {
+      console.error('Error fetching latest bill number:', err);
+      return res.status(500).json({ message: 'Failed to fetch latest bill number' });
+    }
+
+    if (!row || !row.billNumber) {
+      return res.status(200).json({ billNumber: '001' }); // Start at 001 if no bill exists
+    }
+
+    // Increment bill number (assuming format like 001, 002, ...)
+    const currentNumber = parseInt(row.billNumber);
+    const nextNumber = (currentNumber + 1).toString().padStart(3, '0');
+
+    res.status(200).json({ billNumber: nextNumber });
+  });
+});
+
 
 // ✅ Register endpoint
 app.post('/api/register', (req, res) => {

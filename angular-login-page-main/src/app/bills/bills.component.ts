@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductService } from '../products/products.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { BillsService } from './bills.service';
 
 interface BillItem {
   productId: number | null;
@@ -17,23 +19,25 @@ interface BillItem {
 export class BillsComponent implements OnInit {
   products: any[] = [];
   billItems: BillItem[] = [];
-  clients: string[] = ['HAIKO', 'STAR BAZAAR', 'BIG BASKET']; // you can populate dynamically if needed
+  clients: string[] = ['HAIKO', 'STAR BAZAAR', 'BIG BASKET'];
   clientName: string = '';
   address: string = '';
   billNumber: string = '';
-  billDate: string = new Date().toISOString().substring(0, 10); // default to today
+  billDate: string = new Date().toISOString().substring(0, 10);
   discount: number = 0;
   totalAmount: number = 0;
   finalAmount: number = 0;
 
-  constructor(private productService: ProductService) {}
+  constructor(
+    private productService: ProductService,
+    private billsService: BillsService
+  ) {}
 
   ngOnInit(): void {
     this.productService.getProducts().subscribe(data => {
       this.products = data;
     });
 
-    // Initialize with 10 blank rows
     for (let i = 0; i < 10; i++) {
       this.billItems.push({
         productId: null,
@@ -43,6 +47,17 @@ export class BillsComponent implements OnInit {
         total: 0
       });
     }
+
+    // ✅ Fetch next bill number
+    this.billsService.getLatestBillNumber().subscribe({
+      next: (res: { billNumber: string }) => {
+        this.billNumber = res.billNumber;
+      },
+      error: (err: any) => {
+        console.error('Failed to get latest bill number', err);
+        this.billNumber = '001'; // fallback if server fails
+      }
+    });
   }
 
   onProductChange(index: number): void {
@@ -75,12 +90,30 @@ export class BillsComponent implements OnInit {
   }
 
   emailBill(): void {
-    // Placeholder for email logic
     alert('Email sent!');
   }
 
   saveBill(): void {
-    // Placeholder for saving logic
-    alert('Bill saved!');
+    const billData = {
+      clientName: this.clientName,
+      address: this.address,
+      billNumber: this.billNumber,
+      billDate: this.billDate,
+      discount: this.discount,
+      totalAmount: this.totalAmount,
+      finalAmount: this.finalAmount,
+      billItems: this.billItems
+    };
+
+    this.billsService.saveBill(billData).subscribe({
+      next: (response) => {
+        alert('Bill saved successfully!');
+        console.log('Saved bill response:', response);
+      },
+      error: (error: HttpErrorResponse) => {
+        alert('Failed to save bill. Please try again.');
+        console.error('Error saving bill:', error);
+      }
+    });
   }
 }
