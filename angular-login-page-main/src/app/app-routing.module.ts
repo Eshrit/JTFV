@@ -13,7 +13,7 @@ import { RegisterComponent } from './register/register.component';
 import { AddProductsComponent } from './products/add-products/add-products.component';
 import { EditProductsComponent } from './products/edit-products/edit-products.component'; // New route for editing products
 import { ProductsComponent } from './products/products.component';
-import { AddBillComponent } from './bills/add-bills/add-bills.component';
+import { AddBillsComponent } from './bills/add-bills/add-bills.component';
 import { EditBillComponent } from './bills/edit-bills/edit-bills.component';
 import { NavbarComponent } from './navbar/navbar.component';
 
@@ -30,7 +30,7 @@ const routes: Routes = [
   { path: 'barcode', component: BarcodeComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'add-products', component: AddProductsComponent },
-  { path: 'add-bills', component: AddBillComponent },
+  { path: 'add-bills', component: AddBillsComponent },
   { path: 'edit-bills', component: EditBillComponent },
   { path: 'app-navbar', component: NavbarComponent },
   { path: 'edit-products/:id', component: EditProductsComponent }, // Add dynamic path for editing products
