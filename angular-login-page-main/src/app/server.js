@@ -1,3 +1,4 @@
+// ✅ Required modules
 import express from 'express';
 import sqlite3 from 'sqlite3';
 import cors from 'cors';
@@ -10,59 +11,59 @@ dotenv.config();
 const app = express();
 const PORT = 3001;
 
-// ✅ Enable CORS
+// ✅ Middleware
 app.use(cors({
   origin: 'http://localhost:4200',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
-
-// ✅ Handle preflight OPTIONS
 app.options('*', cors());
-
-// ✅ Middleware
 app.use(bodyParser.json());
 
-// ✅ SQLite setup
+// ✅ SQLite DB setup
 const db = new sqlite3.Database('./database.db', (err) => {
-  if (err) {
-    console.error('Error opening database:', err);
-  } else {
-    console.log('Connected to SQLite database');
+  if (err) return console.error('Error opening database:', err);
+  console.log('Connected to SQLite database');
 
-    db.run(`
-      CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        email TEXT UNIQUE,
-        password TEXT
-      )
-    `);
+  db.run(`
+    CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      email TEXT UNIQUE,
+      password TEXT
+    )
+  `);
 
-    db.run(`
-      CREATE TABLE IF NOT EXISTS clients (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        firstName TEXT,
-        middleName TEXT,
-        lastName TEXT,
-        phone TEXT,
-        mobile TEXT,
-        fax TEXT,
-        email TEXT,
-        clientType TEXT,
-        address1 TEXT,
-        address2 TEXT,
-        area TEXT,
-        subArea TEXT,
-        city TEXT,
-        landmark TEXT,
-        franchise TEXT,
-        dateOfEntry TEXT,
-        entryTime TEXT
-      )
-    `);
-  }
+  db.run(`
+    CREATE TABLE IF NOT EXISTS clients (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      firstName TEXT, middleName TEXT, lastName TEXT, phone TEXT,
+      mobile TEXT, fax TEXT, email TEXT, clientType TEXT,
+      address1 TEXT, address2 TEXT, area TEXT, subArea TEXT,
+      city TEXT, landmark TEXT, franchise TEXT, dateOfEntry TEXT, entryTime TEXT
+    )
+  `);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS products (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      vegName TEXT, topPriority TEXT, units TEXT,
+      itemType TEXT, dateOfEntry TEXT, entryTime TEXT
+    )
+  `);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS bills (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      customerName TEXT,
+      date TEXT,
+      items TEXT,
+      totalAmount REAL,
+      createdAt TEXT
+    )
+  `);
 });
 
+// ✅ Clients API
 app.post('/api/clients', (req, res) => {
   const client = req.body;
   const query = `
@@ -74,209 +75,175 @@ app.post('/api/clients', (req, res) => {
   `;
   const values = [
     client.firstName, client.middleName, client.lastName, client.phone, client.mobile,
-    client.fax, client.email, client.clientType,
-    client.address1, client.address2, client.area, client.subArea,
-    client.city, client.landmark, client.franchise,
+    client.fax, client.email, client.clientType, client.address1, client.address2,
+    client.area, client.subArea, client.city, client.landmark, client.franchise,
     client.dateOfEntry, client.entryTime
   ];
 
   db.run(query, values, function (err) {
-    if (err) {
-      console.error('Error saving client:', err);
-      res.status(500).json({ message: 'Failed to save client' });
-    } else {
-      res.status(201).json({ message: 'Client saved successfully', id: this.lastID });
-    }
+    if (err) return res.status(500).json({ message: 'Failed to save client' });
+    res.status(201).json({ message: 'Client saved successfully', id: this.lastID });
   });
 });
 
-// Get all clients
 app.get('/api/clients', (req, res) => {
   db.all('SELECT * FROM clients', [], (err, rows) => {
-    if (err) {
-      console.error('Error fetching clients:', err);
-      res.status(500).json({ message: 'Failed to fetch clients' });
-    } else {
-      res.status(200).json(rows);
-    }
+    if (err) return res.status(500).json({ message: 'Failed to fetch clients' });
+    res.status(200).json(rows);
   });
 });
 
-// ✅ SQLite setup - Add Products Table
-db.run(`
-  CREATE TABLE IF NOT EXISTS products (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    vegName TEXT,
-    topPriority TEXT,
-    units TEXT,
-    itemType TEXT,
-    dateOfEntry TEXT,
-    entryTime TEXT
-  )
-`);
-
-// ✅ POST endpoint for adding a new product
+// ✅ Products API
 app.post('/api/products', (req, res) => {
   const product = req.body;
-  const query = `
-    INSERT INTO products (
-      vegName, topPriority, units, itemType, dateOfEntry, entryTime
-    ) VALUES (?, ?, ?, ?, ?, ?)
-  `;
   const values = [
     product.vegName, product.topPriority, product.units, product.itemType,
     product.dateOfEntry, product.entryTime
   ];
 
-  db.run(query, values, function (err) {
-    if (err) {
-      console.error('Error saving product:', err);
-      res.status(500).json({ message: 'Failed to save product' });
-    } else {
-      res.status(201).json({ message: 'Product saved successfully', id: this.lastID });
-    }
+  db.run(`
+    INSERT INTO products (
+      vegName, topPriority, units, itemType, dateOfEntry, entryTime
+    ) VALUES (?, ?, ?, ?, ?, ?)`, values, function (err) {
+    if (err) return res.status(500).json({ message: 'Failed to save product' });
+    res.status(201).json({ message: 'Product saved', id: this.lastID });
   });
 });
 
-// ✅ GET endpoint to retrieve all products
 app.get('/api/products', (req, res) => {
   db.all('SELECT * FROM products', [], (err, rows) => {
-    if (err) {
-      console.error('Error fetching products:', err);
-      res.status(500).json({ message: 'Failed to fetch products' });
-    } else {
-      res.status(200).json(rows);
-    }
+    if (err) return res.status(500).json({ message: 'Failed to fetch products' });
+    res.status(200).json(rows);
   });
 });
 
+app.get('/api/products/:id', (req, res) => {
+  const id = req.params.id;
+  db.get('SELECT * FROM products WHERE id = ?', [id], (err, row) => {
+    if (err) return res.status(500).json({ message: 'Failed to fetch product' });
+    if (!row) return res.status(404).json({ message: 'Product not found' });
+    res.status(200).json(row);
+  });
+});
 
-// ✅ Register endpoint
+app.put('/api/products/:id', (req, res) => {
+  const id = req.params.id;
+  const { vegName, topPriority, units, itemType, dateOfEntry, entryTime } = req.body;
+
+  db.run(`
+    UPDATE products SET
+      vegName = ?, topPriority = ?, units = ?, itemType = ?,
+      dateOfEntry = ?, entryTime = ?
+    WHERE id = ?
+  `, [vegName, topPriority, units, itemType, dateOfEntry, entryTime, id], function (err) {
+    if (err) return res.status(500).json({ message: 'Failed to update product' });
+    res.status(200).json({ message: 'Product updated successfully' });
+  });
+});
+
+app.delete('/api/products/:id', (req, res) => {
+  const id = req.params.id;
+  db.run('DELETE FROM products WHERE id = ?', [id], function (err) {
+    if (err) return res.status(500).json({ message: 'Failed to delete product' });
+    if (this.changes === 0) return res.status(404).json({ message: 'Product not found' });
+    res.status(200).json({ message: 'Product deleted successfully' });
+  });
+});
+
+// ✅ Bills API
+app.post('/api/bills', (req, res) => {
+  const { customerName, date, items, totalAmount, createdAt } = req.body;
+
+  db.run(`
+    INSERT INTO bills (customerName, date, items, totalAmount, createdAt)
+    VALUES (?, ?, ?, ?, ?)`, [
+    customerName, date,
+    JSON.stringify(items),
+    totalAmount,
+    createdAt || new Date().toISOString()
+  ], function (err) {
+    if (err) return res.status(500).json({ message: 'Failed to save bill' });
+    res.status(201).json({ message: 'Bill saved', id: this.lastID });
+  });
+});
+
+app.get('/api/bills', (req, res) => {
+  db.all('SELECT * FROM bills', [], (err, rows) => {
+    if (err) return res.status(500).json({ message: 'Failed to fetch bills' });
+    const parsed = rows.map(row => ({ ...row, items: JSON.parse(row.items) }));
+    res.status(200).json(parsed);
+  });
+});
+
+app.get('/api/bills/:id', (req, res) => {
+  const id = req.params.id;
+  db.get('SELECT * FROM bills WHERE id = ?', [id], (err, row) => {
+    if (err) return res.status(500).json({ message: 'Failed to fetch bill' });
+    if (!row) return res.status(404).json({ message: 'Bill not found' });
+    row.items = JSON.parse(row.items);
+    res.status(200).json(row);
+  });
+});
+
+app.put('/api/bills/:id', (req, res) => {
+  const id = req.params.id;
+  const { customerName, date, items, totalAmount, createdAt } = req.body;
+
+  db.run(`
+    UPDATE bills SET
+      customerName = ?, date = ?, items = ?, totalAmount = ?, createdAt = ?
+    WHERE id = ?
+  `, [
+    customerName, date,
+    JSON.stringify(items),
+    totalAmount,
+    createdAt || new Date().toISOString(),
+    id
+  ], function (err) {
+    if (err) return res.status(500).json({ message: 'Failed to update bill' });
+    if (this.changes === 0) return res.status(404).json({ message: 'Bill not found' });
+    res.status(200).json({ message: 'Bill updated successfully' });
+  });
+});
+
+app.delete('/api/bills/:id', (req, res) => {
+  const id = req.params.id;
+  db.run('DELETE FROM bills WHERE id = ?', [id], function (err) {
+    if (err) return res.status(500).json({ message: 'Failed to delete bill' });
+    if (this.changes === 0) return res.status(404).json({ message: 'Bill not found' });
+    res.status(200).json({ message: 'Bill deleted successfully' });
+  });
+});
+
+// ✅ Auth endpoints
 app.post('/api/register', (req, res) => {
   const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({ message: 'Email and password are required' });
-  }
+  if (!email || !password) return res.status(400).json({ message: 'Email and password required' });
 
   db.get('SELECT * FROM users WHERE email = ?', [email], async (err, row) => {
-    if (row) {
-      console.log('User already exists');
-      return res.status(400).json({ message: 'Email already exists' });
-    }
+    if (row) return res.status(400).json({ message: 'Email already exists' });
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    db.run('INSERT INTO users (email, password) VALUES (?, ?)', [email, hashedPassword], (err) => {
-      if (err) {
-        console.error('Error saving user:', err);
-        return res.status(500).json({ message: 'Failed to register user' });
-      }
-      console.log('User registered:', email);
+    const hashed = await bcrypt.hash(password, 10);
+    db.run('INSERT INTO users (email, password) VALUES (?, ?)', [email, hashed], (err) => {
+      if (err) return res.status(500).json({ message: 'Failed to register user' });
       res.status(201).json({ message: 'User registered successfully' });
     });
   });
 });
 
-// ✅ Login endpoint
 app.post('/api/login', (req, res) => {
   const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({ message: 'Email and password are required' });
-  }
+  if (!email || !password) return res.status(400).json({ message: 'Email and password required' });
 
   db.get('SELECT * FROM users WHERE email = ?', [email], async (err, row) => {
-    if (err) {
-      console.error('Error querying database:', err);
-      return res.status(500).json({ message: 'Internal server error' });
-    }
+    if (!row) return res.status(400).json({ message: 'Invalid credentials' });
 
-    if (!row) {
-      console.log('Invalid email or password');
-      return res.status(400).json({ message: 'Invalid email or password' });
-    }
-
-    // Compare the hashed password
     const match = await bcrypt.compare(password, row.password);
-    if (match) {
-      console.log('Login successful');
-      res.status(200).json({ message: 'Login successful' });
-    } else {
-      console.log('Invalid email or password');
-      res.status(400).json({ message: 'Invalid email or password' });
-    }
+    if (!match) return res.status(400).json({ message: 'Invalid credentials' });
+
+    res.status(200).json({ message: 'Login successful' });
   });
 });
-
-// ✅ GET a product by ID
-app.get('/api/products/:id', (req, res) => {
-  const productId = req.params.id;
-  db.get('SELECT * FROM products WHERE id = ?', [productId], (err, row) => {
-    if (err) {
-      console.error('Error fetching product:', err);
-      res.status(500).json({ message: 'Failed to fetch product' });
-    } else if (!row) {
-      res.status(404).json({ message: 'Product not found' });
-    } else {
-      res.status(200).json(row);
-    }
-  });
-});
-
-// ✅ PUT update a product by ID
-app.put('/api/products/:id', (req, res) => {
-  const productId = req.params.id;
-  const {
-    vegName,
-    topPriority,
-    units,
-    itemType,
-    dateOfEntry,
-    entryTime
-  } = req.body;
-
-  const query = `
-    UPDATE products SET
-      vegName = ?,
-      topPriority = ?,
-      units = ?,
-      itemType = ?,
-      dateOfEntry = ?,
-      entryTime = ?
-    WHERE id = ?
-  `;
-  const values = [vegName, topPriority, units, itemType, dateOfEntry, entryTime, productId];
-
-  db.run(query, values, function (err) {
-    if (err) {
-      console.error('Error updating product:', err);
-      res.status(500).json({ message: 'Failed to update product' });
-    } else {
-      res.status(200).json({ message: 'Product updated successfully' });
-    }
-  });
-});
-
-// ✅ DELETE endpoint for deleting a product by ID
-app.delete('/api/products/:id', (req, res) => {
-  const productId = req.params.id;
-
-  const query = `DELETE FROM products WHERE id = ?`;
-
-  db.run(query, [productId], function (err) {
-    if (err) {
-      console.error('Error deleting product:', err);
-      return res.status(500).json({ message: 'Failed to delete product' });
-    }
-
-    if (this.changes === 0) {
-      return res.status(404).json({ message: 'Product not found' });
-    }
-
-    res.status(200).json({ message: 'Product deleted successfully' });
-  });
-});
-
 
 // ✅ Start server
 app.listen(PORT, () => {

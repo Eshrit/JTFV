@@ -3,57 +3,51 @@
 <div class="container">
   <h2>Add Bill</h2>
   <form [formGroup]="billForm" (ngSubmit)="submit()">
-    <!-- Bill Number -->
     <label>Bill Number:</label>
-    <input formControlName="billNumber" class="form-control">
-  
-    <!-- Customer Name -->
-    <label>Customer Name:</label>
-    <input formControlName="customerName" class="form-control">
-  
-    <!-- Date -->
+    <input formControlName="billNumber" class="form-control" readonly value="AUTO-GENERATED">
+
+    <label>Client Name:</label>
+    <select formControlName="clientName" class="form-control">
+      <option value="">Select Client</option>
+      <!-- Add client options dynamically -->
+    </select>
+
+    <label>Address:</label>
+    <input formControlName="address" class="form-control">
+
     <label>Date:</label>
     <input type="date" formControlName="date" class="form-control">
-  
-    <!-- Items Form Array -->
+
     <div formArrayName="items">
       <div *ngFor="let item of items.controls; let i = index" [formGroupName]="i" class="card my-3 p-3">
-        <!-- Product Name -->
         <label>Product Name:</label>
-        <input formControlName="productName" class="form-control">
-  
-        <!-- Quantity -->
+        <select formControlName="productName" class="form-control">
+          <option value="">Select Product</option>
+          <!-- Add product options dynamically -->
+        </select>
+
         <label>Quantity:</label>
         <input type="number" formControlName="quantity" class="form-control">
-  
-        <!-- Price -->
+
         <label>Price:</label>
         <input type="number" formControlName="price" class="form-control">
-  
-        <!-- Margin % -->
+
         <label>Margin %:</label>
         <input type="number" formControlName="margin" class="form-control">
-  
-        <!-- Discount % -->
+
         <label>Discount %:</label>
         <input type="number" formControlName="discount" class="form-control">
-  
-        <!-- Calculate Button -->
-        <button type="button" (click)="calculate(i)" class="btn btn-primary">Calculate</button>
-  
-        <!-- Total -->
+
+        <button type="button" (click)="calculate(i)" class="btn btn-info my-2">Calculate</button>
+
         <label>Total:</label>
-        <input [formControl]="item.get('total')" class="form-control" readonly>
-  
-        <!-- Remove Item Button -->
+        <input formControlName="total" class="form-control" readonly>
+
         <button type="button" (click)="removeItem(i)" class="btn btn-danger mt-2">Remove</button>
       </div>
     </div>
-  
-    <!-- Add Item Button -->
+
     <button type="button" (click)="addItem()" class="btn btn-secondary">Add Item</button>
-  
-    <!-- Submit Button -->
     <button type="submit" class="btn btn-primary mt-3">Submit</button>
   </form>
 </div>

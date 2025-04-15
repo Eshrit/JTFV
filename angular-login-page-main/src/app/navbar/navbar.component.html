@@ -33,8 +33,20 @@
     <mat-icon class="dropdown-icon">arrow_drop_down</mat-icon>
   </div>
 
-  <!-- Bills and Reports Links -->
-  <a mat-button routerLink="/bills">Bills</a>
+  <!-- Bills Dropdown Menu -->
+  <mat-menu #billsMenu="matMenu">
+    <button mat-menu-item routerLink="/bills">Bills Overview</button>
+    <button mat-menu-item routerLink="/add-bills">Add Bills</button>
+  </mat-menu>
+
+  <div class="menu-wrapper">
+    <button mat-button [matMenuTriggerFor]="billsMenu">
+      Bills
+    </button>
+    <mat-icon class="dropdown-icon">arrow_drop_down</mat-icon>
+  </div>
+
+  <!-- Reports Link -->
   <a mat-button routerLink="/reports">Reports</a>
   <a mat-button routerLink="/barcode">Barcode</a>
 

@@ -1,0 +1,135 @@
+/* General Styles */
+.container {
+    max-width: 700px;  /* Reduced width */
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  h2 {
+    font-size: 1.6rem;  /* Slightly smaller heading */
+    margin-bottom: 15px;
+    text-align: center;
+    color: #333;
+  }
+  
+  /* Form Styles */
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;  /* Reduced gap between form elements */
+  }
+  
+  label {
+    font-size: 0.9rem;  /* Smaller font size */
+    margin-bottom: 5px;
+    color: #555;
+  }
+  
+  input.form-control {
+    padding: 8px;  /* Reduced padding */
+    font-size: 0.9rem;  /* Slightly smaller font size */
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  input[type="number"], input[type="date"] {
+    max-width: 100%;
+  }
+  
+  /* Form Array Styles */
+  .card {
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    padding: 12px;  /* Reduced padding */
+    margin-top: 8px;  /* Reduced margin */
+  }
+  
+  .card label {
+    font-size: 0.9rem;  /* Smaller font size */
+    color: #555;
+  }
+  
+  .card input.form-control {
+    margin-bottom: 8px;  /* Reduced space between inputs */
+  }
+  
+  /* Button Styles */
+  button {
+    padding: 6px 10px;  /* Smaller button size */
+    font-size: 0.9rem;  /* Slightly smaller font size */
+    border-radius: 5px;
+  }
+  
+  .btn-info {
+    background-color: #17a2b8;
+    border: none;
+    color: white;
+  }
+  
+  .btn-info:hover {
+    background-color: #138496;
+  }
+  
+  .btn-danger {
+    background-color: #dc3545;
+    border: none;
+    color: white;
+  }
+  
+  .btn-danger:hover {
+    background-color: #c82333;
+  }
+  
+  .btn-secondary {
+    background-color: #6c757d;
+    border: none;
+    color: white;
+  }
+  
+  .btn-secondary:hover {
+    background-color: #5a6268;
+  }
+  
+  .btn-primary {
+    background-color: #007bff;
+    border: none;
+    color: white;
+  }
+  
+  .btn-primary:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Add Item Button */
+  button[type="button"] {
+    width: auto;
+    margin-top: 10px;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .container {
+      padding: 15px;
+    }
+  
+    .card {
+      padding: 10px;
+    }
+  
+    input.form-control {
+      font-size: 0.85rem;
+      padding: 6px;
+    }
+  
+    button {
+      font-size: 0.85rem;
+      padding: 6px 8px;
+    }
+  
+    h2 {
+      font-size: 1.4rem;
+    }
+  }
+  

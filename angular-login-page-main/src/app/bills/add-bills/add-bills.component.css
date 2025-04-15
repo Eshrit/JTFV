@@ -1,0 +1,36 @@
+.container {
+    max-width: 800px;
+    margin-top: 20px;
+  }
+  
+  h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  form {
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+  }
+  
+  label {
+    font-weight: bold;
+  }
+  
+  .card {
+    margin-top: 10px;
+  }
+  
+  .card label {
+    margin-top: 5px;
+  }
+  
+  .card input {
+    margin-bottom: 10px;
+  }
+  
+  button {
+    margin-top: 10px;
+  }
+  

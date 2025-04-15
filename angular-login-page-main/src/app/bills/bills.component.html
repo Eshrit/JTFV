@@ -1,36 +1,59 @@
 <app-navbar></app-navbar>
 
 <div class="container">
-    <h2>All Bills</h2>
-  
-    <input [(ngModel)]="searchTerm" (input)="filterBills()" placeholder="Search by bill number or customer" class="form-control my-3">
-  
-    <table class="table table-bordered table-striped">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Bill Number</th>
-          <th>Customer Name</th>
-          <th>Date</th>
-          <th>Total Amount</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let bill of filteredBills; let i = index">
-          <td>{{ i + 1 }}</td>
-          <td>{{ bill.billNumber }}</td>
-          <td>{{ bill.customerName }}</td>
-          <td>{{ bill.date | date }}</td>
-          <td>
-            {{ calculateTotal(bill) | number: '1.2-2' }}
-        </td>
-          <td>
-            <button class="btn btn-sm btn-primary" (click)="goToEdit(bill.id)">Edit</button>
-            <button class="btn btn-sm btn-danger" (click)="deleteBill(bill.id)">Delete</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <h2>Bills</h2>
+
+  <!-- Filters Section -->
+  <div class="filters mb-3">
+    <label for="clientFilter">Client:</label>
+    <select id="clientFilter" class="form-control">
+      <option value="">Select Client</option>
+      <!-- Populate this dropdown with client options -->
+    </select>
+
+    <label for="statusFilter">Status:</label>
+    <select id="statusFilter" class="form-control">
+      <option value="">Select Status</option>
+      <option value="unpaid">Unpaid</option>
+      <option value="paid">Paid</option>
+    </select>
+
+    <label for="fromDate">From Date:</label>
+    <input type="date" id="fromDate" class="form-control">
+
+    <label for="toDate">To Date:</label>
+    <input type="date" id="toDate" class="form-control">
+
+    <button class="btn btn-primary mt-3" (click)="filterBills()">Search</button>
   </div>
-  
+
+  <!-- Bills Table -->
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th>Bill No</th>
+        <th>Client Name</th>
+        <th>Amount</th>
+        <th>Margin</th>
+        <th>Total Amount</th>
+        <th>Date</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let bill of filteredBills">
+        <td>{{ bill.billNumber }}</td>
+        <td>{{ bill.clientName }}</td>
+        <td>{{ bill.amount | currency }}</td>
+        <td>{{ bill.margin }}%</td>
+        <td>{{ bill.totalAmount | currency }}</td>
+        <td>{{ bill.date | date }}</td>
+        <td>{{ bill.status }}</td>
+        <td>
+          <button class="btn btn-sm btn-primary" (click)="goToEdit(bill.id)">Edit</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

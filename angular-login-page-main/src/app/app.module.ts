@@ -29,6 +29,7 @@ import { ProductsComponent } from './products/products.component';
 import { EditProductsComponent } from './products/edit-products/edit-products.component';
 import { EditBillComponent } from './bills/edit-bills/edit-bills.component';
 import { AddBillComponent } from './bills/add-bills/add-bills.component';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 @NgModule({
   declarations: [
@@ -63,8 +64,12 @@ import { AddBillComponent } from './bills/add-bills/add-bills.component';
     MatIconModule,
     MatInputModule,
     MatFormFieldModule,
-    MatCardModule
+    MatCardModule,  
+    BrowserModule,
+    ReactiveFormsModule
   ],
+  
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],  // Add this line=
   providers: [],
   bootstrap: [AppComponent]
 })

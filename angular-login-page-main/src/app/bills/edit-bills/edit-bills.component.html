@@ -1,1 +1,44 @@
 <app-navbar></app-navbar>
+
+<div class="container">
+  <h2>Edit Bill</h2>
+  <form [formGroup]="billForm" (ngSubmit)="submit()">
+    <label>Bill Number:</label>
+    <input formControlName="billNumber" class="form-control">
+
+    <label>Customer Name:</label>
+    <input formControlName="customerName" class="form-control">
+
+    <label>Date:</label>
+    <input type="date" formControlName="date" class="form-control">
+
+    <div formArrayName="items">
+      <div *ngFor="let item of items.controls; let i = index" [formGroupName]="i" class="card my-3 p-3">
+        <label>Product Name:</label>
+        <input formControlName="productName" class="form-control">
+
+        <label>Quantity:</label>
+        <input type="number" formControlName="quantity" class="form-control">
+
+        <label>Price:</label>
+        <input type="number" formControlName="price" class="form-control">
+
+        <label>Margin %:</label>
+        <input type="number" formControlName="margin" class="form-control">
+
+        <label>Discount %:</label>
+        <input type="number" formControlName="discount" class="form-control">
+
+        <button type="button" (click)="calculate(i)" class="btn btn-info my-2">Calculate</button>
+
+        <label>Total:</label>
+        <input formControlName="total" class="form-control" readonly>
+
+        <button type="button" (click)="removeItem(i)" class="btn btn-danger mt-2">Remove</button>
+      </div>
+    </div>
+
+    <button type="button" (click)="addItem()" class="btn btn-secondary">Add Item</button>
+    <button type="submit" class="btn btn-primary mt-3">Update</button>
+  </form>
+</div>
