@@ -1,1 +1,79 @@
 <app-navbar></app-navbar>
+<div class="container">
+  <div class="header">
+    <h1>J.T. Fruits &amp; Vegetables</h1>
+    <p>Shop No. 31-32, Bldg No. 27, EMP Op Jogers Park, Thakur Village, Kandivali(E), Mumbai 400101</p>
+    <p>PAN: AAJFJ0258J | FSS LICENSE ACT 2006 LICENSE NO 11517011000128</p>
+    <p>Email: j.kumarshahu5gmail.com</p>
+    <h2>TAX FREE INVOICE</h2>
+  </div>
+
+  <div class="invoice-info">
+    <div>
+      <label>Name:</label>
+      <select class="form-control" [(ngModel)]="clientName">
+        <option value="">Select Client</option>
+        <option *ngFor="let client of clients" [value]="client">{{ client }}</option>
+      </select>
+    </div>
+    <div>
+      <label>Address:</label>
+      <input type="text" class="form-control" [(ngModel)]="address" />
+    </div>
+    <div>
+      <label>Bill No:</label>
+      <input type="text" class="form-control" [(ngModel)]="billNumber" />
+    </div>
+    <div>
+      <label>Date:</label>
+      <input type="date" class="form-control" [(ngModel)]="billDate" />
+    </div>
+  </div>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Vegetable</th>
+        <th>Quantity</th>
+        <th>Veg Price</th>
+        <th>Total Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of billItems; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>
+          <select class="form-control" [(ngModel)]="item.productId" (change)="onProductChange(i)">
+            <option value="">Select</option>
+            <option *ngFor="let product of products" [value]="product.id">{{ product.vegName }}</option>
+          </select>
+        </td>
+        <td><input class="form-control" type="number" [(ngModel)]="item.quantity" (input)="calculateRowTotal(i)" /></td>
+        <td><input class="form-control" type="number" [(ngModel)]="item.price" (input)="calculateRowTotal(i)" /></td>
+        <td>{{ item.total | number:'1.2-2' }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="summary">
+    <label>Total Amount:</label>
+    <div>{{ totalAmount | currency }}</div>
+  </div>
+
+  <div class="summary">
+    <label>Discount (%):</label>
+    <input class="form-control" style="width: 100px; display: inline-block;" type="number" [(ngModel)]="discount" (input)="calculateFinalAmount()" />
+  </div>
+
+  <div class="summary">
+    <label>Final Amount:</label>
+    <div>{{ finalAmount | currency }}</div>
+  </div>
+
+  <div class="actions no-print">
+    <button class="btn btn-primary" (click)="printBill()">Print</button>
+    <button class="btn btn-secondary" (click)="emailBill()">Email</button>
+    <button class="btn btn-success" (click)="saveBill()">Save</button>
+  </div>
+</div>
