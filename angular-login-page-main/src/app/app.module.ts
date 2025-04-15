@@ -26,7 +26,9 @@ import { RegisterComponent } from './register/register.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AddProductsComponent } from './products/add-products/add-products.component';
 import { ProductsComponent } from './products/products.component';
-import { EditProductsComponent } from './products/edit-products/edit-products.component'; // ✅ Import Edit Component
+import { EditProductsComponent } from './products/edit-products/edit-products.component';
+import { EditBillComponent } from './bills/edit-bills/edit-bills.component';
+import { AddBillComponent } from './bills/add-bills/add-bills.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +46,9 @@ import { EditProductsComponent } from './products/edit-products/edit-products.co
     RegisterComponent,
     AddProductsComponent,
     ProductsComponent,
-    EditProductsComponent // ✅ Declare it here
+    EditProductsComponent,
+    EditBillComponent,
+    AddBillComponent,
   ],
   imports: [
     BrowserModule,

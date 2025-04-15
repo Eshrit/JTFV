@@ -1,1 +1,36 @@
 <app-navbar></app-navbar>
+
+<div class="container">
+    <h2>All Bills</h2>
+  
+    <input [(ngModel)]="searchTerm" (input)="filterBills()" placeholder="Search by bill number or customer" class="form-control my-3">
+  
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Bill Number</th>
+          <th>Customer Name</th>
+          <th>Date</th>
+          <th>Total Amount</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let bill of filteredBills; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>{{ bill.billNumber }}</td>
+          <td>{{ bill.customerName }}</td>
+          <td>{{ bill.date | date }}</td>
+          <td>
+            {{ calculateTotal(bill) | number: '1.2-2' }}
+        </td>
+          <td>
+            <button class="btn btn-sm btn-primary" (click)="goToEdit(bill.id)">Edit</button>
+            <button class="btn btn-sm btn-danger" (click)="deleteBill(bill.id)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  

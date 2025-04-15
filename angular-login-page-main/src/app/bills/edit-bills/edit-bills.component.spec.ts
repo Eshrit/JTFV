@@ -1,21 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { BillsComponent } from './bills.component';
+import { EditBillsComponent } from './edit-bills.component';
 
-describe('BillsComponent', () => {
-  let component: BillsComponent;
-  let fixture: ComponentFixture<BillsComponent>;
+describe('EditBillsComponent', () => {
+  let component: EditBillsComponent;
+  let fixture: ComponentFixture<EditBillsComponent>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [BillsComponent]
+      declarations: [EditBillsComponent]
     });
-    fixture = TestBed.createComponent(BillsComponent);
+    fixture = TestBed.createComponent(EditBillsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  
   it('should create', () => {
     expect(component).toBeTruthy();
   });

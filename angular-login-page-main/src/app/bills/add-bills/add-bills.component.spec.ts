@@ -1,21 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { BillsComponent } from './bills.component';
+import { AddBillsComponent } from './add-bills.component';
 
-describe('BillsComponent', () => {
-  let component: BillsComponent;
-  let fixture: ComponentFixture<BillsComponent>;
+describe('AddBillsComponent', () => {
+  let component: AddBillsComponent;
+  let fixture: ComponentFixture<AddBillsComponent>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [BillsComponent]
+      declarations: [AddBillsComponent]
     });
-    fixture = TestBed.createComponent(BillsComponent);
+    fixture = TestBed.createComponent(AddBillsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  
   it('should create', () => {
     expect(component).toBeTruthy();
   });
