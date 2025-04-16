@@ -23,7 +23,8 @@ export class AddProductsComponent {
       };
 
       this.productService.saveProduct(productData).subscribe({
-        next: () => this.router.navigate(['/products']),
+        next: () => {
+        alert('Product Added!')},
         error: err => console.error('Failed to save product:', err)
       });
     }

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ProductService } from '../products/products.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { BillsService } from './bills.service';
+import { Title } from '@angular/platform-browser';
 
 interface BillItem {
   productId: number | null;
@@ -29,16 +30,18 @@ export class BillsComponent implements OnInit {
   finalAmount: number = 0;
 
   constructor(
+    private titleService: Title,
     private productService: ProductService,
     private billsService: BillsService
   ) {}
 
   ngOnInit(): void {
+    this.titleService.setTitle('Invoice - J.T. Fruits & Vegetables');
     this.productService.getProducts().subscribe(data => {
       this.products = data;
     });
 
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 30; i++) {
       this.billItems.push({
         productId: null,
         productName: '',
@@ -90,7 +93,26 @@ export class BillsComponent implements OnInit {
   }
 
   emailBill(): void {
-    alert('Email sent!');
+    const billData = {
+      clientName: this.clientName,
+      address: this.address,
+      billNumber: this.billNumber,
+      billDate: this.billDate,
+      discount: this.discount,
+      totalAmount: this.totalAmount,
+      finalAmount: this.finalAmount,
+      billItems: this.billItems
+    };
+  
+    this.billsService.sendBillByEmail(billData).subscribe({
+      next: () => {
+        alert('Email Sent!');
+      },
+      error: (err) => {
+        console.error('Email failed:', err);
+        alert('Failed to send email. Please try again.');
+      }
+    });
   }
 
   saveBill(): void {

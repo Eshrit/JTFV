@@ -1,4 +1,5 @@
-<app-navbar></app-navbar>
+<app-navbar class="no-print"></app-navbar>
+
 <div class="container">
   <div class="header">
     <h1>J.T. Fruits &amp; Vegetables</h1>
@@ -34,9 +35,9 @@
     <thead>
       <tr>
         <th>No</th>
-        <th>Vegetable</th>
+        <th>Product</th>
         <th>Quantity</th>
-        <th>Veg Price</th>
+        <th>Product Price</th>
         <th>Total Amount</th>
       </tr>
     </thead>
@@ -44,13 +45,23 @@
       <tr *ngFor="let item of billItems; let i = index">
         <td>{{ i + 1 }}</td>
         <td>
-          <select class="form-control" [(ngModel)]="item.productId" (change)="onProductChange(i)">
-            <option value="">Select</option>
-            <option *ngFor="let product of products" [value]="product.id">{{ product.vegName }}</option>
-          </select>
+          <div class="print-toggle">
+            <select class="form-control" [(ngModel)]="item.productId" (change)="onProductChange(i)">
+              <option value="">Select</option>
+              <option *ngFor="let product of products" [value]="product.id">{{ product.vegName }}</option>
+            </select>
+            <span class="print-view">{{ item.productName }}</span>
+          </div>
         </td>
-        <td><input class="form-control" type="number" [(ngModel)]="item.quantity" (input)="calculateRowTotal(i)" /></td>
-        <td><input class="form-control" type="number" [(ngModel)]="item.price" (input)="calculateRowTotal(i)" /></td>
+        <td><div class="print-toggle">
+          <input class="form-control" type="number" [(ngModel)]="item.quantity" (input)="calculateRowTotal(i)" />
+          <span class="print-view">{{ item.quantity }}</span>
+        </div></td>
+        <td><div class="print-toggle">
+          <input class="form-control" type="number" [(ngModel)]="item.price" (input)="calculateRowTotal(i)" />
+          <span class="print-view">{{ item.price }}</span>
+        </div>
+        </td>
         <td>{{ item.total | number:'1.2-2' }}</td>
       </tr>
     </tbody>

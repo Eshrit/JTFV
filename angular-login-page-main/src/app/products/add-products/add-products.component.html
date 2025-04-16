@@ -3,7 +3,7 @@
   <h2>Add New Product</h2>
   <form #productForm="ngForm" (ngSubmit)="onSubmit(productForm)">
     <div class="form-row">
-      <input type="text" name="vegName" placeholder="Veg Name" ngModel required />
+      <input type="text" name="vegName" placeholder="Product Name" ngModel required />
       <select name="topPriority" ngModel required>
         <option value="" disabled selected>Select Top Priority</option>
         <option value="Yes">Yes</option>

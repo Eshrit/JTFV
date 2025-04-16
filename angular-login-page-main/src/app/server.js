@@ -4,6 +4,7 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
+import nodemailer from 'nodemailer';
 
 dotenv.config();
 
@@ -355,4 +356,48 @@ app.delete('/api/products/:id', (req, res) => {
 // ✅ Start server
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
+});
+
+
+// Email
+app.post('/api/send-bill', (req, res) => {
+  const bill = req.body;
+
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'riteshshahu2603@gmail.com',
+      pass: 'mgag eird shhi xgvo'
+    }
+  });
+
+  const mailOptions = {
+    from: 'riteshshahu2600@gmail.com',
+    to: 'riteshshahu2600@gmail.com',
+    subject: `Invoice - ${bill.billNumber}`,
+    html: `
+      <h2>Invoice - ${bill.billNumber}</h2>
+      <p><strong>Client:</strong> ${bill.clientName}</p>
+      <p><strong>Address:</strong> ${bill.address}</p>
+      <p><strong>Date:</strong> ${bill.billDate}</p>
+      <p><strong>Total:</strong> ₹${bill.finalAmount.toFixed(2)}</p>
+      <br/>
+      <h3>Items:</h3>
+      <ul>
+        ${bill.billItems.map(item => `
+          <li>${item.productName} - Qty: ${item.quantity}, Price: ₹${item.price}, Total: ₹${item.total}</li>
+        `).join('')}
+      </ul>
+    `
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error('Email sending failed:', error);
+      return res.status(500).json({ message: 'Failed to send email' });
+    } else {
+      console.log('Email sent:', info.response);
+      return res.status(200).json({ message: 'Email sent successfully' });
+    }
+  });
 });
