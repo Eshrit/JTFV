@@ -1,0 +1,231 @@
+@media print {
+    .no-print {
+      display: none !important;
+    }
+  
+    .print-toggle input,
+    .print-toggle select {
+      display: none !important;
+    }
+  
+    .print-toggle .print-view {
+      display: inline !important;
+    }
+  }
+  
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 30px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: white;
+    color: #000;
+  }
+  
+  .header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  
+  .header h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .header p {
+    margin: 4px 0;
+    font-size: 14px;
+  }
+  
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  
+  .table th,
+  .table td {
+    border: 1px solid #000;
+    padding: 15px;
+    text-align: center;
+  }
+  
+  .table th {
+    background-color: #f0f0f0;
+  }
+  
+  input.form-control,
+  select.form-control {
+    width: 100%;
+    padding: 4px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .actions {
+    margin-top: 30px;
+  }
+  
+  .actions .btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    margin-right: 15px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .btn-primary {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .btn-secondary {
+    background-color: #6c757d;
+    color: white;
+  }
+  
+  .btn-success {
+    background-color: #28a745;
+    color: white;
+  }
+  
+  .btn-warning {
+    background-color: #ffc107;
+    color: black;
+  }
+  
+  /* Print layout for barcode */
+  .barcode-label {
+    border: 1px solid #000;
+    width: 190px;
+    height: 95px;
+    padding: 4px;
+    margin: 10px auto;
+    text-align: center;
+    font-size: 9px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+  }
+  
+  .barcode-value {
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 2px;
+  }
+  
+  .label-header {
+    font-weight: bold;
+    font-size: 11px;
+  }
+  
+  .label-product {
+    font-size: 9.5px;
+  }
+  
+  .label-info-compact {
+    display: flex;
+    justify-content: space-between;
+    font-size: 8px;
+  }
+  
+  .label-info-compact div {
+    width: 33%;
+  }
+  
+  .label-footer {
+    font-size: 8px;
+    margin-top: 4px;
+  }
+  
+  /* Hide print-view in screen view */
+.print-toggle .print-view {
+    display: none;
+  }
+  
+  /* Show span and hide input/select only during print */
+  @media print {
+    .print-toggle input,
+    .print-toggle select {
+      display: none !important;
+    }
+  
+    .print-toggle .print-view {
+      display: inline !important;
+    }
+  }
+  
+  /* Add Row Button */
+.add-btn {
+    margin: 15px 0;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 4px;
+    border: 1px solid #007bff;
+    background-color: transparent;
+    color: #007bff;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+  .add-btn:hover {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  /* Delete Button (per row) */
+  .delete-btn {
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 4px;
+    border: 1px solid #dc3545;
+    background-color: #dc3545;
+    color: #fff6f6;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+  .delete-btn:hover {
+    background-color: #dc3545;
+    color: white;
+  }
+
+  .table th {
+    background-color: #f0f0f0;
+    font-weight: bold;
+    text-align: center;
+    padding: 8px;
+  }
+  
+  .btn,
+.add-btn,
+.delete-btn {
+  transition: all 0.3s ease;
+}
+
+.btn:hover,
+.add-btn:hover,
+.delete-btn:hover {
+  transform: scale(1.05);
+}
+
+.actions .btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    margin-right: 15px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .actions .btn:hover {
+    transform: scale(1.05);
+  }
+  

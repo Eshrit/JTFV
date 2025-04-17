@@ -226,6 +226,40 @@ app.get('/api/bills/latest', (req, res) => {
 });
 
 
+db.run(`
+  CREATE TABLE IF NOT EXISTS barcodes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    productName TEXT,
+    mrp REAL,
+    category TEXT,
+    expiryDays INTEGER,
+    expiryDate TEXT,
+    barcode TEXT
+  )
+`);
+
+app.post('/api/barcodes', (req, res) => {
+  const products = req.body;
+  const stmt = db.prepare(`
+    INSERT INTO barcodes (productName, mrp, category, expiryDays, expiryDate, barcode)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `);
+  db.serialize(() => {
+    products.forEach(p => {
+      stmt.run(p.productName, p.mrp, p.category, p.expiryDays, p.expiryDate, p.barcode);
+    });
+    stmt.finalize();
+    res.status(201).json({ message: 'Products saved' });
+  });
+});
+
+app.get('/api/barcodes', (req, res) => {
+  db.all('SELECT * FROM barcodes', [], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
+  });
+});
+
 // ✅ Register endpoint
 app.post('/api/register', (req, res) => {
   const { email, password } = req.body;
