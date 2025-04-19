@@ -1,27 +1,25 @@
 <app-navbar class="no-print"></app-navbar>
 
 <div class="container">
-  <div class="header">
-    <h2>BARCODE GENERATOR</h2>
+  <div class="header no-print">
+    <h1>Barcode Generator</h1>
   </div>
 
-  <form (ngSubmit)="saveAll()">
+  <form>
     <table class="table">
       <thead>
         <tr>
-          <th>Select</th>
           <th>Product</th>
           <th>M.R.P. (₹)</th>
           <th>Category</th>
           <th>Quantity</th>
-          <th>Expiry Days</th>          
+          <th>Expiry Days</th>
           <th>Expiry Date</th>
           <th>Delete</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let item of products; let i = index">
-          <td><input type="checkbox" [(ngModel)]="item.selected" name="selected{{i}}" /></td>
           <td>
             <div class="print-toggle">
               <input class="form-control" [(ngModel)]="item.productName" name="productName{{i}}" required />
@@ -43,15 +41,12 @@
               <span class="print-view">{{ item.category }}</span>
             </div>
           </td>
-
           <td>
             <div class="print-toggle">
               <input class="form-control" type="number" [(ngModel)]="item.quantity" name="quantity{{i}}" />
               <span class="print-view">{{ item.quantity }}</span>
             </div>
           </td>
-          
-
           <td>
             <div class="print-toggle">
               <input class="form-control" type="number" [(ngModel)]="item.expiryDays" name="expiryDays{{i}}" (change)="updateExpiry(i)" />
@@ -65,38 +60,35 @@
             </div>
           </td>
           <td class="no-print">
-            <button type="button" class="btn btn-outline-danger delete-btn" (click)="removeRow(i)">
-              Delete
-            </button>
+            <button type="button" class="btn btn-outline-danger delete-btn" (click)="removeRow(i)">Delete</button>
           </td>
         </tr>
       </tbody>
     </table>
 
     <button type="button" class="btn btn-outline-primary add-btn" (click)="addRow()">
-        ➕ Add Row
-      </button>
-      
+      ➕ Add Row
+    </button>
+
     <div class="actions no-print">
       <button type="submit" class="btn btn-success">Save</button>
       <button type="button" class="btn btn-warning" (click)="resetForm()">Refresh</button>
-      <button type="button" class="btn btn-primary" (click)="printSelected()">Print Selected</button>
+      <button type="button" class="btn btn-primary" (click)="printSelected()">Print</button>
     </div>
   </form>
 
-  <!-- Print-Only Preview -->
-  <div class="print-section" *ngIf="printItems.length > 0">
+  <div class="print-section">
     <div *ngFor="let p of printItems; let i = index" class="barcode-label">
-      <div class="label-header">J T FRUITS & VEG</div>
+      <div class="label-header">J T FRUITS &amp; VEG</div>
       <div class="label-product">{{ p.productName }}</div>
       <svg [attr.id]="'barcode-' + i"></svg>
       <div class="barcode-value">{{ p.barcode }}</div>
       <div class="label-info-compact">
-        <div><strong>₹</strong>{{ p.mrp }}</div>
-        <div><strong>Pkd:</strong><br>{{ currentDate }}</div>
-        <div><strong>Exp:</strong><br>{{ p.expiryDate }}</div>
+        <div><strong>M.R.P.</strong><br>₹{{ p.mrp }}</div>
+        <div><strong>Pkd.</strong><br>{{ currentDate | date:'dd.MM.yy' }}</div>
+        <div><strong>Exp.</strong><br>{{ p.expiryDate | date:'dd.MM.yy' }}</div>
       </div>
-      <div class="label-footer">(Incl. of all Taxes)</div>
+      <div class="label-footer">Incl. of all Taxes</div>
     </div>
   </div>
 </div>

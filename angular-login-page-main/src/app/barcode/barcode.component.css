@@ -1,6 +1,7 @@
+/* Updated: barcode.component.css */
 
 .container {
-  max-width: 1200px; /* ⬅ wider container */
+  max-width: 1200px;
   margin: 0 auto;
   padding: 30px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -32,7 +33,7 @@
   border-collapse: collapse;
   font-size: 14px;
   margin-bottom: 20px;
-  table-layout: fixed; /* ⬅ Ensure columns adjust proportionally */
+  table-layout: fixed;
 }
 
 .table th,
@@ -49,7 +50,6 @@
   padding: 8px;
 }
 
-/* Wider columns for key fields */
 .table th:nth-child(2),
 .table td:nth-child(2) {
   width: 22%;
@@ -78,21 +78,32 @@ select.form-control {
   display: none;
 }
 
-/* Show span on print, hide inputs */
 @media print {
-  .no-print {
+  body * {
     display: none !important;
   }
 
-  .print-toggle input,
-  .print-toggle select {
-    display: none !important;
+  .print-section,
+  .print-section * {
+    display: block !important;
+    visibility: visible !important;
   }
 
-  .print-toggle .print-view {
-    display: inline !important;
+  .print-section {
+    position: static !important;
+    top: 0;
+    left: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  .barcode-label {
+    page-break-inside: avoid;
   }
 }
+
+
 
 /* =======================
    Buttons
@@ -120,7 +131,6 @@ select.form-control {
   transform: scale(1.05);
 }
 
-/* Add Row */
 .add-btn {
   margin: 15px 0;
   padding: 8px 16px;
@@ -136,7 +146,6 @@ select.form-control {
   color: white;
 }
 
-/* Delete Row */
 .delete-btn {
   padding: 8px 16px;
   font-size: 14px;
@@ -151,7 +160,6 @@ select.form-control {
   color: white;
 }
 
-/* Button Colors */
 .btn-primary {
   background-color: #007bff;
   color: white;
@@ -172,32 +180,50 @@ select.form-control {
 /* =======================
    Barcode Print Preview
 ======================= */
+.print-section {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 6px;
+  margin-top: 20px;
+}
+
 .barcode-label {
+  width: 180px;
+  height: 90px;
+  padding: 6px 8px;
   border: 1px solid #000;
-  width: 190px;
-  height: 95px;
-  padding: 4px;
-  margin: 10px auto;
-  text-align: center;
+  font-family: 'Courier New', monospace;
   font-size: 9px;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
-}
-
-.barcode-value {
-  font-size: 11px;
-  font-weight: bold;
-  letter-spacing: 2px;
+  text-align: center;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .label-header {
   font-weight: bold;
-  font-size: 11px;
+  font-size: 10px;
 }
 
 .label-product {
   font-size: 9.5px;
+  margin: 2px 0;
+}
+
+svg {
+  display: block;
+  margin: 0 auto;
+  height: 30px;
+  width: 160px;
+}
+
+.barcode-value {
+  font-size: 11px;
+  letter-spacing: 1px;
+  margin: 1px 0;
 }
 
 .label-info-compact {
