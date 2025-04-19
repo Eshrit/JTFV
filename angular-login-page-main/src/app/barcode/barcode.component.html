@@ -12,7 +12,7 @@
           <th>Product</th>
           <th>M.R.P. (₹)</th>
           <th>Category</th>
-          <th>Quantity</th>
+          <th>Qty</th>
           <th>Expiry Days</th>
           <th>Expiry Date</th>
           <th>Delete</th>
@@ -20,45 +20,17 @@
       </thead>
       <tbody>
         <tr *ngFor="let item of products; let i = index">
+          <td><input type="text" class="form-control" [(ngModel)]="item.productName" name="productName{{i}}" required/></td>
+          <td><input type="number" class="form-control" [(ngModel)]="item.mrp" name="mrp{{i}}" required /></td>
           <td>
-            <div class="print-toggle">
-              <input class="form-control" [(ngModel)]="item.productName" name="productName{{i}}" required />
-              <span class="print-view">{{ item.productName }}</span>
-            </div>
+            <select class="form-control" [(ngModel)]="item.category" name="category{{i}}">
+              <option value="Fruit">Fruit</option>
+              <option value="Vegetable">Vegetable</option>
+            </select>
           </td>
-          <td>
-            <div class="print-toggle">
-              <input class="form-control" type="number" [(ngModel)]="item.mrp" name="mrp{{i}}" required />
-              <span class="print-view">₹{{ item.mrp }}</span>
-            </div>
-          </td>
-          <td>
-            <div class="print-toggle">
-              <select class="form-control" [(ngModel)]="item.category" name="category{{i}}">
-                <option value="Fruit">Fruit</option>
-                <option value="Vegetable">Vegetable</option>
-              </select>
-              <span class="print-view">{{ item.category }}</span>
-            </div>
-          </td>
-          <td>
-            <div class="print-toggle">
-              <input class="form-control" type="number" [(ngModel)]="item.quantity" name="quantity{{i}}" />
-              <span class="print-view">{{ item.quantity }}</span>
-            </div>
-          </td>
-          <td>
-            <div class="print-toggle">
-              <input class="form-control" type="number" [(ngModel)]="item.expiryDays" name="expiryDays{{i}}" (change)="updateExpiry(i)" />
-              <span class="print-view">{{ item.expiryDays }} days</span>
-            </div>
-          </td>
-          <td>
-            <div class="print-toggle">
-              <input class="form-control" type="date" [(ngModel)]="item.expiryDate" name="expiryDate{{i}}" />
-              <span class="print-view">{{ item.expiryDate }}</span>
-            </div>
-          </td>
+          <td><input type="number" class="form-control" [(ngModel)]="item.quantity" name="quantity{{i}}" /></td>
+          <td><input type="number" class="form-control" [(ngModel)]="item.expiryDays" name="expiryDays{{i}}" (change)="updateExpiry(i)" /></td>
+          <td><input type="date" class="form-control" [(ngModel)]="item.expiryDate" name="expiryDate{{i}}" /></td>
           <td class="no-print">
             <button type="button" class="btn btn-outline-danger delete-btn" (click)="removeRow(i)">Delete</button>
           </td>
@@ -66,29 +38,12 @@
       </tbody>
     </table>
 
-    <button type="button" class="btn btn-outline-primary add-btn" (click)="addRow()">
-      ➕ Add Row
-    </button>
+    <button type="button" class="btn btn-outline-primary add-btn" (click)="addRow()">➕ Add Row</button>
 
     <div class="actions no-print">
-      <button type="submit" class="btn btn-success">Save</button>
+      <button type="button" class="btn btn-success" (click)="saveAll()">Save</button>
       <button type="button" class="btn btn-warning" (click)="resetForm()">Refresh</button>
       <button type="button" class="btn btn-primary" (click)="printSelected()">Print</button>
     </div>
   </form>
-
-  <div class="print-section">
-    <div *ngFor="let p of printItems; let i = index" class="barcode-label">
-      <div class="label-header">J T FRUITS &amp; VEG</div>
-      <div class="label-product">{{ p.productName }}</div>
-      <svg [attr.id]="'barcode-' + i"></svg>
-      <div class="barcode-value">{{ p.barcode }}</div>
-      <div class="label-info-compact">
-        <div><strong>M.R.P.</strong><br>₹{{ p.mrp }}</div>
-        <div><strong>Pkd.</strong><br>{{ currentDate | date:'dd.MM.yy' }}</div>
-        <div><strong>Exp.</strong><br>{{ p.expiryDate | date:'dd.MM.yy' }}</div>
-      </div>
-      <div class="label-footer">Incl. of all Taxes</div>
-    </div>
-  </div>
 </div>

@@ -240,3 +240,7 @@ svg {
   font-size: 8px;
   margin-top: 4px;
 }
+
+input[name^="productName"] {
+  text-transform: uppercase;
+}

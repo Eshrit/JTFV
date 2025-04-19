@@ -226,6 +226,7 @@ app.get('/api/bills/latest', (req, res) => {
 });
 
 
+// Create barcodes table
 db.run(`
   CREATE TABLE IF NOT EXISTS barcodes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -238,27 +239,63 @@ db.run(`
   )
 `);
 
+// POST endpoint to save barcodes
 app.post('/api/barcodes', (req, res) => {
   const products = req.body;
+
+  if (!Array.isArray(products)) {
+    return res.status(400).json({ message: 'Invalid data format. Expected an array of products.' });
+  }
+
   const stmt = db.prepare(`
     INSERT INTO barcodes (productName, mrp, category, expiryDays, expiryDate, barcode)
     VALUES (?, ?, ?, ?, ?, ?)
   `);
+
   db.serialize(() => {
-    products.forEach(p => {
-      stmt.run(p.productName, p.mrp, p.category, p.expiryDays, p.expiryDate, p.barcode);
-    });
-    stmt.finalize();
-    res.status(201).json({ message: 'Products saved' });
+    try {
+      products.forEach(p => {
+        if (
+          !p.productName || typeof p.mrp !== 'number' ||
+          !p.category || !p.expiryDate || !p.barcode
+        ) {
+          console.warn('Skipping invalid product:', p);
+          return;
+        }
+
+        stmt.run(
+          p.productName,
+          p.mrp,
+          p.category,
+          p.expiryDays || 0,
+          p.expiryDate,
+          p.barcode,
+          err => {
+            if (err) {
+              console.error('Failed to insert barcode for product:', p.productName, err.message);
+            } else {
+              console.log('Inserted barcode for:', p.productName);
+            }
+          }
+        );
+      });
+
+      stmt.finalize(err => {
+        if (err) {
+          console.error('Finalize error:', err.message);
+          return res.status(500).json({ message: 'Database finalize error', error: err.message });
+        }
+
+        res.status(201).json({ message: 'Products saved successfully.' });
+      });
+
+    } catch (e) {
+      console.error('Unexpected error in /api/barcodes:', e.message);
+      res.status(500).json({ message: 'Unexpected server error', error: e.message });
+    }
   });
 });
 
-app.get('/api/barcodes', (req, res) => {
-  db.all('SELECT * FROM barcodes', [], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(rows);
-  });
-});
 
 // ✅ Register endpoint
 app.post('/api/register', (req, res) => {
