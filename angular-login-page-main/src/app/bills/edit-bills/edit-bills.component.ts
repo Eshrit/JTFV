@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { ProductService } from 'src/app/products/products.service';
+import { BillsService } from '../bills.service';
 
 interface BillItem {
   productId: number | null;
@@ -29,11 +29,10 @@ export class EditBillsComponent implements OnInit {
   finalAmount = 0;
   clients: string[] = ['HAIKO', 'STAR BAZAAR', 'BIG BASKET'];
 
-
   constructor(
     private productService: ProductService,
+    private billsService: BillsService,
     private route: ActivatedRoute,
-    private http: HttpClient,
     private titleService: Title
   ) {}
 
@@ -49,14 +48,14 @@ export class EditBillsComponent implements OnInit {
       }
     });
 
-    // Pre-fill blank items in case billItems are empty
+    // Fill with empty rows (if needed)
     for (let i = 0; i < 30; i++) {
       this.billItems.push({ productId: null, productName: '', quantity: 0, price: 0, total: 0 });
     }
   }
 
   loadBillForEdit(billNumber: string) {
-    this.http.get<any>(`http://localhost:3001/api/bills/${billNumber}`).subscribe({
+    this.billsService.getBillByNumber(billNumber).subscribe({
       next: bill => {
         this.clientName = bill.clientName;
         this.address = bill.address;
@@ -67,14 +66,13 @@ export class EditBillsComponent implements OnInit {
         this.finalAmount = bill.finalAmount;
         this.billItems = bill.billItems || [];
 
-        // Patch productName from productId
         this.billItems.forEach(item => {
           const match = this.products.find(p => p.id === item.productId);
           if (match) item.productName = match.vegName;
         });
       },
       error: err => {
-        console.error('Failed to load bill for edit:', err);
+        console.error('Failed to load bill:', err);
         alert('Failed to load bill.');
       }
     });
@@ -82,9 +80,9 @@ export class EditBillsComponent implements OnInit {
 
   onProductChange(index: number): void {
     const selectedId = this.billItems[index].productId;
-    const selectedProduct = this.products.find(p => p.id === selectedId);
-    if (selectedProduct) {
-      this.billItems[index].productName = selectedProduct.vegName;
+    const product = this.products.find(p => p.id === selectedId);
+    if (product) {
+      this.billItems[index].productName = product.vegName;
     }
     this.calculateRowTotal(index);
   }
@@ -121,7 +119,7 @@ export class EditBillsComponent implements OnInit {
       billItems: this.billItems
     };
 
-    this.http.post('http://localhost:3001/api/send-bill', billData).subscribe({
+    this.billsService.sendBillByEmail(billData).subscribe({
       next: () => alert('Email sent!'),
       error: (err) => {
         console.error('Email failed:', err);
@@ -141,11 +139,11 @@ export class EditBillsComponent implements OnInit {
       billItems: this.billItems
     };
 
-    this.http.put(`http://localhost:3001/api/bills/${this.billNumber}`, updatedBill).subscribe({
+    this.billsService.updateBill(this.billNumber, updatedBill).subscribe({
       next: () => alert('Bill updated successfully!'),
-      error: (error: HttpErrorResponse) => {
+      error: (err) => {
         alert('Failed to update bill.');
-        console.error('Error updating bill:', error);
+        console.error('Error updating bill:', err);
       }
     });
   }

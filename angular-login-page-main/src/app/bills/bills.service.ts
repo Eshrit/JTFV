@@ -6,10 +6,6 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class BillsService {
-  getBillByNumber(billNumber: string) {
-    throw new Error('Method not implemented.');
-  }
-  private apiUrl = 'http://localhost:3001/api/bills';
 
   constructor(private http: HttpClient) {}
 
@@ -32,6 +28,15 @@ export class BillsService {
   getBillById(id: number): Observable<any> {
     return this.http.get<any>(`http://localhost:3001/api/bills/${id}`);
   }
+  
+  getBillByNumber(billNumber: string): Observable<any> {
+    return this.http.get<any>(`http://localhost:3001/api/bills/${billNumber}`);
+  }
+  
+  updateBill(billNumber: string, billData: any): Observable<any> {
+    return this.http.put(`http://localhost:3001/api/bills/${billNumber}`, billData);
+  }
+  
   
 }
 
