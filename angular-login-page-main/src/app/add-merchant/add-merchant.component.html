@@ -1,31 +1,40 @@
 <app-navbar></app-navbar>
+
 <div class="container">
   <h2>Client Details</h2>
   <form #merchantForm="ngForm" (ngSubmit)="onSubmit(merchantForm)">
+    
+    <!-- Name fields -->
     <div class="form-row">
-      <input type="text" name="firstName" placeholder="First Name" ngModel>
+      <input type="text" name="firstName" placeholder="First Name" ngModel required>
       <input type="text" name="middleName" placeholder="Middle Name" ngModel>
       <input type="text" name="lastName" placeholder="Last Name" ngModel>
     </div>
 
+    <!-- Contact info -->
     <div class="form-row">
       <input type="text" name="phone" placeholder="Phone" ngModel>
       <input type="text" name="mobile" placeholder="Mobile" ngModel>
       <input type="text" name="fax" placeholder="Fax" ngModel>
       <input type="email" name="email" placeholder="Email" ngModel>
+    </div>
 
-      <select name="clientType" ngModel>
+    <!-- Client type -->
+    <div class="form-row">
+      <select name="clientType" ngModel required>
         <option value="" disabled selected hidden>Select Client Type</option>
         <option value="Individual">Individual</option>
         <option value="Business">Business</option>
       </select>
     </div>
 
+    <!-- Address fields -->
     <div class="form-row">
       <input type="text" name="address1" placeholder="Address 1" ngModel>
       <input type="text" name="address2" placeholder="Address 2" ngModel>
     </div>
 
+    <!-- Area, City, Landmark -->
     <div class="form-row">
       <select name="area" ngModel>
         <option value="" disabled selected hidden>Select Area</option>
@@ -45,6 +54,7 @@
       <input type="text" name="landmark" placeholder="Landmark" ngModel>
     </div>
 
+    <!-- Franchise -->
     <div class="form-row">
       <select name="franchise" ngModel>
         <option value="" disabled selected hidden>Select Franchise Name</option>
@@ -52,15 +62,18 @@
       </select>
     </div>
 
+    <!-- Entry info (auto-generated) -->
     <div class="form-row">
       <input type="text" name="dateOfEntry" [value]="currentDate" disabled />
       <input type="text" name="entryTime" [value]="currentTime" disabled />
     </div>
-    
+
+    <!-- Action buttons -->
     <div class="form-buttons">
       <button type="submit">Save</button>
       <button type="button" (click)="backToHome()">Back To Home</button>
       <button type="reset">Clear</button>
-    </div>    
+    </div>
+
   </form>
 </div>

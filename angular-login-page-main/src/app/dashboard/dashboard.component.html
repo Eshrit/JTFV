@@ -1,53 +1,62 @@
 <app-navbar></app-navbar>
+
 <div class="dashboard-content container">
-    <h2>Client Address Search</h2>
+  <h2>Client Address Search</h2>
 
-    <div class="search-bar">
-        <label for="searchBy">Search By</label>
-        <select [(ngModel)]="searchBy">
-            <option value="firstName">First Name</option>
-            <option value="dateOfEntry">Date Of Entry</option>
-            <option value="entryTime">Entry Time</option>
-            <option value="address1">Address</option>
-            <option value="city">City</option>
-            <option value="landmark">Landmark</option>
-            <option value="email">Email</option>
-        </select>
-
-        <input type="text" [(ngModel)]="searchText" placeholder="Enter search text" />
-        <button (click)="onSearch()">Search</button>
+  <div class="search-bar">
+    <div class="search-field-group">
+      <label for="searchBy">Search By</label>
+      <select id="searchBy" [(ngModel)]="searchBy">
+        <option value="firstName">First Name</option>
+        <option value="dateOfEntry">Date Of Entry</option>
+        <option value="entryTime">Entry Time</option>
+        <option value="address1">Address</option>
+        <option value="city">City</option>
+        <option value="landmark">Landmark</option>
+        <option value="email">Email</option>
+      </select>
     </div>
 
-    <table class="client-table">
-        <thead>
-            <tr>
-                <th>First Name</th>
-                <th>Date Of Entry</th>
-                <th>Entry Time</th>
-                <th>Address1</th>
-                <th>Address2</th>
-                <th>Area</th>
-                <th>City</th>
-                <th>Phone</th>
-                <th>Mobile</th>
-                <th>Landmark</th>
-                <th>Email</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let client of filteredClients">
-                <td>{{ client.firstName }}</td>
-                <td>{{ client.dateOfEntry }}</td>
-                <td>{{ client.entryTime }}</td>
-                <td>{{ client.address1 }}</td>
-                <td>{{ client.address2 }}</td>
-                <td>{{ client.area }}</td>
-                <td>{{ client.city }}</td>
-                <td>{{ client.phone }}</td>
-                <td>{{ client.mobile }}</td>
-                <td>{{ client.landmark }}</td>
-                <td>{{ client.email }}</td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="search-field-group">
+      <label for="searchText">Search</label>
+      <input id="searchText" type="text" [(ngModel)]="searchText" placeholder="Enter search text" />
+    </div>
+
+    <div class="search-btn-wrapper">
+      <button (click)="onSearch()">Search</button>
+    </div>
+  </div>
+
+  <table class="client-table">
+    <thead>
+      <tr>
+        <th>First Name</th>
+        <th>Date Of Entry</th>
+        <th>Entry Time</th>
+        <th>Address1</th>
+        <th>Address2</th>
+        <th>Area</th>
+        <th>City</th>
+        <th>Phone</th>
+        <th>Mobile</th>
+        <th>Landmark</th>
+        <th>Email</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let client of filteredClients">
+        <td>{{ client.firstName }}</td>
+        <td>{{ client.dateOfEntry }}</td>
+        <td>{{ client.entryTime }}</td>
+        <td>{{ client.address1 }}</td>
+        <td>{{ client.address2 }}</td>
+        <td>{{ client.area }}</td>
+        <td>{{ client.city }}</td>
+        <td>{{ client.phone }}</td>
+        <td>{{ client.mobile }}</td>
+        <td>{{ client.landmark }}</td>
+        <td>{{ client.email }}</td>
+      </tr>
+    </tbody>
+  </table>
 </div>

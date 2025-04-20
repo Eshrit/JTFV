@@ -21,6 +21,14 @@ export class BillsService {
   sendBillByEmail(billData: any): Observable<any> {
     return this.http.post('http://localhost:3001/api/send-bill', billData);
   }
+
+  getAllBills(): Observable<any[]> {
+    return this.http.get<any[]>('http://localhost:3001/api/bills');
+  }
+  
+  getBillById(id: number): Observable<any> {
+    return this.http.get<any>(`http://localhost:3001/api/bills/${id}`);
+  }
   
 }
 

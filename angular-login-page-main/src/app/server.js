@@ -225,6 +225,16 @@ app.get('/api/bills/latest', (req, res) => {
   });
 });
 
+app.get('/api/bills', (req, res) => {
+  db.all('SELECT * FROM bills ORDER BY id DESC', [], (err, rows) => {
+    if (err) {
+      console.error('Error fetching bills:', err);
+      return res.status(500).json({ message: 'Failed to fetch bills' });
+    }
+    res.status(200).json(rows);
+  });
+});
+
 
 // Create barcodes table
 db.run(`

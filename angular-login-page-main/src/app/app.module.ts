@@ -16,7 +16,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { BillsComponent } from './bills/bills.component';
 import { AdbComponent } from './adb/adb.component';
 import { AlbComponent } from './alb/alb.component';
-import { ReportsComponent } from './reports/reports.component';
 import { VendorsComponent } from './vendors/vendors.component';
 import { AddMerchantComponent } from './add-merchant/add-merchant.component';
 import { MatMenuModule } from '@angular/material/menu';
@@ -26,7 +25,8 @@ import { RegisterComponent } from './register/register.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AddProductsComponent } from './products/add-products/add-products.component';
 import { ProductsComponent } from './products/products.component';
-import { EditProductsComponent } from './products/edit-products/edit-products.component'; // ✅ Import Edit Component
+import { EditProductsComponent } from './products/edit-products/edit-products.component';
+import { ReportsComponent } from './bills/reports/reports.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +44,7 @@ import { EditProductsComponent } from './products/edit-products/edit-products.co
     RegisterComponent,
     AddProductsComponent,
     ProductsComponent,
-    EditProductsComponent // ✅ Declare it here
+    EditProductsComponent,
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,62 @@
+import { Component, OnInit } from '@angular/core';
+import { BillsService } from '../bills.service';
+
+@Component({
+  selector: 'app-reports',
+  templateUrl: './reports.component.html',
+  styleUrls: ['./reports.component.css']
+})
+export class ReportsComponent implements OnInit {
+  searchBy = 'billNumber';
+  searchText = '';
+  bills: any[] = [];
+  filteredBills: any[] = [];
+  selectedBill: any = null;
+
+  constructor(private billsService: BillsService) {}
+
+  ngOnInit(): void {
+    this.billsService.getAllBills().subscribe({
+      next: (data) => {
+        this.bills = data.filter(bill => {
+          try {
+            const items = JSON.parse(bill.billItems);
+            return Array.isArray(items) && items.length > 0;
+          } catch {
+            return false;
+          }
+        });
+        this.filteredBills = [...this.bills]; // initial copy
+      },
+      error: (err) => console.error('Failed to load bills:', err)
+    });
+  }
+
+  selectBill(bill: any): void {
+    this.selectedBill = {
+      ...bill,
+      billItems: JSON.parse(bill.billItems)
+    };
+  }
+
+  closeDetail(): void {
+    this.selectedBill = null;
+  }
+
+  onSearch(): void {
+    const query = this.searchText.toLowerCase();
+    if (!query) {
+      this.filteredBills = [...this.bills];
+      return;
+    }
+
+    this.filteredBills = this.bills.filter(bill => {
+      if (this.searchBy === 'billNumber') {
+        return bill.billNumber?.toLowerCase().includes(query);
+      } else if (this.searchBy === 'clientName') {
+        return bill.clientName?.toLowerCase().includes(query);
+      }
+      return false;
+    });
+  }
+}

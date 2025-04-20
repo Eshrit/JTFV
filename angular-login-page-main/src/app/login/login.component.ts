@@ -24,27 +24,14 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadLogo();
-  }
-
-  loadLogo() {
-    const logoUrl = 'file:///C:/Users/rites/Downloads/logo.jpg';
-    this.logoUrl = logoUrl;
+    this.logoUrl = 'assets/logo.jpg'; // Ensure this path is valid
   }
 
   onSubmit(): void {
     if (this.loginForm.valid) {
-      const loginData = this.loginForm.value;
-      this.http.post('http://localhost:3001/api/login', loginData).subscribe({
-        next: (response) => {
-          console.log('Login successful', response);
-          // Redirect to dashboard after successful login
-          this.router.navigate(['/dashboard']);
-        },
-        error: (error) => {
-          console.error('Login failed', error);
-          alert('Invalid email or password');
-        }
+      this.http.post('http://localhost:3001/api/login', this.loginForm.value).subscribe({
+        next: () => this.router.navigate(['/dashboard']),
+        error: () => alert('Invalid email or password. Please try again.')
       });
     }
   }
