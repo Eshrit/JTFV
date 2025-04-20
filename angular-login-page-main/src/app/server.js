@@ -235,6 +235,54 @@ app.get('/api/bills', (req, res) => {
   });
 });
 
+app.get('/api/bills/:billNumber', (req, res) => {
+  const { billNumber } = req.params;
+  db.get('SELECT * FROM bills WHERE billNumber = ?', [billNumber], (err, row) => {
+    if (err) return res.status(500).json({ message: 'Failed to fetch bill' });
+    if (!row) return res.status(404).json({ message: 'Bill not found' });
+
+    // Parse billItems JSON
+    row.billItems = JSON.parse(row.billItems || '[]');
+    res.json(row);
+  });
+});
+
+//Edit bills
+app.put('/api/bills/:billNumber', (req, res) => {
+  const {
+    clientName,
+    address,
+    billDate,
+    discount,
+    totalAmount,
+    finalAmount,
+    billItems
+  } = req.body;
+  const { billNumber } = req.params;
+
+  const query = `
+    UPDATE bills SET
+      clientName = ?, address = ?, billDate = ?, discount = ?,
+      totalAmount = ?, finalAmount = ?, billItems = ?
+    WHERE billNumber = ?
+  `;
+
+  const values = [
+    clientName, address, billDate, discount,
+    totalAmount, finalAmount, JSON.stringify(billItems),
+    billNumber
+  ];
+
+  db.run(query, values, function (err) {
+    if (err) {
+      console.error('Error updating bill:', err);
+      res.status(500).json({ message: 'Failed to update bill' });
+    } else {
+      res.status(200).json({ message: 'Bill updated successfully' });
+    }
+  });
+});
+
 
 // Create barcodes table
 db.run(`

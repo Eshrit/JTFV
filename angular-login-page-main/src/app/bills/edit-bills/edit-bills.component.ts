@@ -1,10 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { ProductService } from '../products/products.service';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { BillsService } from './bills.service';
-import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
-
+import { Title } from '@angular/platform-browser';
+import { ProductService } from 'src/app/products/products.service';
 
 interface BillItem {
   productId: number | null;
@@ -15,35 +13,34 @@ interface BillItem {
 }
 
 @Component({
-  selector: 'app-bills',
-  templateUrl: './bills.component.html',
-  styleUrls: ['./bills.component.css']
+  selector: 'app-edit-bills',
+  templateUrl: './edit-bills.component.html',
+  styleUrls: ['./edit-bills.component.css']
 })
-export class BillsComponent implements OnInit {
+export class EditBillsComponent implements OnInit {
   products: any[] = [];
   billItems: BillItem[] = [];
+  clientName = '';
+  address = '';
+  billNumber = '';
+  billDate = new Date().toISOString().substring(0, 10);
+  discount = 0;
+  totalAmount = 0;
+  finalAmount = 0;
   clients: string[] = ['HAIKO', 'STAR BAZAAR', 'BIG BASKET'];
-  clientName: string = '';
-  address: string = '';
-  billNumber: string = '';
-  billDate: string = new Date().toISOString().substring(0, 10);
-  discount: number = 0;
-  totalAmount: number = 0;
-  finalAmount: number = 0;
+
 
   constructor(
-    private titleService: Title,
     private productService: ProductService,
-    private billsService: BillsService,
     private route: ActivatedRoute,
-    private http: HttpClient
+    private http: HttpClient,
+    private titleService: Title
   ) {}
 
   ngOnInit(): void {
-    this.titleService.setTitle('Invoice - J.T. Fruits & Vegetables');
-    this.productService.getProducts().subscribe(data => {
-      this.products = data;
-    });
+    this.titleService.setTitle('Edit Bill - J.T. Fruits & Vegetables');
+
+    this.productService.getProducts().subscribe(data => this.products = data);
 
     this.route.paramMap.subscribe(params => {
       const billNumber = params.get('billNumber');
@@ -52,26 +49,10 @@ export class BillsComponent implements OnInit {
       }
     });
 
+    // Pre-fill blank items in case billItems are empty
     for (let i = 0; i < 30; i++) {
-      this.billItems.push({
-        productId: null,
-        productName: '',
-        quantity: 0,
-        price: 0,
-        total: 0
-      });
+      this.billItems.push({ productId: null, productName: '', quantity: 0, price: 0, total: 0 });
     }
-
-    // ✅ Fetch next bill number
-    this.billsService.getLatestBillNumber().subscribe({
-      next: (res: { billNumber: string }) => {
-        this.billNumber = res.billNumber;
-      },
-      error: (err: any) => {
-        console.error('Failed to get latest bill number', err);
-        this.billNumber = '001'; // fallback if server fails
-      }
-    });
   }
 
   loadBillForEdit(billNumber: string) {
@@ -85,17 +66,20 @@ export class BillsComponent implements OnInit {
         this.totalAmount = bill.totalAmount;
         this.finalAmount = bill.finalAmount;
         this.billItems = bill.billItems || [];
-  
-        // Ensure productName is patched when loading
+
+        // Patch productName from productId
         this.billItems.forEach(item => {
           const match = this.products.find(p => p.id === item.productId);
           if (match) item.productName = match.vegName;
         });
       },
-      error: err => console.error('Failed to load bill for edit:', err)
+      error: err => {
+        console.error('Failed to load bill for edit:', err);
+        alert('Failed to load bill.');
+      }
     });
   }
-  
+
   onProductChange(index: number): void {
     const selectedId = this.billItems[index].productId;
     const selectedProduct = this.products.find(p => p.id === selectedId);
@@ -136,23 +120,20 @@ export class BillsComponent implements OnInit {
       finalAmount: this.finalAmount,
       billItems: this.billItems
     };
-  
-    this.billsService.sendBillByEmail(billData).subscribe({
-      next: () => {
-        alert('Email Sent!');
-      },
+
+    this.http.post('http://localhost:3001/api/send-bill', billData).subscribe({
+      next: () => alert('Email sent!'),
       error: (err) => {
         console.error('Email failed:', err);
-        alert('Failed to send email. Please try again.');
+        alert('Failed to send email.');
       }
     });
   }
 
   saveBill(): void {
-    const billData = {
+    const updatedBill = {
       clientName: this.clientName,
       address: this.address,
-      billNumber: this.billNumber,
       billDate: this.billDate,
       discount: this.discount,
       totalAmount: this.totalAmount,
@@ -160,14 +141,11 @@ export class BillsComponent implements OnInit {
       billItems: this.billItems
     };
 
-    this.billsService.saveBill(billData).subscribe({
-      next: (response) => {
-        alert('Bill saved successfully!');
-        console.log('Saved bill response:', response);
-      },
+    this.http.put(`http://localhost:3001/api/bills/${this.billNumber}`, updatedBill).subscribe({
+      next: () => alert('Bill updated successfully!'),
       error: (error: HttpErrorResponse) => {
-        alert('Failed to save bill. Please try again.');
-        console.error('Error saving bill:', error);
+        alert('Failed to update bill.');
+        console.error('Error updating bill:', error);
       }
     });
   }

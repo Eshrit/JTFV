@@ -6,6 +6,9 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class BillsService {
+  getBillByNumber(billNumber: string) {
+    throw new Error('Method not implemented.');
+  }
   private apiUrl = 'http://localhost:3001/api/bills';
 
   constructor(private http: HttpClient) {}

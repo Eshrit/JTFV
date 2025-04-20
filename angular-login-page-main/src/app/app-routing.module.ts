@@ -12,6 +12,7 @@ import { AddProductsComponent } from './products/add-products/add-products.compo
 import { EditProductsComponent } from './products/edit-products/edit-products.component'; // New route for editing products
 import { ProductsComponent } from './products/products.component';
 import { ReportsComponent } from './bills/reports/reports.component';
+import { EditBillsComponent } from './bills/edit-bills/edit-bills.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -26,6 +27,7 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'add-products', component: AddProductsComponent },
   { path: 'edit-products/:id', component: EditProductsComponent },
+  { path: 'edit-bills/:billNumber', component: EditBillsComponent },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
 ];
 

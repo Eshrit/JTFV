@@ -12,263 +12,74 @@
   font-size: 24px;
   margin-bottom: 16px;
   color: #333;
-}
-
-/* Search Bar */
-.search-bar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: flex-end;
-  background-color: #fff;
-  padding: 12px 16px;
-  border-radius: 6px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-  margin-bottom: 30px;
-}
-
-.search-field-group {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-width: 180px;
-}
-
-.search-bar label {
-  font-weight: 600;
-  margin-bottom: 4px;
-  font-size: 13px;
-}
-
-.search-bar select,
-.search-bar input[type="text"] {
-  padding: 6px 10px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.search-btn-wrapper {
-  display: flex;
-  align-items: center;
-  height: 100%;
-}
-
-.search-bar button {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 14px;
-  transition: background-color 0.2s ease;
-}
-
-.search-bar button:hover {
-  background-color: #0056b3;
+  text-align: center;
 }
 
 /* Table Layout */
-.report-table,
-.item-table {
+.report-table {
   width: 100%;
-  max-width: 720px;
-  margin: 0 auto 30px;
-  table-layout: fixed;
   border-collapse: collapse;
   background-color: #fff;
   box-shadow: 0 1px 4px rgba(0,0,0,0.05);
   border-radius: 6px;
   font-size: 13px;
   overflow: hidden;
+  margin-bottom: 30px;
+  table-layout: fixed;
 }
 
-.report-table thead,
-.item-table thead {
+.report-table thead {
   background-color: #f1f1f1;
   font-weight: 600;
 }
 
 .report-table th,
-.report-table td,
-.item-table th,
-.item-table td {
-  padding: 8px 12px;
+.report-table td {
+  padding: 10px 12px;
   border-bottom: 1px solid #ddd;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  text-align: left;
+  text-align: center; /* ✅ center-align header and content */
+  vertical-align: middle;
 }
 
-.report-table th:nth-child(4),
-.report-table th:nth-child(5),
-.report-table td:nth-child(4),
-.report-table td:nth-child(5),
-.item-table td:nth-child(2),
-.item-table td:nth-child(3),
-.item-table td:nth-child(4) {
-  text-align: right;
-}
-
-/* Bill Detail Section */
-.bill-details {
-  width: 100%;
-  max-width: 720px;
-  margin: 0 auto 30px;
-  border: 1px solid #ccc;
-  padding: 16px;
-  border-radius: 6px;
-  background-color: #fff;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-}
-
-.invoice-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  margin-bottom: 16px;
-  gap: 10px;
-}
-
-.invoice-header h3 {
-  font-size: 18px;
-  font-weight: 600;
-  margin: 0;
-}
-
-.invoice-header .action-buttons {
-  display: flex;
-  gap: 10px;
-}
-
-/* Buttons */
-.btn-close,
-.btn-print {
+/* Edit Button Styling */
+.btn-edit {
+  border: 1px solid #28a745;
+  background-color: #28a745;
+  color: #ffffff;
   padding: 6px 12px;
   font-size: 13px;
   border-radius: 4px;
   font-weight: 600;
-  border: none;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
-.btn-close {
-  background: #dc3545;
-  color: white;
+.btn-edit:hover {
+  background-color: #28a745;
+  color: rgb(255, 255, 255);
+  transform: scale(1.05);
 }
 
-.btn-close:hover {
-  background-color: #c82333;
-}
-
-.btn-print {
-  background: #007bff;
-  color: white;
-}
-
-.btn-print:hover {
-  background-color: #0056b3;
-}
-
-/* Summary Info */
-.amount-summary {
-  margin-top: 16px;
-  font-weight: 500;
-  font-size: 14px;
-}
-
-.cell-content {
-  padding: 0 8px;
-  font-size: 13px;
-  line-height: 1.6;
-  text-align: left;
-}
-
-/* Print Styles */
-@media print {
-  app-navbar,
-  .search-bar,
-  .report-table,
-  .btn-close,
-  .btn-print,
-  .invoice-header .action-buttons {
-    display: none !important;
-  }
-
-  body {
-    background: white !important;
-    color: black !important;
-  }
-
-  #print-section {
-    margin: 0;
-    padding: 0;
-    box-shadow: none;
-    border: none;
-  }
-
-  #print-section * {
-    color: black !important;
-    font-size: 13px !important;
-  }
-
-  .amount-summary {
-    margin-top: 16px;
-    font-weight: bold;
-  }
-
-  table {
-    width: 60% !important;
-  }
-
-  th, td {
-    padding: 8px !important;
-    border: 1px solid #ccc;
-  }
-}
-
-/* Responsive Design */
-@media screen and (max-width: 768px) {
-  .search-bar {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .search-field-group,
-  .search-btn-wrapper {
-    width: 100%;
-  }
-
-  .search-bar button,
-  .btn-close,
-  .btn-print {
-    width: 100%;
-  }
-
-  .report-table,
-  .bill-details,
-  .item-table {
-    font-size: 12px;
-  }
-}
-
-/* Utility Reset */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-/* Optional Layout Wrapper */
+/* Centered Layout Wrapper */
 .centered-layout {
   max-width: 720px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 30px;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+  .report-table {
+    font-size: 12px;
+  }
+
+  .btn-edit {
+    width: 100%;
+    text-align: center;
+  }
 }

@@ -4,31 +4,6 @@
 <div class="report-container">
   <h2>Saved Bills</h2>
   <!-- Search Bar -->
-  <div class="search-bar">
-    <div class="search-field-group">
-      <label for="searchBy">Search By</label>
-      <select id="searchBy" [(ngModel)]="searchBy">
-        <option value="billNumber">Bill No</option>
-        <option value="clientName">Client Name</option>
-      </select>
-    </div>
-
-    <div class="search-field-group">
-      <label for="searchText">Search</label>
-      <input
-        id="searchText"
-        type="text"
-        [(ngModel)]="searchText"
-        placeholder="Enter search text"
-      />
-    </div>
-
-    <div class="search-btn-wrapper">
-      <button (click)="onSearch()">Search</button>
-    </div>
-  </div>
-
-  <!-- Bills Table -->
   <table class="report-table" *ngIf="filteredBills.length">
     <thead>
       <tr>
@@ -37,58 +12,27 @@
         <th>Date</th>
         <th>Total</th>
         <th>Final Amount</th>
+        <th>Edit</th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let bill of filteredBills" (click)="selectBill(bill)">
+      <tr *ngFor="let bill of filteredBills">
         <td>{{ bill.billNumber }}</td>
         <td>{{ bill.clientName }}</td>
         <td>{{ bill.billDate }}</td>
         <td>{{ bill.totalAmount | currency }}</td>
         <td>{{ bill.finalAmount | currency }}</td>
+        <td>
+          <button class="btn btn-outline-primary btn-edit" [routerLink]="['/edit-bills', bill.billNumber]">
+            Edit
+          </button>
+        </td>
       </tr>
     </tbody>
   </table>
+  
 
   <p *ngIf="!filteredBills.length">No bills found.</p>
 
-  <!-- Bill Detail View -->
-  <div class="bill-details" *ngIf="selectedBill">
-    <div class="invoice-header">
-        <h3>Invoice Details - {{ selectedBill.billNumber }}</h3>
-        <div class="action-buttons">
-          <button class="btn-print" (click)="printSelectedBill()">Print</button>
-          <button class="btn-close" (click)="closeDetail()">Close</button>
-        </div>        
-      </div>
-    <p><strong>Client:</strong> {{ selectedBill.clientName }}</p>
-    <p><strong>Address:</strong> {{ selectedBill.address }}</p>
-    <p><strong>Date:</strong> {{ selectedBill.billDate }}</p>
-
-    <table class="item-table">
-      <thead>
-        <tr>
-          <th>Product</th>
-          <th>Qty</th>
-          <th>Price</th>
-          <th>Total</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let item of selectedBill.billItems">
-          <td><div class="cell-content">{{ item.productName }}</div></td>
-          <td><div class="cell-content">{{ item.quantity }}</div></td>
-          <td><div class="cell-content">{{ item.price }}</div></td>
-          <td><div class="cell-content">{{ item.total }}</div></td>          
-        </tr>
-      </tbody>
-    </table>
-
-    <div class="amount-summary">
-      <p><strong>Total:</strong> {{ selectedBill.totalAmount | currency }}</p>
-      <p><strong>Discount:</strong> {{ selectedBill.discount }}%</p>
-      <p><strong>Final:</strong> {{ selectedBill.finalAmount | currency }}</p>
-    </div>
-  </div>
 </div>
 </div>
