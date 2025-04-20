@@ -25,7 +25,7 @@ const routes: Routes = [
   { path: 'barcode', component: BarcodeComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'add-products', component: AddProductsComponent },
-  { path: 'edit-products/:id', component: EditProductsComponent }, // Add dynamic path for editing products
+  { path: 'edit-products/:id', component: EditProductsComponent },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
 ];
 

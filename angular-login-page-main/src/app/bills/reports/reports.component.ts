@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { BillsService } from '../bills.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-reports',
@@ -43,6 +44,17 @@ export class ReportsComponent implements OnInit {
     this.selectedBill = null;
   }
 
+  printSelectedBill(): void {
+    const printContents = document.getElementById('print-section')?.innerHTML;
+    if (printContents) {
+      const originalContents = document.body.innerHTML;
+      document.body.innerHTML = printContents;
+      window.print();
+      document.body.innerHTML = originalContents;
+      window.location.reload(); // optional: refresh to restore bindings
+    }
+  }
+  
   onSearch(): void {
     const query = this.searchText.toLowerCase();
     if (!query) {
