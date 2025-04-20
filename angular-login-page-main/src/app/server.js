@@ -249,16 +249,11 @@ app.get('/api/bills/:billNumber', (req, res) => {
 
 //Edit bills
 app.put('/api/bills/:billNumber', (req, res) => {
-  const {
-    clientName,
-    address,
-    billDate,
-    discount,
-    totalAmount,
-    finalAmount,
-    billItems
-  } = req.body;
   const { billNumber } = req.params;
+  const {
+    clientName, address, billDate, discount,
+    totalAmount, finalAmount, billItems
+  } = req.body;
 
   const query = `
     UPDATE bills SET
@@ -275,13 +270,19 @@ app.put('/api/bills/:billNumber', (req, res) => {
 
   db.run(query, values, function (err) {
     if (err) {
-      console.error('Error updating bill:', err);
-      res.status(500).json({ message: 'Failed to update bill' });
-    } else {
-      res.status(200).json({ message: 'Bill updated successfully' });
+      console.error('❌ Failed to update bill:', err.message);
+      return res.status(500).json({ message: 'Database update error', error: err.message });
     }
+
+    if (this.changes === 0) {
+      console.warn('⚠️ No bill updated: not found');
+      return res.status(404).json({ message: 'Bill not found' });
+    }
+
+    res.status(200).json({ message: 'Bill updated successfully' });
   });
 });
+
 
 
 // Create barcodes table
