@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ProductService } from '../products.service';
+import { ProductService } from 'src/app/core/services/products.service';
 
 @Component({
   selector: 'app-add-products',

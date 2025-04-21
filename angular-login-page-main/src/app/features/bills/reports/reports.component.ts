@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { BillsService } from '../bills.service';
+import { BillsService } from 'src/app/core/services/bills.service';
 
 @Component({
   selector: 'app-reports',

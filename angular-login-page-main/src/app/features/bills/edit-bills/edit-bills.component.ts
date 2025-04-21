@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Title } from '@angular/platform-browser';
-import { BillsService } from '../bills.service';
-import { ProductService } from '../../products/products.service';
+import { ProductService } from 'src/app/core/services/products.service';
+import { BillsService } from 'src/app/core/services/bills.service';
+
 
 interface BillItem {
   productId: number | null;

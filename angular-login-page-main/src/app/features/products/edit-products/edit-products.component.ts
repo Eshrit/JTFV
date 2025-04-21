@@ -2,7 +2,7 @@ import { OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Component } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { ProductService } from '../products.service';
+import { ProductService } from 'src/app/core/services/products.service';
 
 @Component({
   selector: 'app-edit-products',
