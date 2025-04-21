@@ -1,6 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import JsBarcode from 'jsbarcode';
-import { BarcodeService } from './barcode.service';
 
 @Component({
   selector: 'app-barcode',

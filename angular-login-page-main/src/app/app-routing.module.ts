@@ -1,18 +1,16 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { LoginComponent } from './login/login.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
-import { AddMerchantComponent } from './add-merchant/add-merchant.component';
-import { BillsComponent } from './bills/bills.component';
-import { AdbComponent } from './adb/adb.component';
-import { AlbComponent } from './alb/alb.component';
-import { BarcodeComponent } from './barcode/barcode.component';
-import { RegisterComponent } from './register/register.component';
-import { AddProductsComponent } from './products/add-products/add-products.component';
-import { EditProductsComponent } from './products/edit-products/edit-products.component'; // New route for editing products
-import { ProductsComponent } from './products/products.component';
-import { ReportsComponent } from './bills/reports/reports.component';
-import { EditBillsComponent } from './bills/edit-bills/edit-bills.component';
+import { AddMerchantComponent } from './features/dashboard/add-merchant/add-merchant.component';
+import { LoginComponent } from './features/login/login.component';
+import { DashboardComponent } from './features/dashboard/dashboard.component';
+import { ProductsComponent } from './features/products/products.component';
+import { ReportsComponent } from './features/bills/reports/reports.component';
+import { RegisterComponent } from './features/register/register.component';
+import { EditProductsComponent } from './features/products/edit-products/edit-products.component';
+import { AddProductsComponent } from './features/products/add-products/add-products.component';
+import { BillsComponent } from './features/bills/bills.component';
+import { BarcodeComponent } from './features/barcode/barcode.component';
+import { EditBillsComponent } from './features/bills/edit-bills/edit-bills.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -20,8 +18,6 @@ const routes: Routes = [
   { path: 'add-merchants', component: AddMerchantComponent },
   { path: 'products', component: ProductsComponent },
   { path: 'bills', component: BillsComponent },
-  { path: 'adb', component: AdbComponent },
-  { path: 'alb', component: AlbComponent },
   { path: 'reports', component: ReportsComponent },
   { path: 'barcode', component: BarcodeComponent },
   { path: 'register', component: RegisterComponent },

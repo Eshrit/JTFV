@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { ClientService } from '../client.service';
 import { Router } from '@angular/router';
+import { ClientService } from 'src/app/core/services/client.service';
 
 @Component({
   selector: 'app-add-merchant',
