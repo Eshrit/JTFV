@@ -128,8 +128,25 @@ export class BillsComponent implements OnInit {
   }
 
   printBill(): void {
-    window.print();
+    // Backup all items
+    const allItems = [...this.billItems];
+  
+    // Filter filled rows
+    this.billItems = this.billItems.filter(item =>
+      item.productId !== null &&
+      item.quantity > 0 &&
+      item.price > 0
+    );
+  
+    // Trigger print after short delay
+    setTimeout(() => {
+      window.print();
+  
+      // Restore full list after print
+      this.billItems = allItems;
+    }, 300);
   }
+  
 
   emailBill(): void {
     const billData = {

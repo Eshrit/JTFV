@@ -20,8 +20,8 @@
         <td>{{ bill.billNumber }}</td>
         <td>{{ bill.clientName }}</td>
         <td>{{ bill.billDate }}</td>
-        <td>{{ bill.totalAmount | currency }}</td>
-        <td>{{ bill.finalAmount | currency }}</td>
+        <td>{{ bill.totalAmount | currency:'INR' }}</td>
+        <td>{{ bill.finalAmount | currency:'INR' }}</td>
         <td>
           <button class="btn btn-outline-primary btn-edit" [routerLink]="['/edit-bills', bill.billNumber]">
             Edit

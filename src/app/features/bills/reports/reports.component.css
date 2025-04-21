@@ -85,3 +85,20 @@
     text-align: center;
   }
 }
+
+/* Hide inputs/selects while printing */
+@media print {
+  .print-toggle input,
+  .print-toggle select {
+    display: none !important;
+  }
+
+  .print-toggle .print-view {
+    display: inline !important;
+  }
+}
+
+/* Default state: hide spans, show inputs */
+.print-toggle .print-view {
+  display: none;
+}

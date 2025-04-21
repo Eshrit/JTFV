@@ -42,10 +42,11 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let item of billItems; let i = index">
+      <tr *ngFor="let item of billItems; let i = index"
+          [class.no-print]="!item.productId || !item.quantity || !item.price">
         <td>{{ i + 1 }}</td>
         <td>
-          <div class="print-toggle">
+          <div>
             <select class="form-control" [(ngModel)]="item.productId" (change)="onProductChange(i)">
               <option value="">Select</option>
               <option *ngFor="let product of products" [value]="product.id">{{ product.vegName }}</option>
@@ -53,14 +54,17 @@
             <span class="print-view">{{ item.productName }}</span>
           </div>
         </td>
-        <td><div class="print-toggle">
-          <input class="form-control" type="number" [(ngModel)]="item.quantity" (input)="calculateRowTotal(i)" />
-          <span class="print-view">{{ item.quantity }}</span>
-        </div></td>
-        <td><div class="print-toggle">
-          <input class="form-control" type="number" [(ngModel)]="item.price" (input)="calculateRowTotal(i)" />
-          <span class="print-view">{{ item.price }}</span>
-        </div>
+        <td>
+          <div class="print-toggle">
+            <input class="form-control" type="number" [(ngModel)]="item.quantity" (input)="calculateRowTotal(i)" />
+            <span class="print-view">{{ item.quantity }}</span>
+          </div>
+        </td>
+        <td>
+          <div class="print-toggle">
+            <input class="form-control" type="number" [(ngModel)]="item.price" (input)="calculateRowTotal(i)" />
+            <span class="print-view">{{ item.price }}</span>
+          </div>
         </td>
         <td>{{ item.total | number:'1.2-2' }}</td>
       </tr>
@@ -69,7 +73,7 @@
 
   <div class="summary">
     <label>Total Amount:</label>
-    <div>{{ totalAmount | currency }}</div>
+    <div>{{ totalAmount | currency:'INR' }}</div>
   </div>
 
   <div class="summary">
@@ -79,7 +83,7 @@
 
   <div class="summary">
     <label>Final Amount:</label>
-    <div>{{ finalAmount | currency }}</div>
+    <div>{{ finalAmount | currency:'INR' }}</div>
   </div>
 
   <div class="actions no-print">
