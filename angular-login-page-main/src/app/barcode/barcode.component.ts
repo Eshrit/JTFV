@@ -12,7 +12,7 @@ export class BarcodeComponent implements OnInit {
   printItems: any[] = [];
   currentDate: string = new Date().toISOString().substring(0, 10);
 
-  constructor(private barcodeService: BarcodeService, private cdRef: ChangeDetectorRef) {}
+  constructor(private cdRef: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     for (let i = 0; i < 5; i++) this.addRow();
@@ -60,34 +60,34 @@ export class BarcodeComponent implements OnInit {
     for (let i = 0; i < 10; i++) this.addRow();
   }
 
-  saveAll() {
-    // Validate and filter only valid rows
-    const validItems = this.products.filter(p =>
-      p.productName?.trim() &&
-      typeof p.mrp === 'number' && p.mrp > 0 &&
-      p.category &&
-      p.expiryDate &&
-      p.barcode?.length === 12
-    );
+  // saveAll() {
+  //   // Validate and filter only valid rows
+  //   const validItems = this.products.filter(p =>
+  //     p.productName?.trim() &&
+  //     typeof p.mrp === 'number' && p.mrp > 0 &&
+  //     p.category &&
+  //     p.expiryDate &&
+  //     p.barcode?.length === 12
+  //   );
   
-    if (validItems.length === 0) {
-      alert('No valid products to save.');
-      return;
-    }
+  //   if (validItems.length === 0) {
+  //     alert('No valid products to save.');
+  //     return;
+  //   }
   
-    console.log('📤 Sending to backend:', validItems);
+  //   console.log('📤 Sending to backend:', validItems);
   
-    this.barcodeService.saveProducts(validItems).subscribe({
-      next: (res) => {
-        console.log('✅ Server response:', res);
-        alert('Products saved successfully!');
-      },
-      error: (err) => {
-        console.error('❌ Failed to save:', err);
-        alert('Failed to save products. Please check the console.');
-      }
-    });
-  }  
+  //   this.barcodeService.saveProducts(validItems).subscribe({
+  //     next: (res) => {
+  //       console.log('✅ Server response:', res);
+  //       alert('Products saved successfully!');
+  //     },
+  //     error: (err) => {
+  //       console.error('❌ Failed to save:', err);
+  //       alert('Failed to save products. Please check the console.');
+  //     }
+  //   });
+  // }  
 
   printSelected() {
     this.preparePrintItems();
