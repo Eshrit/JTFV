@@ -27,7 +27,13 @@ export class EditBillsComponent implements OnInit {
   discount = 0;
   totalAmount = 0;
   finalAmount = 0;
-  clients: string[] = ['HAIKO', 'STAR BAZAAR', 'BIG BASKET'];
+  clients: string[] = [ 'HAIKO', 
+                        'AVENUE SUPER MARTS GR FLOOR SPECTRA BUILDING HIGH STREET CORNER', 
+                        'CHEK MARKET', 'AVENUE E-COMMERCE LIMITED', 
+                        'AVENUE E- COMMERCE LTD',
+                        'HAIKO MARKET',
+                        'AVENUE E-COMMERCE LTD'
+                      ];
 
   constructor(
     private productService: ProductService,

@@ -22,7 +22,13 @@ interface BillItem {
 export class BillsComponent implements OnInit {
   products: any[] = [];
   billItems: BillItem[] = [];
-  clients: string[] = ['HAIKO', 'STAR BAZAAR', 'BIG BASKET'];
+  clients: string[] = ['HAIKO', 
+                       'AVENUE SUPER MARTS GR FLOOR SPECTRA BUILDING HIGH STREET CORNER', 
+                       'CHEK MARKET', 'AVENUE E-COMMERCE LIMITED', 
+                       'AVENUE E- COMMERCE LTD',
+                       'HAIKO MARKET',
+                       'AVENUE E-COMMERCE LTD'
+                      ];
   clientName: string = '';
   address: string = '';
   billNumber: string = '';
