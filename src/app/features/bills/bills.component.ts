@@ -130,7 +130,6 @@ export class BillsComponent implements OnInit {
   printBill(): void {
     // Backup all items
     const allItems = [...this.billItems];
-  
     // Filter filled rows
     this.billItems = this.billItems.filter(item =>
       item.productId !== null &&
