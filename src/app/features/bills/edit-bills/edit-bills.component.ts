@@ -111,7 +111,26 @@ export class EditBillsComponent implements OnInit {
   }
 
   printBill(): void {
-    window.print();
+    const allItems = [...this.billItems];
+  
+    // Filter and map filled items for printing
+    const printableItems = allItems
+      .filter(item => item.productId !== null && item.quantity > 0 && item.price > 0)
+      .map(item => {
+        const matchedProduct = this.products.find(p => +p.id === item.productId); // Ensure number comparison
+        return {
+          ...item,
+          productName: matchedProduct ? matchedProduct.vegName : '(Unknown Product)'
+        };
+      });
+  
+    // Replace with printable items temporarily
+    this.billItems = printableItems;
+  
+    setTimeout(() => {
+      window.print();
+      this.billItems = allItems;
+    }, 300);
   }
 
   emailBill(): void {
@@ -154,4 +173,11 @@ export class EditBillsComponent implements OnInit {
       }
     });
   }
+
+  autoResize(event: Event): void {
+    const textarea = event.target as HTMLTextAreaElement;
+    textarea.style.height = 'auto'; // Reset height
+    textarea.style.height = textarea.scrollHeight + 'px'; // Set to scroll height
+  }
+  
 }

@@ -109,7 +109,7 @@ export class BillsComponent implements OnInit {
       this.billItems[index].productName = selectedProduct.vegName;
     }
     this.calculateRowTotal(index);
-  }
+  }  
 
   calculateRowTotal(index: number): void {
     const item = this.billItems[index];
@@ -128,25 +128,28 @@ export class BillsComponent implements OnInit {
   }
 
   printBill(): void {
-    // Backup all items
     const allItems = [...this.billItems];
-    // Filter filled rows
-    this.billItems = this.billItems.filter(item =>
-      item.productId !== null &&
-      item.quantity > 0 &&
-      item.price > 0
-    );
   
-    // Trigger print after short delay
+    // Filter and map filled items for printing
+    const printableItems = allItems
+      .filter(item => item.productId !== null && item.quantity > 0 && item.price > 0)
+      .map(item => {
+        const matchedProduct = this.products.find(p => +p.id === item.productId); // Ensure number comparison
+        return {
+          ...item,
+          productName: matchedProduct ? matchedProduct.vegName : '(Unknown Product)'
+        };
+      });
+  
+    // Replace with printable items temporarily
+    this.billItems = printableItems;
+  
     setTimeout(() => {
       window.print();
-  
-      // Restore full list after print
       this.billItems = allItems;
     }, 300);
   }
   
-
   emailBill(): void {
     const billData = {
       clientName: this.clientName,
@@ -192,5 +195,11 @@ export class BillsComponent implements OnInit {
         console.error('Error saving bill:', error);
       }
     });
+  }
+
+  autoResize(event: Event): void {
+    const textarea = event.target as HTMLTextAreaElement;
+    textarea.style.height = 'auto'; // Reset height
+    textarea.style.height = textarea.scrollHeight + 'px'; // Set to scroll height
   }
 }

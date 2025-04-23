@@ -3,7 +3,16 @@
 <div class="centered-layout">
 <div class="report-container">
   <h2>Saved Bills</h2>
-  <!-- Search Bar -->
+  <div class="search-section">
+    <label>Search By</label>
+    <select [(ngModel)]="searchBy">
+      <option value="billNumber">Bill No</option>
+      <option value="clientName">Client</option>
+    </select>
+    <input type="text" (keydown.enter)="onSearch()" [(ngModel)]="searchText" placeholder="Enter search text" />
+    <button class="button" (click)="onSearch()">Search</button>
+  </div>
+  
   <table class="report-table" *ngIf="filteredBills.length">
     <thead>
       <tr>

@@ -10,7 +10,7 @@
       <option value="units">Units</option>
       <option value="itemType">Item Type</option>
     </select>
-    <input type="text" [(ngModel)]="searchText" placeholder="Enter search text" />
+    <input type="text" (keydown.enter)="onSearch()" [(ngModel)]="searchText" placeholder="Enter search text" />
     <button class="button" (click)="onSearch()">Search</button>
     <button class="button" (click)="backToHome()">Back To Home</button>
   </div>
