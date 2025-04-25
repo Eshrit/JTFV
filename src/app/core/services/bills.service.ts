@@ -6,7 +6,6 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class BillsService {
-
   constructor(private http: HttpClient) {}
 
   saveBill(billData: any): Observable<any> {
@@ -37,6 +36,9 @@ export class BillsService {
     return this.http.put(`http://localhost:3001/api/bills/${billNumber}`, billData);
   }
   
+  deleteBill(billNumber: string): Observable<any> {
+    return this.http.delete(`http://localhost:3001/api/bills/${billNumber}`);
+  }  
   
 }
 

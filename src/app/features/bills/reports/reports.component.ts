@@ -43,6 +43,22 @@ export class ReportsComponent implements OnInit {
     this.selectedBill = null;
   }
 
+  deleteBill(billNumber: string): void {
+    if (confirm(`Are you sure you want to delete Bill No: ${billNumber}?`)) {
+      this.billsService.deleteBill(billNumber).subscribe({
+        next: () => {
+          this.filteredBills = this.filteredBills.filter(bill => bill.billNumber !== billNumber);
+          alert('Bill deleted successfully.');
+        },
+        error: err => {
+          console.error('Failed to delete bill:', err);
+          alert('Error deleting bill.');
+        }
+      });
+    }
+  }
+  
+  
   printSelectedBill(): void {
     const printContents = document.getElementById('print-section')?.innerHTML;
     if (printContents) {

@@ -50,8 +50,9 @@
 }
 
 .search-bar button {
-  background-color: #007bff;
-  color: white;
+  background-color: #2a93e4;
+  color: #333;
+  font-weight: bold;
   border: none;
   padding: 10px 22px;
   border-radius: 5px;
@@ -62,7 +63,9 @@
 }
 
 .search-bar button:hover {
-  background-color: #0056b3;
+  background-color: #2a93e4;
+  color: white;
+  transform: scale(1.05);
 }
 
 /* Table Styling */

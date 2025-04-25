@@ -22,6 +22,7 @@
         <th>Total</th>
         <th>Final Amount</th>
         <th>Edit</th>
+        <th>Delete</th>
       </tr>
     </thead>
     <tbody>
@@ -36,6 +37,11 @@
             Edit
           </button>
         </td>
+        <td>
+          <button class="btn btn-outline-danger btn-delete" (click)="deleteBill(bill.billNumber)">
+            Delete
+          </button>
+        </td>        
       </tr>
     </tbody>
   </table>

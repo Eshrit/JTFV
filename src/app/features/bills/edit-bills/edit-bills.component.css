@@ -119,17 +119,35 @@
 
 .btn-primary {
   background-color: #007bff;
+  color: #333;
+}
+
+.btn-primary:hover {
+  background-color: #007bff;
   color: white;
+  transform: scale(1.05);
 }
 
 .btn-secondary {
   background-color: #6c757d;
+  color: #333;
+}
+
+.btn-secondary:hover {
+  background-color: #6c757d;
   color: white;
+  transform: scale(1.05);
 }
 
 .btn-success {
   background-color: #28a745;
+  color: #333;
+}
+
+.btn-success:hover {
+  background-color: #28a745;
   color: white;
+  transform: scale(1.05);
 }
 
 input.form-control,

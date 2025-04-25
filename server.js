@@ -215,6 +215,19 @@ app.get('/api/bills/:billNumber', (req, res) => {
   });
 });
 
+app.delete('/api/bills/:billNumber', (req, res) => {
+  const { billNumber } = req.params;
+  db.run('DELETE FROM bills WHERE billNumber = ?', [billNumber], function (err) {
+    if (err) {
+      return res.status(500).json({ message: 'Failed to delete bill' });
+    }
+    if (this.changes === 0) {
+      return res.status(404).json({ message: 'Bill not found' });
+    }
+    res.status(200).json({ message: 'Bill deleted successfully' });
+  });
+});
+
 // BARCODE ROUTES
 app.post('/api/barcodes', (req, res) => {
   const items = req.body;

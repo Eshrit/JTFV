@@ -64,28 +64,34 @@
   
   button[type="submit"] {
     background-color: #28a745;
-    color: white;
+    color: #333;
   }
   
   button[type="submit"]:hover {
     background-color: #218838;
+    color: white;
+    transform: scale(1.05);
   }
   
   button[type="button"]:not(:last-child) {
     background-color: #17a2b8;
-    color: white;
+    color: #333;
   }
   
   button[type="button"]:not(:last-child):hover {
     background-color: #138496;
+    color: white;
+    transform: scale(1.05);
   }
   
   button[type="reset"] {
     background-color: #ffc107;
-    color: #212529;
+    color: #333;
   }
   
   button[type="reset"]:hover {
     background-color: #e0a800;
+    color: white;
+    transform: scale(1.05);
   }
   
