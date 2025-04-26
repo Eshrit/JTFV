@@ -20,15 +20,16 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Database Setup
-const dbPath = process.env.NODE_ENV === 'production'
+const isPackaged = process.env.RUNNING_IN_ELECTRON === 'true';
+
+const dbPath = isPackaged
   ? path.join(process.resourcesPath, 'database.db')
   : path.join(__dirname, 'database.db');
 
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) return console.error('Error opening database:', err);
-  console.log('Connected to SQLite database');
+  console.log('Connected to SQLite database:', dbPath);
 
-  // Tables setup
   db.run(`CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT UNIQUE, password TEXT)`);
   db.run(`CREATE TABLE IF NOT EXISTS clients (id INTEGER PRIMARY KEY AUTOINCREMENT, firstName TEXT, middleName TEXT, lastName TEXT, phone TEXT, mobile TEXT, fax TEXT, email TEXT, clientType TEXT, address1 TEXT, address2 TEXT, area TEXT, subArea TEXT, city TEXT, landmark TEXT, franchise TEXT, dateOfEntry TEXT, entryTime TEXT)`);
   db.run(`CREATE TABLE IF NOT EXISTS products (id INTEGER PRIMARY KEY AUTOINCREMENT, vegName TEXT, topPriority TEXT, units TEXT, itemType TEXT, dateOfEntry TEXT, entryTime TEXT)`);
@@ -36,7 +37,7 @@ const db = new sqlite3.Database(dbPath, (err) => {
   db.run(`CREATE TABLE IF NOT EXISTS barcodes (id INTEGER PRIMARY KEY AUTOINCREMENT, productName TEXT, mrp REAL, category TEXT, expiryDays INTEGER, expiryDate TEXT, barcode TEXT)`);
 });
 
-// CLIENT ROUTES
+// ==================== CLIENT ROUTES ====================
 app.post('/api/clients', (req, res) => {
   const c = req.body;
   const query = `
@@ -46,8 +47,10 @@ app.post('/api/clients', (req, res) => {
       dateOfEntry, entryTime
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
-  const values = [c.firstName, c.middleName, c.lastName, c.phone, c.mobile, c.fax, c.email, c.clientType,
-    c.address1, c.address2, c.area, c.subArea, c.city, c.landmark, c.franchise, c.dateOfEntry, c.entryTime];
+  const values = [
+    c.firstName, c.middleName, c.lastName, c.phone, c.mobile, c.fax, c.email, c.clientType,
+    c.address1, c.address2, c.area, c.subArea, c.city, c.landmark, c.franchise, c.dateOfEntry, c.entryTime
+  ];
 
   db.run(query, values, function (err) {
     if (err) return res.status(500).json({ message: 'Failed to save client' });
@@ -62,7 +65,7 @@ app.get('/api/clients', (req, res) => {
   });
 });
 
-// PRODUCT ROUTES
+// ==================== PRODUCT ROUTES ====================
 app.post('/api/products', (req, res) => {
   const p = req.body;
   const values = [p.vegName, p.topPriority, p.units, p.itemType, p.dateOfEntry, p.entryTime];
@@ -108,7 +111,7 @@ app.delete('/api/products/:id', (req, res) => {
   });
 });
 
-// BILL ROUTES
+// ==================== BILL ROUTES ====================
 app.post('/api/bills', (req, res) => {
   const b = req.body;
   const query = `INSERT INTO bills (clientName, address, billNumber, billDate, discount, totalAmount, finalAmount, billItems)
@@ -162,19 +165,14 @@ app.get('/api/bills/:billNumber', (req, res) => {
 });
 
 app.delete('/api/bills/:billNumber', (req, res) => {
-  const { billNumber } = req.params;
-  db.run('DELETE FROM bills WHERE billNumber = ?', [billNumber], function (err) {
-    if (err) {
-      return res.status(500).json({ message: 'Failed to delete bill' });
-    }
-    if (this.changes === 0) {
-      return res.status(404).json({ message: 'Bill not found' });
-    }
-    res.status(200).json({ message: 'Bill deleted successfully' });
+  db.run('DELETE FROM bills WHERE billNumber = ?', [req.params.billNumber], function (err) {
+    if (err) return res.status(500).json({ message: 'Failed to delete bill' });
+    if (this.changes === 0) return res.status(404).json({ message: 'Bill not found' });
+    res.json({ message: 'Bill deleted successfully' });
   });
 });
 
-// BARCODE ROUTES
+// ==================== BARCODE ROUTES ====================
 app.post('/api/barcodes', (req, res) => {
   const items = req.body;
   if (!Array.isArray(items)) return res.status(400).json({ message: 'Expected array of barcodes' });
@@ -192,7 +190,7 @@ app.post('/api/barcodes', (req, res) => {
   });
 });
 
-// AUTH ROUTES
+// ==================== AUTH ROUTES ====================
 app.post('/api/register', (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) return res.status(400).json({ message: 'Email and password required' });
@@ -217,7 +215,7 @@ app.post('/api/login', (req, res) => {
   });
 });
 
-// EMAIL BILL
+// ==================== EMAIL BILL ROUTE ====================
 app.post('/api/send-bill', (req, res) => {
   const bill = req.body;
   const transporter = nodemailer.createTransport({
@@ -243,7 +241,8 @@ app.post('/api/send-bill', (req, res) => {
         ${bill.billItems.map(item => `
           <li>${item.productName} - Qty: ${item.quantity}, Price: ₹${item.price}, Total: ₹${item.total}</li>
         `).join('')}
-      </ul>`
+      </ul>
+    `
   };
 
   transporter.sendMail(mailOptions, (error, info) => {
@@ -252,23 +251,33 @@ app.post('/api/send-bill', (req, res) => {
   });
 });
 
-// 404 Handler for API routes
-app.use('/api/*', (req, res) => {
-  res.status(404).json({ message: 'API route not found' });
-});
-
-// Serve Angular app (only in production mode)
+// ==================== SERVE ANGULAR APP ====================
 const angularDistPath = path.join(__dirname, 'dist', 'my-login-app');
-
 app.use(express.static(angularDistPath));
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(angularDistPath, 'index.html'));
 });
 
-
-
-// Start server
-app.listen(PORT, () => {
+// ==================== START SERVER WITH SHUTDOWN HANDLING ====================
+const server = app.listen(PORT, () => {
   console.log(`✅ Server running at http://localhost:${PORT}`);
+});
+
+function shutdown() {
+  console.log('\n🛑 Gracefully shutting down server...');
+  server.close(() => {
+    console.log('✅ Server closed. Exiting process.');
+    process.exit(0);
+  });
+}
+
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+  shutdown();
+});
+process.on('exit', (code) => {
+  console.log(`Process exiting with code: ${code}`);
 });
