@@ -1,0 +1,223 @@
+.print-view {
+  display: none;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .print-toggle select,
+  .print-toggle input,
+  .print-toggle textarea {
+    display: none !important;
+  }
+
+  .print-toggle .print-view {
+    display: inline !important;
+  }
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 30px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: white;
+  color: #000;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.header p {
+  margin: 4px 0;
+  font-size: 14px;
+}
+
+.invoice-info div {
+  flex: 1;
+  min-width: 180px;
+}
+
+.horizontal-info {
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.field-row {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  min-width: 220px;
+  flex: 1;
+}
+
+.field-row label {
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.print-value {
+  word-break: break-word;
+  max-width: 200px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.table th,
+.table td {
+  border: 1px solid #000;
+  padding: 8px;
+  text-align: center;
+}
+
+.table th {
+  background-color: #f0f0f0;
+}
+
+.summary {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  gap: 10px;
+}
+
+.actions {
+  margin-top: 30px;
+}
+
+.actions .btn {
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  margin-right: 15px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: #333;
+}
+
+.btn-primary:hover {
+  background-color: #007bff;
+  color: white;
+  transform: scale(1.05);
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: #333;
+}
+
+.btn-secondary:hover {
+  background-color: #6c757d;
+  color: white;
+  transform: scale(1.05);
+}
+
+.btn-success {
+  background-color: #28a745;
+  color: #333;
+}
+
+.btn-success:hover {
+  background-color: #28a745;
+  color: white;
+  transform: scale(1.05);
+}
+
+input.form-control,
+select.form-control,
+textarea.form-control {
+  width: 100%;
+  padding: 2px;
+  font-size: 14px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  resize: none;       /* Prevent manual resize */
+  overflow: hidden;   /* Hide scroll */
+}
+
+select.product-control {
+  width: 200px;
+  padding: 2px;
+  font-size: 14px;
+  margin-top: 3px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.invoice-header {
+  margin-top: 20px;
+  position: relative;
+}
+
+.header-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+.invoice-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  font-size: 20px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.date-control {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.bill-number-block {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+input.bill-control {
+  width: 80px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 4px;
+}
+
+.bold-label {
+  font-weight: bold;
+  margin-right: 5px;
+}

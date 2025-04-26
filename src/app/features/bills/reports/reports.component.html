@@ -1,0 +1,53 @@
+<app-navbar></app-navbar>
+
+<div class="centered-layout">
+<div class="report-container">
+  <h2>Saved Bills</h2>
+  <div class="search-section">
+    <label>Search By</label>
+    <select [(ngModel)]="searchBy">
+      <option value="billNumber">Bill No</option>
+      <option value="clientName">Client</option>
+    </select>
+    <input type="text" (keydown.enter)="onSearch()" [(ngModel)]="searchText" placeholder="Enter search text" />
+    <button class="button" (click)="onSearch()">Search</button>
+  </div>
+  
+  <table class="report-table" *ngIf="filteredBills.length">
+    <thead>
+      <tr>
+        <th>Bill No</th>
+        <th>Client</th>
+        <th>Date</th>
+        <th>Total</th>
+        <th>Final Amount</th>
+        <th>Edit</th>
+        <th>Delete</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let bill of filteredBills">
+        <td>{{ bill.billNumber }}</td>
+        <td>{{ bill.clientName }}</td>
+        <td>{{ bill.billDate }}</td>
+        <td>{{ bill.totalAmount | currency:'INR' }}</td>
+        <td>{{ bill.finalAmount | currency:'INR' }}</td>
+        <td>
+          <button class="btn btn-outline-primary btn-edit" [routerLink]="['/edit-bills', bill.billNumber]">
+            Edit
+          </button>
+        </td>
+        <td>
+          <button class="btn btn-outline-danger btn-delete" (click)="deleteBill(bill.billNumber)">
+            Delete
+          </button>
+        </td>        
+      </tr>
+    </tbody>
+  </table>
+  
+
+  <p *ngIf="!filteredBills.length">No bills found.</p>
+
+</div>
+</div>

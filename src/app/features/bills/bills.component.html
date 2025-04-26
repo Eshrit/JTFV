@@ -1,0 +1,114 @@
+<app-navbar class="no-print"></app-navbar>
+
+<div class="container">
+  <div class="header">
+    <h1>J.T. Fruits &amp; Vegetables</h1>
+    <p>Shop No. 31-32, Bldg No. 27, EMP Op Jogers Park, Thakur Village, Kandivali(E), Mumbai 400101</p>
+    <p>PAN: AAJFJ0258J | FSS LICENSE ACT 2006 LICENSE NO 11517011000128</p>
+    <p>Email: jkumarshahu6&#64;gmail.com</p>
+
+    <div class="invoice-header">
+      <div class="header-flex">
+        <div class="date-control">
+          <span class="bold-label">Date:</span>
+          <div class="print-toggle print-value">
+            <input type="date" class="form-control no-print" [(ngModel)]="billDate" />
+            <span class="print-view">{{ billDate | date:'dd/MM/yyyy' }}</span>
+          </div>
+        </div>        
+    
+        <h2 class="invoice-title">TAX FREE INVOICE</h2>
+    
+        <div class="bill-number-block print-toggle print-value">
+          <span class="bold-label">Bill No:</span>
+          <input type="text" class="bill-control" [(ngModel)]="billNumber" readonly />
+          <span class="print-view">{{ billNumber }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="horizontal-info">
+    <div class="field-row">
+      <label>Name:</label>
+      <div class="print-toggle print-value">
+        <select class="form-control product-control no-print" [(ngModel)]="clientName">
+          <option value="">Select Client</option>
+          <option *ngFor="let client of clients" [value]="client">{{ client }}</option>
+        </select>
+        <span class="print-view">{{ clientName }}</span>
+      </div>
+    </div>
+    
+    <div class="field-row">
+      <label>Address:</label>
+      <div class="print-toggle print-value">
+        <textarea class="form-control auto-expand no-print" [(ngModel)]="address" rows="1" (input)="autoResize($event)"></textarea>
+        <span class="print-view" style="white-space: pre-line;">{{ address }}</span>
+      </div>
+    </div>
+  </div>   
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Product</th>
+        <th>Quantity</th>
+        <th>Product Price</th>
+        <th>Total Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of billItems; let i = index"
+          [class.no-print]="!item.productId || !item.quantity || !item.price">
+        <td>{{ i + 1 }}</td>
+        <td>
+          <div class="print-toggle">
+            <select class="product-control" [(ngModel)]="item.productId" (change)="onProductChange(i)">
+              <option value="">Select</option>
+              <option *ngFor="let product of products" [ngValue]="product.id">{{ product.vegName }}</option>
+            </select>
+            <span class="print-view">{{ item.productName }}</span>
+          </div>
+        </td>              
+        <td>
+          <div class="print-toggle">
+            <input class="form-control" type="number" [(ngModel)]="item.quantity" (input)="calculateRowTotal(i)" />
+            <span class="print-view">{{ item.quantity }}</span>
+          </div>
+        </td>
+        <td>
+          <div class="print-toggle">
+            <input class="form-control" type="number" [(ngModel)]="item.price" (input)="calculateRowTotal(i)" />
+            <span class="print-view">{{ item.price }}</span>
+          </div>
+        </td>
+        <td>{{ item.total | number:'1.2-2' }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="summary">
+    <label>Total Amount:</label>
+    <div>{{ totalAmount | currency:'INR' }}</div>
+  </div>
+
+  <div class="summary print-toggle">
+    <label>Discount (%):</label>
+    <input class="form-control" style="width: 100px; display: inline-block;" 
+    type="number" [(ngModel)]="discount" (input)="calculateFinalAmount()" />
+    <span class="print-view">{{ discount }}</span>
+  </div>
+
+  <div class="summary">
+    <label>Final Amount:</label>
+    <div>{{ finalAmount | currency:'INR' }}</div>
+  </div>
+
+  <div class="actions no-print">
+    <button class="btn btn-success" (click)="saveBill()">Save</button>
+    <button class="btn btn-secondary" (click)="emailBill()">Email</button>
+    <button class="btn btn-primary" (click)="printBill()">Print</button>
+  </div>
+</div>

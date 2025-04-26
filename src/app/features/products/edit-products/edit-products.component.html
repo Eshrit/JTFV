@@ -1,0 +1,63 @@
+<app-navbar></app-navbar>
+
+<div class="container">
+  <h2>Edit Product</h2>
+  <form #productForm="ngForm" (ngSubmit)="onSubmit(productForm)">
+    <div class="form-row">
+      <input
+        type="text"
+        name="vegName"
+        placeholder="Product Name"
+        [(ngModel)]="product.vegName"
+        required
+      />
+      <select
+        name="topPriority"
+        [(ngModel)]="product.topPriority"
+        required
+      >
+        <option value="" disabled>Select Top Priority</option>
+        <option value="Yes">Yes</option>
+        <option value="No">No</option>
+      </select>
+      <input
+        type="text"
+        name="units"
+        placeholder="Units (e.g., kg, dozen)"
+        [(ngModel)]="product.units"
+        required
+      />
+      <select
+        name="itemType"
+        [(ngModel)]="product.itemType"
+        required
+      >
+        <option value="" disabled>Select Item Type</option>
+        <option value="Vegetable">Vegetable</option>
+        <option value="Fruit">Fruit</option>
+        <option value="Others">Others</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <input
+        type="text"
+        name="dateOfEntry"
+        [value]="product.dateOfEntry"
+        disabled
+      />
+      <input
+        type="text"
+        name="entryTime"
+        [value]="product.entryTime"
+        disabled
+      />
+    </div>
+
+    <div class="form-buttons">
+      <button type="submit">Save</button>
+      <button type="button" (click)="backToHome()">Back To Products</button>
+      <button type="reset">Clear</button>
+    </div>
+  </form>
+</div>

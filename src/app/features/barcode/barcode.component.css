@@ -1,0 +1,247 @@
+/* Updated: barcode.component.css */
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 30px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: white;
+  color: #000;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.header p {
+  margin: 4px 0;
+  font-size: 14px;
+}
+
+/* =======================
+   Table Styling
+======================= */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  margin-bottom: 20px;
+  table-layout: fixed;
+}
+
+.table th,
+.table td {
+  border: 1px solid #000;
+  padding: 10px;
+  text-align: center;
+  word-wrap: break-word;
+}
+
+.table th {
+  background-color: #f0f0f0;
+  font-weight: bold;
+  padding: 8px;
+}
+
+.table th:nth-child(2),
+.table td:nth-child(2) {
+  width: 22%;
+}
+.table th:nth-child(3),
+.table td:nth-child(3),
+.table th:nth-child(4),
+.table td:nth-child(4) {
+  width: 14%;
+}
+
+/* =======================
+   Form Inputs
+======================= */
+input.form-control,
+select.form-control {
+  width: 90%;
+  padding: 4px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Hide span in screen view */
+.print-toggle .print-view {
+  display: none;
+}
+
+@media print {
+  body * {
+    display: none !important;
+  }
+
+  .print-section,
+  .print-section * {
+    display: block !important;
+    visibility: visible !important;
+  }
+
+  .print-section {
+    position: static !important;
+    top: 0;
+    left: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  .barcode-label {
+    page-break-inside: avoid;
+  }
+}
+
+
+
+/* =======================
+   Buttons
+======================= */
+.btn,
+.add-btn,
+.delete-btn {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.actions .btn {
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  margin-right: 15px;
+  font-weight: bold;
+  border: none;
+}
+
+.actions .btn:hover,
+.btn:hover,
+.add-btn:hover,
+.delete-btn:hover {
+  transform: scale(1.05);
+  color: white;
+}
+
+.add-btn {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 4px;
+  border: 1px solid #5d6267;
+  background-color: #5d6267;
+  color: #333;
+}
+.add-btn:hover {
+  background-color: #5d6267;
+  color: white;
+}
+
+.delete-btn {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 4px;
+  border: 1px solid #dc3545;
+  background-color: #dc3545;
+  color: #333;
+}
+.delete-btn:hover {
+  background-color: #dc3545;
+  color: white;
+  transform: scale(1.05);
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: #333;
+}
+.btn-secondary {
+  background-color: #6c757d;
+  color: #333;
+}
+.btn-success {
+  background-color: #28a745;
+  color: #333;
+}
+.btn-warning {
+  background-color: #28a745;
+  color: #333;
+}
+
+/* =======================
+   Barcode Print Preview
+======================= */
+.print-section {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 6px;
+  margin-top: 20px;
+}
+
+.barcode-label {
+  width: 180px;
+  height: 90px;
+  padding: 6px 8px;
+  border: 1px solid #000;
+  font-family: 'Courier New', monospace;
+  font-size: 9px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  text-align: center;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.label-header {
+  font-weight: bold;
+  font-size: 10px;
+}
+
+.label-product {
+  font-size: 9.5px;
+  margin: 2px 0;
+}
+
+svg {
+  display: block;
+  margin: 0 auto;
+  height: 30px;
+  width: 160px;
+}
+
+.barcode-value {
+  font-size: 11px;
+  letter-spacing: 1px;
+  margin: 1px 0;
+}
+
+.label-info-compact {
+  display: flex;
+  justify-content: space-between;
+  font-size: 8px;
+}
+
+.label-info-compact div {
+  width: 33%;
+}
+
+.label-footer {
+  font-size: 8px;
+  margin-top: 4px;
+}
+
+input[name^="productName"] {
+  text-transform: uppercase;
+}

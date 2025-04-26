@@ -1,0 +1,61 @@
+<div class="login-wrapper">
+    <div class="login-container">
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <mat-card class="login-card">
+            <mat-card-header class="login-card__header">
+                <div class="login-card__logo-wrapper">
+                  <img [src]="logoUrl" alt="Company Logo" class="login-card__logo" />
+                </div>
+              </mat-card-header>              
+  
+          <mat-card-content class="login-card__content">
+            <mat-form-field appearance="outline">
+              <mat-label>Email Address</mat-label>
+              <input
+                matInput
+                type="email"
+                placeholder="Enter your email"
+                formControlName="email"
+                class="login-input"
+                required
+              />
+              <mat-error *ngIf="loginForm.get('email')?.hasError('required')">
+                Email is required
+              </mat-error>
+              <mat-error *ngIf="loginForm.get('email')?.hasError('email')">
+                Please enter a valid email address
+              </mat-error>
+            </mat-form-field>
+  
+            <mat-form-field appearance="outline">
+              <mat-label>Password</mat-label>
+              <input
+                matInput
+                type="password"
+                placeholder="Enter your password"
+                formControlName="password"
+                class="login-input"
+                required
+              />
+              <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
+                Password is required
+              </mat-error>
+              <mat-error *ngIf="loginForm.get('password')?.hasError('minlength')">
+                Minimum 6 characters required
+              </mat-error>
+            </mat-form-field>
+          </mat-card-content>
+  
+          <mat-card-actions class="login-card__actions">
+            <button mat-raised-button color="primary" type="submit" [disabled]="!loginForm.valid">
+              Sign In
+            </button>
+         <!-- <button mat-stroked-button color="accent" type="button" (click)="goToRegister()">
+              Create Account
+            </button>  -->
+          </mat-card-actions>
+        </mat-card>
+      </form>
+    </div>
+  </div>
+  

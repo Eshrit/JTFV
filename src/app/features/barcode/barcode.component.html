@@ -1,0 +1,49 @@
+<app-navbar class="no-print"></app-navbar>
+
+<div class="container">
+  <div class="header no-print">
+    <h1>Barcode Generator</h1>
+  </div>
+
+  <form>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>M.R.P. (₹)</th>
+          <th>Category</th>
+          <th>Qty</th>
+          <th>Expiry Days</th>
+          <th>Expiry Date</th>
+          <th>Delete</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of products; let i = index">
+          <td><input type="text" class="form-control" [(ngModel)]="item.productName" name="productName{{i}}" required/></td>
+          <td><input type="number" class="form-control" [(ngModel)]="item.mrp" name="mrp{{i}}" required /></td>
+          <td>
+            <select class="form-control" [(ngModel)]="item.category" name="category{{i}}">
+              <option value="Fruit">Fruit</option>
+              <option value="Vegetable">Vegetable</option>
+            </select>
+          </td>
+          <td><input type="number" class="form-control" [(ngModel)]="item.quantity" name="quantity{{i}}" /></td>
+          <td><input type="number" class="form-control" [(ngModel)]="item.expiryDays" name="expiryDays{{i}}" (change)="updateExpiry(i)" /></td>
+          <td><input type="date" class="form-control" [(ngModel)]="item.expiryDate" name="expiryDate{{i}}" /></td>
+          <td class="no-print">
+            <button type="button" class="btn btn-outline-danger delete-btn" (click)="removeRow(i)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+
+    <div class="actions no-print">
+      <button type="button" class="btn btn-outline-primary add-btn" (click)="addRow()">Add Row</button>
+      <!-- <button type="button" class="btn btn-success" (click)="saveAll()">Save</button> -->
+      <button type="button" class="btn btn-warning" (click)="resetForm()">Refresh</button>
+      <button type="button" class="btn btn-primary" (click)="printSelected()">Print</button>
+    </div>
+  </form>
+</div>
