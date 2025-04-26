@@ -26,7 +26,15 @@ const createWindow = () => {
 
 app.whenReady().then(() => {
   const serverPath = path.join(__dirname, 'server.js');
-  serverProcess = spawn('node', [serverPath], { shell: true });
+
+  // 💥 Important: Pass RUNNING_IN_ELECTRON env variable here
+  serverProcess = spawn('node', [serverPath], { 
+    shell: true,
+    env: {
+      ...process.env,
+      RUNNING_IN_ELECTRON: 'true'
+    }
+  });
 
   serverProcess.stdout.on('data', (data) => {
     console.log(`Server: ${data}`);
