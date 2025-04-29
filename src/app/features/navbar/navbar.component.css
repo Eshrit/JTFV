@@ -24,7 +24,7 @@
 }
 
 .app-title {
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 600;
 }
 
@@ -58,6 +58,7 @@
 .dropdown-icon {
   margin-left: 5px;
   font-size: 20px;
+
 }
 
 /* Spacer to push logout to right */
@@ -67,18 +68,19 @@
 
 /* Logout Button */
 .logout-button {
-  text-transform: uppercase;
-  font-weight: 600;
-  padding: 8px 16px;
+  font-size: 15px;
+  font-weight: 500; 
+  text-transform: none;
+  padding: 6px 12px;
   border-radius: 6px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.3);
   transition: transform 0.3s, background-color 0.3s;
 }
 
 .logout-button:hover {
-  transform: scale(1.05);
   background-color: #c62828;
   color: white;
+  transform: translateY(-2px);
 }
 
 /* Mat Menu Items */

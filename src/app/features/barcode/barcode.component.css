@@ -1,4 +1,4 @@
-/* Main Container */
+/* Root Container */
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -18,27 +18,29 @@
   margin: 0;
   font-size: 32px;
   font-weight: bold;
-  color: #3f51b5;
+  color: #434343;
+  text-align: left;
 }
 
-/* Table Layout */
+/* Table Styling */
 .table {
   width: 100%;
   border-collapse: collapse;
+  font-size: 14px;
+  margin-bottom: 30px;
   background-color: #ffffff;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
   border-radius: 12px;
   overflow: hidden;
-  margin-bottom: 30px;
-  font-size: 14px;
   table-layout: fixed;
 }
 
 .table th,
 .table td {
   border: 1px solid #e0e0e0;
-  padding: 12px 14px;
+  padding: 12px;
   text-align: center;
+  word-wrap: break-word;
   vertical-align: middle;
 }
 
@@ -48,63 +50,26 @@
   color: #2c3e50;
 }
 
-.table th:nth-child(2),
-.table td:nth-child(2) {
-  width: 22%;
+.table tbody tr:hover {
+  background-color: #f4f6f8;
 }
 
-.table th:nth-child(3),
-.table td:nth-child(3),
-.table th:nth-child(4),
-.table td:nth-child(4) {
-  width: 14%;
-}
-
-/* Inputs and Selects */
+/* Input fields and selects */
 input.form-control,
 select.form-control {
   width: 90%;
-  padding: 8px 10px;
+  padding: 8px;
   font-size: 14px;
   border: 1px solid #ccd6dd;
   border-radius: 8px;
   background-color: #f7f9fc;
-  transition: border-color 0.3s ease, background-color 0.3s ease;
+  transition: border-color 0.3s ease;
 }
 
 input.form-control:focus,
 select.form-control:focus {
   border-color: #3f51b5;
   background-color: #ffffff;
-  outline: none;
-}
-
-/* Print adjustments */
-.print-toggle .print-view {
-  display: none;
-}
-
-@media print {
-  body * {
-    display: none !important;
-  }
-
-  .print-section,
-  .print-section * {
-    display: block !important;
-    visibility: visible !important;
-  }
-
-  .print-section {
-    position: static !important;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-  }
-
-  .barcode-label {
-    page-break-inside: avoid;
-  }
 }
 
 /* Action Buttons */
@@ -118,7 +83,7 @@ select.form-control:focus {
 .actions .btn,
 .add-btn,
 .delete-btn {
-  padding: 10px 20px;
+  padding: 8px 15px;
   font-size: 15px;
   font-weight: bold;
   border-radius: 8px;
@@ -163,30 +128,30 @@ select.form-control:focus {
 }
 
 .btn-warning {
-  background-color: #ff9800;
+  background-color: #339b43;
   color: #ffffff;
 }
 
 .btn-warning:hover {
-  background-color: #fb8c00;
+  background-color: #44bc56;
 }
 
-/* Barcode Print Preview Section */
+/* Barcode Print Section */
 .print-section {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
   justify-content: flex-start;
-  margin-top: 30px;
+  gap: 8px;
+  margin-top: 20px;
 }
 
 .barcode-label {
   width: 180px;
   height: 90px;
-  padding: 8px 10px;
-  border: 1px solid #2c3e50;
+  padding: 6px 8px;
+  border: 1px solid #000;
   font-family: 'Courier New', monospace;
-  font-size: 9px;
+  font-size: 10px;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
@@ -194,12 +159,13 @@ select.form-control:focus {
   overflow: hidden;
   white-space: nowrap;
   background-color: #ffffff;
-  border-radius: 8px;
+  page-break-inside: avoid;
+  border-radius: 6px;
 }
 
 .label-header {
   font-weight: bold;
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .label-product {
@@ -223,12 +189,7 @@ svg {
 .label-info-compact {
   display: flex;
   justify-content: space-between;
-  font-size: 8px;
-}
-
-.label-info-compact div {
-  width: 33%;
-  text-align: center;
+  font-size: 9px;
 }
 
 .label-footer {
@@ -236,7 +197,48 @@ svg {
   margin-top: 4px;
 }
 
-/* Capitalize product name input */
+/* Uppercase for product names */
 input[name^="productName"] {
   text-transform: uppercase;
+}
+
+/* Print Rules */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .print-section,
+  .print-section * {
+    visibility: visible;
+  }
+
+  .print-section {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  .barcode-label {
+    page-break-inside: avoid;
+  }
+}
+
+/* Print/Screen view toggles */
+.print-toggle .print-view {
+  display: none;
+}
+
+@media print {
+  .print-toggle input,
+  .print-toggle select {
+    display: none !important;
+  }
+
+  .print-toggle .print-view {
+    display: inline !important;
+  }
 }
