@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "JTFV Billing & Barcode App",
   "main": "main-electron.js",
+  "type":"module",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
