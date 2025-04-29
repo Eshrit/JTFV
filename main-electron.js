@@ -27,12 +27,13 @@ const createWindow = () => {
 app.whenReady().then(() => {
   const serverPath = path.join(__dirname, 'server.js');
 
-  // 💥 Important: Pass RUNNING_IN_ELECTRON env variable here
-  serverProcess = spawn('node', [serverPath], { 
+  // ✅ Pass userData path for database use
+  serverProcess = spawn('node', [serverPath], {
     shell: true,
     env: {
       ...process.env,
-      RUNNING_IN_ELECTRON: 'true'
+      RUNNING_IN_ELECTRON: 'true',
+      USER_DATA_PATH: app.getPath('userData') // 🆕 added
     }
   });
 

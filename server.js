@@ -6,6 +6,7 @@ import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -21,10 +22,29 @@ app.use(bodyParser.json());
 
 // Database Setup
 const isPackaged = process.env.RUNNING_IN_ELECTRON === 'true';
+let dbPath;
 
-const dbPath = isPackaged
-  ? path.join(process.resourcesPath, 'database.db')
-  : path.join(__dirname, 'database.db');
+if (isPackaged) {
+  const userDataPath = process.env.USER_DATA_PATH;
+  dbPath = path.join(userDataPath, 'database.db');
+  const defaultDbPath = path.join(process.resourcesPath || __dirname, 'assets', 'database.db');
+
+  if (!fs.existsSync(dbPath)) {
+    try {
+      if (fs.existsSync(defaultDbPath)) {
+        fs.mkdirSync(path.dirname(dbPath), { recursive: true });
+        fs.copyFileSync(defaultDbPath, dbPath);
+        console.log('✅ Copied default database to userData path');
+      } else {
+        console.warn('⚠️ Default database not found at:', defaultDbPath);
+      }
+    } catch (err) {
+      console.error('❌ Error copying default database:', err);
+    }
+  }
+} else {
+  dbPath = path.join(__dirname, 'database.db');
+}
 
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) return console.error('Error opening database:', err);
@@ -36,6 +56,7 @@ const db = new sqlite3.Database(dbPath, (err) => {
   db.run(`CREATE TABLE IF NOT EXISTS bills (id INTEGER PRIMARY KEY AUTOINCREMENT, clientName TEXT, address TEXT, billNumber TEXT, billDate TEXT, discount REAL, totalAmount REAL, finalAmount REAL, billItems TEXT)`);
   db.run(`CREATE TABLE IF NOT EXISTS barcodes (id INTEGER PRIMARY KEY AUTOINCREMENT, productName TEXT, mrp REAL, category TEXT, expiryDays INTEGER, expiryDate TEXT, barcode TEXT)`);
 });
+
 
 // ==================== CLIENT ROUTES ====================
 app.post('/api/clients', (req, res) => {
