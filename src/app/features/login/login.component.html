@@ -11,14 +11,7 @@
         <mat-card-content class="login-card__content">
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Email Address</mat-label>
-            <input
-              matInput
-              type="email"
-              placeholder="Enter your email"
-              formControlName="email"
-              class="login-input"
-              required
-            />
+            <input matInput type="email" placeholder="Enter your email" formControlName="email" class="login-input" required/>
             <mat-error *ngIf="loginForm.get('email')?.hasError('required')">
               Email is required
             </mat-error>
@@ -29,14 +22,7 @@
 
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Password</mat-label>
-            <input
-              matInput
-              type="password"
-              placeholder="Enter your password"
-              formControlName="password"
-              class="login-input"
-              required
-            />
+            <input matInput type="password" placeholder="Enter your password" formControlName="password" class="login-input" required/>
             <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
               Password is required
             </mat-error>
@@ -47,12 +33,7 @@
         </mat-card-content>
 
         <mat-card-actions class="login-card__actions">
-          <button
-            mat-raised-button
-            color="primary"
-            type="submit"
-            [disabled]="!loginForm.valid"
-          >
+          <button mat-raised-button color="primary" type="submit" [disabled]="!loginForm.valid">
             Sign In
           </button>
         </mat-card-actions>

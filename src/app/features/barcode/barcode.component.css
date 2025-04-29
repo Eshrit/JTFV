@@ -1,14 +1,14 @@
-/* Updated: barcode.component.css */
-
+/* Main Container */
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 30px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: white;
-  color: #000;
+  padding: 40px;
+  font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f0f2f5;
+  color: #2c3e50;
 }
 
+/* Header */
 .header {
   text-align: center;
   margin-bottom: 30px;
@@ -16,44 +16,43 @@
 
 .header h1 {
   margin: 0;
-  font-size: 28px;
+  font-size: 32px;
   font-weight: bold;
+  color: #3f51b5;
 }
 
-.header p {
-  margin: 4px 0;
-  font-size: 14px;
-}
-
-/* =======================
-   Table Styling
-======================= */
+/* Table Layout */
 .table {
   width: 100%;
   border-collapse: collapse;
+  background-color: #ffffff;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 30px;
   font-size: 14px;
-  margin-bottom: 20px;
   table-layout: fixed;
 }
 
 .table th,
 .table td {
-  border: 1px solid #000;
-  padding: 10px;
+  border: 1px solid #e0e0e0;
+  padding: 12px 14px;
   text-align: center;
-  word-wrap: break-word;
+  vertical-align: middle;
 }
 
 .table th {
-  background-color: #f0f0f0;
+  background-color: #ecf0f1;
   font-weight: bold;
-  padding: 8px;
+  color: #2c3e50;
 }
 
 .table th:nth-child(2),
 .table td:nth-child(2) {
   width: 22%;
 }
+
 .table th:nth-child(3),
 .table td:nth-child(3),
 .table th:nth-child(4),
@@ -61,19 +60,26 @@
   width: 14%;
 }
 
-/* =======================
-   Form Inputs
-======================= */
+/* Inputs and Selects */
 input.form-control,
 select.form-control {
   width: 90%;
-  padding: 4px;
+  padding: 8px 10px;
   font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  border: 1px solid #ccd6dd;
+  border-radius: 8px;
+  background-color: #f7f9fc;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
 }
 
-/* Hide span in screen view */
+input.form-control:focus,
+select.form-control:focus {
+  border-color: #3f51b5;
+  background-color: #ffffff;
+  outline: none;
+}
+
+/* Print adjustments */
 .print-toggle .print-view {
   display: none;
 }
@@ -91,8 +97,6 @@ select.form-control {
 
   .print-section {
     position: static !important;
-    top: 0;
-    left: 0;
     width: 100%;
     margin: 0;
     padding: 0;
@@ -103,97 +107,84 @@ select.form-control {
   }
 }
 
-
-
-/* =======================
-   Buttons
-======================= */
-.btn,
-.add-btn,
-.delete-btn {
-  transition: all 0.3s ease;
-  cursor: pointer;
+/* Action Buttons */
+.actions {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
 }
 
-.actions .btn {
+.actions .btn,
+.add-btn,
+.delete-btn {
   padding: 10px 20px;
-  font-size: 16px;
-  border-radius: 5px;
-  margin-right: 15px;
+  font-size: 15px;
   font-weight: bold;
+  border-radius: 8px;
   border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .actions .btn:hover,
-.btn:hover,
 .add-btn:hover,
 .delete-btn:hover {
   transform: scale(1.05);
   color: white;
 }
 
+/* Specific Buttons */
 .add-btn {
-  padding: 8px 16px;
-  font-size: 14px;
-  font-weight: 600;
-  border-radius: 4px;
-  border: 1px solid #5d6267;
-  background-color: #5d6267;
-  color: #333;
+  background-color: #607d8b;
+  color: #ffffff;
 }
+
 .add-btn:hover {
-  background-color: #5d6267;
-  color: white;
+  background-color: #546e7a;
 }
 
 .delete-btn {
-  padding: 8px 16px;
-  font-size: 14px;
-  font-weight: 600;
-  border-radius: 4px;
-  border: 1px solid #dc3545;
-  background-color: #dc3545;
-  color: #333;
+  background-color: #e53935;
+  color: #ffffff;
 }
+
 .delete-btn:hover {
-  background-color: #dc3545;
-  color: white;
-  transform: scale(1.05);
+  background-color: #c62828;
 }
 
 .btn-primary {
-  background-color: #007bff;
-  color: #333;
-}
-.btn-secondary {
-  background-color: #6c757d;
-  color: #333;
-}
-.btn-success {
-  background-color: #28a745;
-  color: #333;
-}
-.btn-warning {
-  background-color: #28a745;
-  color: #333;
+  background-color: #3f51b5;
+  color: #ffffff;
 }
 
-/* =======================
-   Barcode Print Preview
-======================= */
+.btn-primary:hover {
+  background-color: #35449c;
+}
+
+.btn-warning {
+  background-color: #ff9800;
+  color: #ffffff;
+}
+
+.btn-warning:hover {
+  background-color: #fb8c00;
+}
+
+/* Barcode Print Preview Section */
 .print-section {
   display: flex;
   flex-wrap: wrap;
+  gap: 8px;
   justify-content: flex-start;
-  gap: 6px;
-  margin-top: 20px;
+  margin-top: 30px;
 }
 
 .barcode-label {
   width: 180px;
   height: 90px;
-  padding: 6px 8px;
-  border: 1px solid #000;
+  padding: 8px 10px;
+  border: 1px solid #2c3e50;
   font-family: 'Courier New', monospace;
   font-size: 9px;
   display: flex;
@@ -202,6 +193,8 @@ select.form-control {
   text-align: center;
   overflow: hidden;
   white-space: nowrap;
+  background-color: #ffffff;
+  border-radius: 8px;
 }
 
 .label-header {
@@ -210,7 +203,7 @@ select.form-control {
 }
 
 .label-product {
-  font-size: 9.5px;
+  font-size: 10px;
   margin: 2px 0;
 }
 
@@ -235,6 +228,7 @@ svg {
 
 .label-info-compact div {
   width: 33%;
+  text-align: center;
 }
 
 .label-footer {
@@ -242,6 +236,7 @@ svg {
   margin-top: 4px;
 }
 
+/* Capitalize product name input */
 input[name^="productName"] {
   text-transform: uppercase;
 }
