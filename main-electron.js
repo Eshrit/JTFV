@@ -4,7 +4,6 @@ import { spawn } from 'child_process';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
-// Fix __dirname in ES Module
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -24,16 +23,23 @@ const createWindow = () => {
   mainWindow.loadURL('http://localhost:3001');
 };
 
+function killServer() {
+  if (serverProcess) {
+    serverProcess.kill();
+    serverProcess = null;
+    console.log('🛑 Node server killed');
+  }
+}
+
 app.whenReady().then(() => {
   const serverPath = path.join(__dirname, 'server.js');
 
-  // ✅ Pass userData path for database use
   serverProcess = spawn('node', [serverPath], {
     shell: true,
     env: {
       ...process.env,
       RUNNING_IN_ELECTRON: 'true',
-      USER_DATA_PATH: app.getPath('userData') // 🆕 added
+      USER_DATA_PATH: app.getPath('userData')
     }
   });
 
@@ -56,9 +62,18 @@ app.whenReady().then(() => {
   });
 });
 
+// Always clean up
 app.on('window-all-closed', () => {
-  if (serverProcess) serverProcess.kill();
+  killServer();
   if (process.platform !== 'darwin') {
     app.quit();
   }
+});
+
+app.on('before-quit', () => {
+  killServer();
+});
+
+app.on('quit', () => {
+  killServer();
 });

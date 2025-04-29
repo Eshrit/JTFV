@@ -7,12 +7,18 @@ import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
 import path from 'path';
 import fs from 'fs';
+import net from 'net';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 dotenv.config();
+
+if (process.env.RUNNING_IN_ELECTRON !== 'true') {
+  delete process.env.USER_DATA_PATH;
+}
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -43,12 +49,12 @@ if (isPackaged) {
     }
   }
 } else {
-  dbPath = path.join(__dirname, 'database.db');
+  dbPath = path.join(__dirname, '/assets/database.db');
 }
 
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) return console.error('Error opening database:', err);
-  console.log('Connected to SQLite database:', dbPath);
+  console.log('✅ Connected to SQLite database:', dbPath);
 
   db.run(`CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT UNIQUE, password TEXT)`);
   db.run(`CREATE TABLE IF NOT EXISTS clients (id INTEGER PRIMARY KEY AUTOINCREMENT, firstName TEXT, middleName TEXT, lastName TEXT, phone TEXT, mobile TEXT, fax TEXT, email TEXT, clientType TEXT, address1 TEXT, address2 TEXT, area TEXT, subArea TEXT, city TEXT, landmark TEXT, franchise TEXT, dateOfEntry TEXT, entryTime TEXT)`);
@@ -57,8 +63,9 @@ const db = new sqlite3.Database(dbPath, (err) => {
   db.run(`CREATE TABLE IF NOT EXISTS barcodes (id INTEGER PRIMARY KEY AUTOINCREMENT, productName TEXT, mrp REAL, category TEXT, expiryDays INTEGER, expiryDate TEXT, barcode TEXT)`);
 });
 
+// ==================== API ROUTES ====================
 
-// ==================== CLIENT ROUTES ====================
+// Client Routes
 app.post('/api/clients', (req, res) => {
   const c = req.body;
   const query = `
@@ -66,13 +73,11 @@ app.post('/api/clients', (req, res) => {
       firstName, middleName, lastName, phone, mobile, fax, email, clientType,
       address1, address2, area, subArea, city, landmark, franchise,
       dateOfEntry, entryTime
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `;
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
   const values = [
     c.firstName, c.middleName, c.lastName, c.phone, c.mobile, c.fax, c.email, c.clientType,
     c.address1, c.address2, c.area, c.subArea, c.city, c.landmark, c.franchise, c.dateOfEntry, c.entryTime
   ];
-
   db.run(query, values, function (err) {
     if (err) return res.status(500).json({ message: 'Failed to save client' });
     res.status(201).json({ message: 'Client saved successfully', id: this.lastID });
@@ -86,7 +91,7 @@ app.get('/api/clients', (req, res) => {
   });
 });
 
-// ==================== PRODUCT ROUTES ====================
+// Product Routes
 app.post('/api/products', (req, res) => {
   const p = req.body;
   const values = [p.vegName, p.topPriority, p.units, p.itemType, p.dateOfEntry, p.entryTime];
@@ -132,32 +137,23 @@ app.delete('/api/products/:id', (req, res) => {
   });
 });
 
-// ==================== BILL ROUTES ====================
+// Bill Routes
 app.post('/api/bills', (req, res) => {
   const b = req.body;
-  const query = `INSERT INTO bills (clientName, address, billNumber, billDate, discount, totalAmount, finalAmount, billItems)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+  const query = `
+    INSERT INTO bills (clientName, address, billNumber, billDate, discount, totalAmount, finalAmount, billItems)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
   const values = [b.clientName, b.address, b.billNumber, b.billDate, b.discount, b.totalAmount, b.finalAmount, JSON.stringify(b.billItems)];
-
   db.run(query, values, function (err) {
     if (err) return res.status(500).json({ message: 'Failed to save bill' });
     res.status(201).json({ message: 'Bill saved successfully', id: this.lastID });
   });
 });
 
-app.put('/api/bills/:billNumber', (req, res) => {
-  const b = req.body;
-  const query = `
-    UPDATE bills SET
-      clientName=?, address=?, billDate=?, discount=?,
-      totalAmount=?, finalAmount=?, billItems=?
-    WHERE billNumber=?`;
-  const values = [b.clientName, b.address, b.billDate, b.discount, b.totalAmount, b.finalAmount, JSON.stringify(b.billItems), req.params.billNumber];
-
-  db.run(query, values, function (err) {
-    if (err) return res.status(500).json({ message: 'Failed to update bill' });
-    if (this.changes === 0) return res.status(404).json({ message: 'Bill not found' });
-    res.json({ message: 'Bill updated successfully' });
+app.get('/api/bills', (req, res) => {
+  db.all('SELECT * FROM bills ORDER BY id DESC', [], (err, rows) => {
+    if (err) return res.status(500).json({ message: 'Failed to fetch bills' });
+    res.json(rows);
   });
 });
 
@@ -166,13 +162,6 @@ app.get('/api/bills/latest', (req, res) => {
     if (err) return res.status(500).json({ message: 'Failed to fetch latest bill number' });
     const next = row?.billNumber ? (parseInt(row.billNumber) + 1).toString().padStart(3, '0') : '001';
     res.json({ billNumber: next });
-  });
-});
-
-app.get('/api/bills', (req, res) => {
-  db.all('SELECT * FROM bills ORDER BY id DESC', [], (err, rows) => {
-    if (err) return res.status(500).json({ message: 'Failed to fetch bills' });
-    res.json(rows);
   });
 });
 
@@ -185,6 +174,17 @@ app.get('/api/bills/:billNumber', (req, res) => {
   });
 });
 
+app.put('/api/bills/:billNumber', (req, res) => {
+  const b = req.body;
+  const values = [b.clientName, b.address, b.billDate, b.discount, b.totalAmount, b.finalAmount, JSON.stringify(b.billItems), req.params.billNumber];
+  db.run(`
+    UPDATE bills SET clientName=?, address=?, billDate=?, discount=?, totalAmount=?, finalAmount=?, billItems=?
+    WHERE billNumber=?`, values, function (err) {
+    if (err) return res.status(500).json({ message: 'Failed to update bill' });
+    res.json({ message: 'Bill updated successfully' });
+  });
+});
+
 app.delete('/api/bills/:billNumber', (req, res) => {
   db.run('DELETE FROM bills WHERE billNumber = ?', [req.params.billNumber], function (err) {
     if (err) return res.status(500).json({ message: 'Failed to delete bill' });
@@ -193,7 +193,7 @@ app.delete('/api/bills/:billNumber', (req, res) => {
   });
 });
 
-// ==================== BARCODE ROUTES ====================
+// Barcode Routes
 app.post('/api/barcodes', (req, res) => {
   const items = req.body;
   if (!Array.isArray(items)) return res.status(400).json({ message: 'Expected array of barcodes' });
@@ -211,7 +211,7 @@ app.post('/api/barcodes', (req, res) => {
   });
 });
 
-// ==================== AUTH ROUTES ====================
+// Auth Routes
 app.post('/api/register', (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) return res.status(400).json({ message: 'Email and password required' });
@@ -236,7 +236,7 @@ app.post('/api/login', (req, res) => {
   });
 });
 
-// ==================== EMAIL BILL ROUTE ====================
+// Send Bill by Email
 app.post('/api/send-bill', (req, res) => {
   const bill = req.body;
   const transporter = nodemailer.createTransport({
@@ -272,33 +272,10 @@ app.post('/api/send-bill', (req, res) => {
   });
 });
 
-// ==================== SERVE ANGULAR APP ====================
+// Serve Angular App
 const angularDistPath = path.join(__dirname, 'dist', 'my-login-app');
 app.use(express.static(angularDistPath));
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(angularDistPath, 'index.html'));
-});
-
-// ==================== START SERVER WITH SHUTDOWN HANDLING ====================
-const server = app.listen(PORT, () => {
-  console.log(`✅ Server running at http://localhost:${PORT}`);
-});
-
-function shutdown() {
-  console.log('\n🛑 Gracefully shutting down server...');
-  server.close(() => {
-    console.log('✅ Server closed. Exiting process.');
-    process.exit(0);
-  });
-}
-
-process.on('SIGINT', shutdown);
-process.on('SIGTERM', shutdown);
-process.on('uncaughtException', (err) => {
-  console.error('Uncaught Exception:', err);
-  shutdown();
-});
-process.on('exit', (code) => {
-  console.log(`Process exiting with code: ${code}`);
 });
