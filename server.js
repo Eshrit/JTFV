@@ -43,7 +43,7 @@ if (isPackaged) {
     }
   }
 } else {
-  dbPath = path.join(__dirname, 'database.db');
+  dbPath = path.join(__dirname, '/assets/database.db');
 }
 
 const db = new sqlite3.Database(dbPath, (err) => {
