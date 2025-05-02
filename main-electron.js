@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, shell } from 'electron';
 import path, { dirname } from 'path';
 import { spawn } from 'child_process';
 import fs from 'fs';
@@ -7,9 +7,15 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+// IST time formatter
+function getISTTime() {
+  const date = new Date();
+  return new Date(date.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' })).toISOString();
+}
+
 const logFilePath = path.join(app.getPath('userData'), 'log.txt');
 function log(message) {
-  const timestamp = new Date().toISOString();
+  const timestamp = getISTTime();
   fs.appendFileSync(logFilePath, `[${timestamp}] ${message}\n`);
 }
 
@@ -40,6 +46,12 @@ const createWindow = () => {
     log(`❌ Renderer failed to load ${validatedURL}: ${desc} (${code})`);
   });
 
+  // Prevent navigation to external URLs inside Electron
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    shell.openExternal(url);
+    return { action: 'deny' };
+  });
+
   mainWindow.webContents.openDevTools();
 };
 
@@ -54,14 +66,18 @@ app.whenReady().then(() => {
     ? path.join(__dirname, 'node_modules')
     : path.join(process.resourcesPath, 'app.asar.unpacked', 'node_modules');
 
-  log('App is ready.');
-  log(`Spawning server: ${serverPath}`);
+  log('======================');
+  log('🚀 App starting up...');
+  log(`Environment: ${isDev ? 'Development' : 'Production'}`);
+  log(`Server path: ${serverPath}`);
   log(`User data path: ${userDataPath}`);
   log(`NODE_PATH: ${nodeModulesPath}`);
+  log('======================');
 
   serverProcess = spawn('node', [serverPath], {
     env: {
       ...process.env,
+      NODE_ENV: isDev ? 'development' : 'production',
       RUNNING_IN_ELECTRON: 'true',
       USER_DATA_PATH: userDataPath,
       NODE_PATH: nodeModulesPath
@@ -93,4 +109,10 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
+});
+
+// Optional: catch uncaught errors
+process.on('uncaughtException', (err) => {
+  log(`❌ Uncaught exception: ${err.message}`);
+  if (serverProcess) serverProcess.kill();
 });

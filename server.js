@@ -265,7 +265,10 @@ app.post('/api/send-bill', (req, res) => {
 });
 
 // ==================== SERVE ANGULAR APP ====================
-const angularDistPath = path.join(__dirname, 'dist', 'my-login-app');
+const angularDistPath = process.env.NODE_ENV === 'development'
+  ? path.join(__dirname, 'dist', 'my-login-app')
+  : path.join(process.resourcesPath, 'dist', 'my-login-app');
+  
 app.use(express.static(angularDistPath));
 
 app.get('*', (req, res) => {
