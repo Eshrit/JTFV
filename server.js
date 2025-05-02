@@ -6,6 +6,7 @@ import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -15,16 +16,28 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
-// Database Setup
-const isPackaged = process.env.RUNNING_IN_ELECTRON === 'true';
+// ✅ Resolve DB location
+const userDataPath = process.env.USER_DATA_PATH || path.join(__dirname, 'userdata');
+const dbPath = path.join(userDataPath, 'database.db');
+const defaultDbPath = process.env.DEFAULT_DB_PATH || path.join(__dirname, 'assets', 'database.db');
 
-const dbPath = isPackaged
-  ? path.join(process.resourcesPath, 'database.db')
-  : path.join(__dirname, 'database.db');
+fs.mkdirSync(path.dirname(dbPath), { recursive: true });
+
+if (!fs.existsSync(dbPath)) {
+  try {
+    if (fs.existsSync(defaultDbPath)) {
+      fs.copyFileSync(defaultDbPath, dbPath);
+      console.log('✅ Copied default database to userData path');
+    } else {
+      console.warn('⚠️ Default database not found at:', defaultDbPath);
+    }
+  } catch (err) {
+    console.error('❌ Error copying default database:', err);
+  }
+}
 
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) return console.error('Error opening database:', err);

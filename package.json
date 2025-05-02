@@ -3,13 +3,14 @@
   "version": "1.0.0",
   "description": "JTFV Billing & Barcode App",
   "main": "main-electron.js",
+  "type": "module",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --configuration production",
+    "build": "ng build --configuration production --base-href ./",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "electron": "electron .",
+    "electron": "electron --trace-warnings .",
     "pack": "electron-builder --dir",
     "dist": "electron-builder"
   },
@@ -60,17 +61,27 @@
     "productName": "JTFV Billing App",
     "files": [
       "**/*",
-      "!node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
-      "!node_modules/.bin",
-      "!*.map"
+      "!**/*.map",
+      "!node_modules/*/{README.md,readme.md}",
+      "!node_modules/.bin"
+    ],
+    "asarUnpack": [
+      "node_modules/bcrypt/**",
+      "node_modules/sqlite3/**"
     ],
     "extraResources": [
-      "database.db"
+      {
+        "from": "dist/my-login-app",
+        "to": "dist/my-login-app"
+      },
+      {
+        "from": "database.db",
+        "to": "database.db"
+      }
     ],
     "directories": {
       "buildResources": "assets"
     },
-    "asar": true,
     "win": {
       "target": "nsis"
     },
