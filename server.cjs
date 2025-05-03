@@ -126,7 +126,66 @@ app.delete('/api/products/:id', (req, res) => {
 });
 
 // ==================== BILL ROUTES ====================
-// (identical to original, omitted for brevity — you already have it working perfectly)
+app.post('/api/bills', (req, res) => {
+  const b = req.body;
+  const query = `INSERT INTO bills (clientName, address, billNumber, billDate, discount, totalAmount, finalAmount, billItems)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+  const values = [b.clientName, b.address, b.billNumber, b.billDate, b.discount, b.totalAmount, b.finalAmount, JSON.stringify(b.billItems)];
+
+  db.run(query, values, function (err) {
+    if (err) return res.status(500).json({ message: 'Failed to save bill' });
+    res.status(201).json({ message: 'Bill saved successfully', id: this.lastID });
+  });
+});
+
+app.put('/api/bills/:billNumber', (req, res) => {
+  const b = req.body;
+  const query = `
+    UPDATE bills SET
+      clientName=?, address=?, billDate=?, discount=?,
+      totalAmount=?, finalAmount=?, billItems=?
+    WHERE billNumber=?`;
+  const values = [b.clientName, b.address, b.billDate, b.discount, b.totalAmount, b.finalAmount, JSON.stringify(b.billItems), req.params.billNumber];
+
+  db.run(query, values, function (err) {
+    if (err) return res.status(500).json({ message: 'Failed to update bill' });
+    if (this.changes === 0) return res.status(404).json({ message: 'Bill not found' });
+    res.json({ message: 'Bill updated successfully' });
+  });
+});
+
+app.get('/api/bills/latest', (req, res) => {
+  db.get('SELECT billNumber FROM bills ORDER BY id DESC LIMIT 1', [], (err, row) => {
+    if (err) return res.status(500).json({ message: 'Failed to fetch latest bill number' });
+    const next = row?.billNumber ? (parseInt(row.billNumber) + 1).toString().padStart(3, '0') : '001';
+    res.json({ billNumber: next });
+  });
+});
+
+app.get('/api/bills', (req, res) => {
+  db.all('SELECT * FROM bills ORDER BY id DESC', [], (err, rows) => {
+    if (err) return res.status(500).json({ message: 'Failed to fetch bills' });
+    res.json(rows);
+  });
+});
+
+app.get('/api/bills/:billNumber', (req, res) => {
+  db.get('SELECT * FROM bills WHERE billNumber = ?', [req.params.billNumber], (err, row) => {
+    if (err) return res.status(500).json({ message: 'Failed to fetch bill' });
+    if (!row) return res.status(404).json({ message: 'Bill not found' });
+    row.billItems = JSON.parse(row.billItems || '[]');
+    res.json(row);
+  });
+});
+
+app.delete('/api/bills/:billNumber', (req, res) => {
+  db.run('DELETE FROM bills WHERE billNumber = ?', [req.params.billNumber], function (err) {
+    if (err) return res.status(500).json({ message: 'Failed to delete bill' });
+    if (this.changes === 0) return res.status(404).json({ message: 'Bill not found' });
+    res.json({ message: 'Bill deleted successfully' });
+  });
+});
+
 
 
 // ==================== BARCODE ROUTES ====================
