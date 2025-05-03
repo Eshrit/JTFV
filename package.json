@@ -1,9 +1,9 @@
 {
   "name": "jtfv-billing",
   "version": "1.0.0",
-  "description": "JTFV Billing & Barcode App",
+  "description": "A desktop application for billing and barcode generation built with Angular, Express, and Electron.",
+  "author": "Shailesh Shahu",
   "main": "main-electron.js",
-  "type": "module",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -12,7 +12,7 @@
     "test": "ng test",
     "electron": "electron --trace-warnings .",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder"
+    "dist": "npm run build && electron-builder && exit 0"
   },
   "private": true,
   "dependencies": {
@@ -57,41 +57,54 @@
     "typescript": "~5.0.2"
   },
   "build": {
-    "appId": "com.jtfv.billing",
-    "productName": "JTFV Billing App",
-    "files": [
-      "**/*",
-      "!**/*.map",
-      "!node_modules/*/{README.md,readme.md}",
-      "!node_modules/.bin"
-    ],
-    "asarUnpack": [
-      "node_modules/bcrypt/**",
-      "node_modules/sqlite3/**"
-    ],
-    "extraResources": [
-      {
-        "from": "dist/my-login-app",
-        "to": "dist/my-login-app"
-      },
-      {
-        "from": "database.db",
-        "to": "database.db"
-      }
-    ],
-    "directories": {
-      "buildResources": "assets"
+  "appId": "com.jtfv.billing",
+  "productName": "JTFV Billing App",
+  "files": [
+    "**/*",
+    "!**/*.map",
+    "!**/*.ts",
+    "!angular.json",
+    "!tsconfig.json",
+    "!tslint.json",
+    "!karma.conf.js",
+    "!README.md",
+    "!src"
+  ],
+  "asarUnpack": [
+    "app_data/**"
+  ],
+  "extraResources": [
+    {
+      "from": "dist/my-login-app",
+      "to": "app_data/dist/my-login-app"
     },
-    "win": {
-      "target": "nsis"
+    {
+      "from": "server.cjs",
+      "to": "app_data/server.cjs"
     },
-    "nsis": {
-      "oneClick": false,
-      "perMachine": true,
-      "allowElevation": true,
-      "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": true,
-      "createStartMenuShortcut": true
+    {
+      "from": "node_modules",
+      "to": "app_data/node_modules"
+    },
+    {
+      "from": "database.db",
+      "to": "app_data/database.db"
     }
+  ],
+  "directories": {
+    "buildResources": "assets"
+  },
+  "win": {
+    "target": "nsis"
+  },
+  "nsis": {
+    "oneClick": false,
+    "perMachine": true,
+    "allowElevation": true,
+    "allowToChangeInstallationDirectory": true,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true
   }
+}
+
 }

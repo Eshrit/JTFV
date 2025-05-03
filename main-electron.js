@@ -7,7 +7,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// IST time formatter
+// ⏰ IST time formatter for logs
 function getISTTime() {
   const date = new Date();
   return new Date(date.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' })).toISOString();
@@ -46,30 +46,35 @@ const createWindow = () => {
     log(`❌ Renderer failed to load ${validatedURL}: ${desc} (${code})`);
   });
 
-  // Prevent navigation to external URLs inside Electron
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
     shell.openExternal(url);
     return { action: 'deny' };
   });
 
-  mainWindow.webContents.openDevTools();
+  // Only open dev tools in development
+  if (!app.isPackaged) {
+    mainWindow.webContents.openDevTools();
+  }
 };
 
 app.whenReady().then(() => {
   const isDev = !app.isPackaged;
-  const serverPath = isDev
-    ? path.join(__dirname, 'server.js')
-    : path.join(process.resourcesPath, 'server.js');
 
+  // ✅ Use unified unpacked folder in production: app_data
+  const basePath = isDev
+    ? __dirname
+    : path.join(process.resourcesPath, 'app_data');
+
+  const serverPath = path.join(basePath, 'server.cjs');
+  const nodeModulesPath = path.join(basePath, 'node_modules');
+  const angularDistPath = path.join(basePath, 'dist', 'my-login-app');
   const userDataPath = app.getPath('userData');
-  const nodeModulesPath = isDev
-    ? path.join(__dirname, 'node_modules')
-    : path.join(process.resourcesPath, 'app.asar.unpacked', 'node_modules');
 
   log('======================');
   log('🚀 App starting up...');
   log(`Environment: ${isDev ? 'Development' : 'Production'}`);
   log(`Server path: ${serverPath}`);
+  log(`Angular dist path: ${angularDistPath}`);
   log(`User data path: ${userDataPath}`);
   log(`NODE_PATH: ${nodeModulesPath}`);
   log('======================');
@@ -111,7 +116,6 @@ app.on('window-all-closed', () => {
   }
 });
 
-// Optional: catch uncaught errors
 process.on('uncaughtException', (err) => {
   log(`❌ Uncaught exception: ${err.message}`);
   if (serverProcess) serverProcess.kill();
