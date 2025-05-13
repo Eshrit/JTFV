@@ -132,7 +132,7 @@ export class BillsComponent implements OnInit {
   
     // Filter and map filled items for printing
     const printableItems = allItems
-      .filter(item => item.productId !== null && item.quantity > 0 && item.price > 0)
+      .filter(item => item.productId !== null && item.productName && item.quantity > 0 && item.price > 0)
       .map(item => {
         const matchedProduct = this.products.find(p => +p.id === item.productId); // Ensure number comparison
         return {
