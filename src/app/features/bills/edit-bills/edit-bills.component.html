@@ -67,7 +67,9 @@
           <div class="print-toggle">
             <select class="product-control" [(ngModel)]="item.productId" (change)="onProductChange(i)">
               <option value="">Select</option>
-              <option *ngFor="let product of products" [ngValue]="product.id">{{ product.vegName }}</option>
+              <option *ngFor="let product of products" [ngValue]="product.id">
+                {{ product.name }}
+              </option>
             </select>
             <span class="print-view">{{ item.productName }}</span>
           </div>

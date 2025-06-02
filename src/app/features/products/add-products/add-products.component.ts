@@ -16,16 +16,14 @@ export class AddProductsComponent {
 
   onSubmit(form: NgForm): void {
     if (form.valid) {
-      const productData = {
-        ...form.value,
-        dateOfEntry: this.currentDate,
-        entryTime: this.currentTime
-      };
+      const nameData = form.value;
 
-      this.productService.saveProduct(productData).subscribe({
+      this.productService.addName(nameData).subscribe({
         next: () => {
-        alert('Product Added!')},
-        error: err => console.error('Failed to save product:', err)
+          alert('Product added!');
+          this.router.navigate(['/products']);
+        },
+        error: err => console.error('Failed to add name:', err)
       });
     }
   }

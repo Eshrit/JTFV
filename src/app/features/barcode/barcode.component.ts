@@ -1,4 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { ProductService, Name } from 'src/app/core/services/products.service';
 import JsBarcode from 'jsbarcode';
 
 @Component({
@@ -9,12 +10,23 @@ import JsBarcode from 'jsbarcode';
 export class BarcodeComponent implements OnInit {
   products: any[] = [];
   printItems: any[] = [];
+  nameOptions: Name[] = [];
   currentDate: string = new Date().toISOString().substring(0, 10);
 
-  constructor(private cdRef: ChangeDetectorRef) {}
+  constructor(
+    private cdRef: ChangeDetectorRef,
+    private productService: ProductService
+  ) {}
 
   ngOnInit(): void {
     for (let i = 0; i < 5; i++) this.addRow();
+
+    this.productService.getNames().subscribe({
+      next: (names) => {
+        this.nameOptions = names;
+      },
+      error: (err) => console.error('Failed to load names:', err)
+    });
   }
 
   addRow() {
@@ -40,6 +52,18 @@ export class BarcodeComponent implements OnInit {
     this.products[index].expiryDate = expiry.toISOString().substring(0, 10);
   }
 
+  onProductSelect(i: number, event: Event) {
+    const target = event.target as HTMLSelectElement;
+    const nameId = Number(target.value);
+    const selected = this.nameOptions.find(n => n.id === nameId);
+    if (selected) {
+      this.products[i].productName = `${selected.name} ${selected.units}`;
+      this.products[i].category = selected.type
+        ? selected.type.charAt(0).toUpperCase() + selected.type.slice(1)
+        : '';
+    }
+  }
+
   generateBarcodeValue(): string {
     const base = Math.floor(Math.random() * 1e11).toString().padStart(11, '0');
     return base + this.calculateUPCCheckDigit(base);
@@ -58,35 +82,6 @@ export class BarcodeComponent implements OnInit {
     this.products = [];
     for (let i = 0; i < 10; i++) this.addRow();
   }
-
-  // saveAll() {
-  //   // Validate and filter only valid rows
-  //   const validItems = this.products.filter(p =>
-  //     p.productName?.trim() &&
-  //     typeof p.mrp === 'number' && p.mrp > 0 &&
-  //     p.category &&
-  //     p.expiryDate &&
-  //     p.barcode?.length === 12
-  //   );
-  
-  //   if (validItems.length === 0) {
-  //     alert('No valid products to save.');
-  //     return;
-  //   }
-  
-  //   console.log('📤 Sending to backend:', validItems);
-  
-  //   this.barcodeService.saveProducts(validItems).subscribe({
-  //     next: (res) => {
-  //       console.log('✅ Server response:', res);
-  //       alert('Products saved successfully!');
-  //     },
-  //     error: (err) => {
-  //       console.error('❌ Failed to save:', err);
-  //       alert('Failed to save products. Please check the console.');
-  //     }
-  //   });
-  // }  
 
   printSelected() {
     this.preparePrintItems();

@@ -3,18 +3,21 @@
   <h2>Add New Product</h2>
   <form #productForm="ngForm" (ngSubmit)="onSubmit(productForm)">
     <div class="form-row">
-      <input type="text" name="vegName" placeholder="Product Name" ngModel required />
-      <select name="topPriority" ngModel required>
-        <option value="" disabled selected>Select Top Priority</option>
+      <input type="text" name="name" placeholder="Product Name" ngModel required />
+
+      <select name="priority" ngModel required>
+        <option value="" disabled selected>Select Priority</option>
         <option value="Yes">Yes</option>
         <option value="No">No</option>
       </select>
+
       <input type="text" name="units" placeholder="Units (e.g., kg, dozen)" ngModel required />
-      <select name="itemType" ngModel required>
-        <option value="" disabled selected>Select Item Type</option>
-        <option value="Vegetable">Vegetable</option>
-        <option value="Fruit">Fruit</option>
-        <option value="Others">Others</option>
+
+      <select name="type" ngModel required>
+        <option value="" disabled selected>Select Type</option>
+        <option value="vegetable">Vegetable</option>
+        <option value="fruit">Fruit</option>
+        <option value="others">Others</option>
       </select>
     </div>
 
@@ -27,6 +30,6 @@
       <button type="submit">Save</button>
       <button type="button" (click)="backToHome()">Back To Products</button>
       <button type="reset">Clear</button>
-    </div>    
+    </div>
   </form>
 </div>

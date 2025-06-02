@@ -1,8 +1,7 @@
-import { OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Component } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { ProductService } from 'src/app/core/services/products.service';
+import { ProductService, Name } from 'src/app/core/services/products.service';
 
 @Component({
   selector: 'app-edit-products',
@@ -11,9 +10,7 @@ import { ProductService } from 'src/app/core/services/products.service';
 })
 export class EditProductsComponent implements OnInit {
   productId!: number;
-  currentDate = new Date().toLocaleDateString();
-  currentTime = new Date().toLocaleTimeString();
-  product: any = {};
+  product: Partial<Name> = {};
 
   constructor(
     private productService: ProductService,
@@ -27,31 +24,22 @@ export class EditProductsComponent implements OnInit {
   }
 
   loadProduct(): void {
-    this.productService.getProductById(this.productId).subscribe({
-      next: (product) => {
-        this.product = product;
-      },
-      error: (err) => console.error('Failed to load product:', err)
+    this.productService.getNameById(this.productId).subscribe({
+      next: (name) => this.product = name,
+      error: (err) => console.error('Failed to load name:', err)
     });
   }
 
   onSubmit(form: NgForm): void {
     if (form.valid) {
-      const updatedProduct = {
-        ...form.value,
-        id: this.productId,  // Keep the ID intact
-        dateOfEntry: this.currentDate,
-        entryTime: this.currentTime
-      };
-
-      this.productService.updateProduct(this.productId, updatedProduct).subscribe({
+      this.productService.updateName(this.productId, form.value).subscribe({
         next: () => this.router.navigate(['/products']),
-        error: (err) => console.error('Failed to update product:', err)
+        error: (err) => console.error('Failed to update name:', err)
       });
     }
   }
 
-  backToHome(): void {
+  backToProducts(): void {
     this.router.navigate(['/products']);
   }
 }

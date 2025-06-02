@@ -15,6 +15,7 @@ export class AddMerchantComponent {
   constructor(private clientService: ClientService, private router: Router) {}
 
   onSubmit(form: NgForm): void {
+    console.log('Form submitted', form.value); // Add this
     if (form.valid) {
       const now = new Date();
       const clientData = {

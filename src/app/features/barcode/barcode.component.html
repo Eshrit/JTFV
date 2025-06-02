@@ -20,7 +20,14 @@
       </thead>
       <tbody>
         <tr *ngFor="let item of products; let i = index">
-          <td><input type="text" class="form-control" [(ngModel)]="item.productName" name="productName{{i}}" required/></td>
+          <td>
+            <select class="form-control" name="productName{{i}}" (change)="onProductSelect(i, $event)">
+              <option value=""> Select Product </option>
+              <option *ngFor="let option of nameOptions" [value]="option.id">
+                {{ option.name }} {{ option.units }}
+              </option>
+            </select>
+          </td>
           <td><input type="number" class="form-control" [(ngModel)]="item.mrp" name="mrp{{i}}" required /></td>
           <td>
             <select class="form-control" [(ngModel)]="item.category" name="category{{i}}">

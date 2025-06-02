@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Title } from '@angular/platform-browser';
-import { ProductService } from 'src/app/core/services/products.service';
+import { ProductService, Name } from 'src/app/core/services/products.service';
 import { BillsService } from 'src/app/core/services/bills.service';
-
 
 interface BillItem {
   productId: number | null;
@@ -19,7 +18,8 @@ interface BillItem {
   styleUrls: ['./edit-bills.component.css']
 })
 export class EditBillsComponent implements OnInit {
-  products: any[] = [];
+  products: Name[] = [];
+  namesMap: { [id: number]: string } = {};
   billItems: BillItem[] = [];
   clientName = '';
   address = '';
@@ -28,13 +28,11 @@ export class EditBillsComponent implements OnInit {
   discount = 0;
   totalAmount = 0;
   finalAmount = 0;
-  clients: string[] = [ 'HAIKO', 
-                        'AVENUE SUPER MARTS GR FLOOR SPECTRA BUILDING HIGH STREET CORNER', 
-                        'CHEK MARKET', 'AVENUE E-COMMERCE LIMITED', 
-                        'AVENUE E- COMMERCE LTD',
-                        'HAIKO MARKET',
-                        'AVENUE E-COMMERCE LTD'
-                      ];
+  clients: string[] = [
+    'HAIKO', 'AVENUE SUPER MARTS GR FLOOR SPECTRA BUILDING HIGH STREET CORNER',
+    'CHEK MARKET', 'AVENUE E-COMMERCE LIMITED', 'AVENUE E- COMMERCE LTD',
+    'HAIKO MARKET', 'AVENUE E-COMMERCE LTD'
+  ];
 
   constructor(
     private productService: ProductService,
@@ -46,16 +44,17 @@ export class EditBillsComponent implements OnInit {
   ngOnInit(): void {
     this.titleService.setTitle('Edit Bill - J.T. Fruits & Vegetables');
 
-    this.productService.getProducts().subscribe(data => this.products = data);
+    // ✅ Get product names from names table
+    this.productService.getNames().subscribe((names: Name[]) => {
+      this.products = names;
+      this.namesMap = Object.fromEntries(names.map(n => [n.id, n.name]));
 
-    this.route.paramMap.subscribe(params => {
-      const billNumber = params.get('billNumber');
-      if (billNumber) {
-        this.loadBillForEdit(billNumber);
-      }
+      this.route.paramMap.subscribe(params => {
+        const billNumber = params.get('billNumber');
+        if (billNumber) this.loadBillForEdit(billNumber);
+      });
     });
 
-    // Fill with empty rows (if needed)
     for (let i = 0; i < 30; i++) {
       this.billItems.push({ productId: null, productName: '', quantity: 0, price: 0, total: 0 });
     }
@@ -74,8 +73,7 @@ export class EditBillsComponent implements OnInit {
         this.billItems = bill.billItems || [];
 
         this.billItems.forEach(item => {
-          const match = this.products.find(p => p.id === item.productId);
-          if (match) item.productName = match.vegName;
+          item.productName = item.productId ? this.namesMap[item.productId] || '(Unknown)' : '';
         });
       },
       error: err => {
@@ -87,10 +85,7 @@ export class EditBillsComponent implements OnInit {
 
   onProductChange(index: number): void {
     const selectedId = this.billItems[index].productId;
-    const product = this.products.find(p => p.id === selectedId);
-    if (product) {
-      this.billItems[index].productName = product.vegName;
-    }
+    this.billItems[index].productName = this.namesMap[selectedId!] || '(Unknown)';
     this.calculateRowTotal(index);
   }
 
@@ -112,23 +107,17 @@ export class EditBillsComponent implements OnInit {
 
   printBill(): void {
     const allItems = [...this.billItems];
-  
-    // Filter and map filled items for printing
     const printableItems = allItems
       .filter(item => item.productId !== null && item.quantity > 0 && item.price > 0)
-      .map(item => {
-        const matchedProduct = this.products.find(p => +p.id === item.productId); // Ensure number comparison
-        return {
-          ...item,
-          productName: matchedProduct ? matchedProduct.vegName : '(Unknown Product)'
-        };
-      });
-  
-    // Replace with printable items temporarily
+      .map(item => ({
+        ...item,
+        productName: this.namesMap[item.productId!] || '(Unknown)'
+      }));
+
     this.billItems = printableItems;
 
     alert('Please uncheck "Headers and footers" in the print dialog for cleaner output.');
-  
+
     setTimeout(() => {
       window.print();
       this.billItems = allItems;
@@ -178,8 +167,7 @@ export class EditBillsComponent implements OnInit {
 
   autoResize(event: Event): void {
     const textarea = event.target as HTMLTextAreaElement;
-    textarea.style.height = 'auto'; // Reset height
-    textarea.style.height = textarea.scrollHeight + 'px'; // Set to scroll height
+    textarea.style.height = 'auto';
+    textarea.style.height = textarea.scrollHeight + 'px';
   }
-  
 }

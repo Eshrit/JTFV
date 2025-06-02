@@ -16,10 +16,8 @@ const PORT = process.env.PORT || 3001;
 app.use(cors());
 app.use(bodyParser.json());
 
-// ✅ Resolve DB location
 const userDataPath = process.env.USER_DATA_PATH || path.join(__dirname, 'userdata');
 const dbPath = path.join(userDataPath, 'database.db');
-
 const defaultDbPath = process.env.DEFAULT_DB_PATH || (
   process.resourcesPath
     ? path.join(process.resourcesPath, 'app_data', 'database.db')
@@ -45,48 +43,185 @@ const db = new sqlite3.Database(dbPath, (err) => {
   if (err) return console.error('Error opening database:', err);
   console.log('Connected to SQLite database:', dbPath);
 
-  db.run(`CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT UNIQUE, password TEXT)`);
-  db.run(`CREATE TABLE IF NOT EXISTS clients (id INTEGER PRIMARY KEY AUTOINCREMENT, firstName TEXT, middleName TEXT, lastName TEXT, phone TEXT, mobile TEXT, fax TEXT, email TEXT, clientType TEXT, address1 TEXT, address2 TEXT, area TEXT, subArea TEXT, city TEXT, landmark TEXT, franchise TEXT, dateOfEntry TEXT, entryTime TEXT)`);
-  db.run(`CREATE TABLE IF NOT EXISTS products (id INTEGER PRIMARY KEY AUTOINCREMENT, vegName TEXT, topPriority TEXT, units TEXT, itemType TEXT, dateOfEntry TEXT, entryTime TEXT)`);
-  db.run(`CREATE TABLE IF NOT EXISTS bills (id INTEGER PRIMARY KEY AUTOINCREMENT, clientName TEXT, address TEXT, billNumber TEXT, billDate TEXT, discount REAL, totalAmount REAL, finalAmount REAL, billItems TEXT)`);
-  db.run(`CREATE TABLE IF NOT EXISTS barcodes (id INTEGER PRIMARY KEY AUTOINCREMENT, productName TEXT, mrp REAL, category TEXT, expiryDays INTEGER, expiryDate TEXT, barcode TEXT)`);
+  db.run(`
+    CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT, 
+    email TEXT UNIQUE, 
+    password TEXT)
+    `);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS clients (
+    id INTEGER PRIMARY KEY AUTOINCREMENT, 
+    firstName TEXT, 
+    middleName TEXT, 
+    lastName TEXT, 
+    phone TEXT, 
+    mobile TEXT, 
+    fax TEXT, 
+    email TEXT, 
+    clientType TEXT, 
+    address1 TEXT, 
+    address2 TEXT, 
+    area TEXT, 
+    subArea TEXT, 
+    city TEXT, 
+    landmark TEXT, 
+    franchise TEXT, 
+    dateOfEntry TEXT, 
+    entryTime TEXT
+    )
+    `);
+
+db.run(`
+  CREATE TABLE IF NOT EXISTS names (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    type TEXT, -- 'vegetable', 'fruit', or null
+    priority TEXT,
+    units TEXT,
+    createdAt TEXT DEFAULT (datetime('now')),
+    UNIQUE(name, type)
+  )
+`);
+
+db.serialize(() => {
+  db.run(`DROP TABLE IF EXISTS products`);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS products (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      nameId INTEGER NOT NULL,
+      topPriority TEXT,
+      units TEXT,
+      itemType TEXT,
+      dateOfEntry TEXT,
+      entryTime TEXT,
+      FOREIGN KEY(nameId) REFERENCES names(id)
+    )
+  `);
+});
+
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS bills (
+    id INTEGER PRIMARY KEY AUTOINCREMENT, 
+    clientName TEXT, 
+    address TEXT, 
+    billNumber TEXT, 
+    billDate TEXT, 
+    discount REAL, 
+    totalAmount REAL, 
+    finalAmount REAL, 
+    billItems TEXT
+    )
+    `);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS barcodes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT, 
+    productName TEXT, 
+    mrp REAL, 
+    category TEXT, 
+    expiryDays INTEGER, 
+    expiryDate TEXT, 
+    barcode TEXT
+    )
+    `);
+
 });
 
 // ==================== CLIENT ROUTES ====================
 app.post('/api/clients', (req, res) => {
   const c = req.body;
+
   const query = `
     INSERT INTO clients (
-      firstName, middleName, lastName, phone, mobile, fax, email, clientType,
-      address1, address2, area, subArea, city, landmark, franchise,
-      dateOfEntry, entryTime
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `;
+      firstName, middleName, lastName, phone, mobile, fax, email,
+      clientType, address1, address2, area, subArea, city, landmark,
+      franchise, dateOfEntry, entryTime
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
   const values = [
-    c.firstName, c.middleName, c.lastName, c.phone, c.mobile, c.fax, c.email, c.clientType,
-    c.address1, c.address2, c.area, c.subArea, c.city, c.landmark, c.franchise, c.dateOfEntry, c.entryTime
+    c.firstName, c.middleName, c.lastName, c.phone, c.mobile, c.fax, c.email,
+    c.clientType, c.address1, c.address2, c.area, c.subArea, c.city, c.landmark,
+    c.franchise, c.dateOfEntry, c.entryTime
   ];
+
   db.run(query, values, function (err) {
-    if (err) return res.status(500).json({ message: 'Failed to save client' });
+    if (err) {
+      console.error('❌ Failed to insert client:', err.message);
+      return res.status(500).json({ message: 'Failed to save client', error: err.message });
+    }
     res.status(201).json({ message: 'Client saved successfully', id: this.lastID });
   });
 });
 
 app.get('/api/clients', (req, res) => {
-  db.all('SELECT * FROM clients', [], (err, rows) => {
-    if (err) return res.status(500).json({ message: 'Failed to fetch clients' });
+  db.all('SELECT * FROM clients ORDER BY id DESC', [], (err, rows) => {
+    if (err) return res.status(500).json({ message: 'Failed to fetch clients', error: err.message });
     res.json(rows);
+  });
+});
+
+// ==================== NAME ROUTES ====================
+app.get('/api/names', (req, res) => {
+  db.all('SELECT * FROM names ORDER BY id DESC', [], (err, rows) => {
+    if (err) return res.status(500).json({ message: 'Failed to fetch names', error: err.message });
+    res.json(rows);
+  });
+});
+
+// Get all names
+app.post('/api/names', (req, res) => {
+  const { name, type, priority, units } = req.body;
+  if (!name) return res.status(400).json({ message: 'Name is required' });
+
+  const query = `
+    INSERT OR IGNORE INTO names (name, type, priority, units) 
+    VALUES (?, ?, ?, ?)
+  `;
+  db.run(query, [name.trim(), type || null, priority || '', units || ''], function (err) {
+    if (err) return res.status(500).json({ message: 'Failed to add name', error: err.message });
+    res.status(201).json({ message: 'Name added', id: this.lastID });
+  });
+});
+
+// Get a single name by ID
+app.get('/api/names/:id', (req, res) => {
+  db.get('SELECT * FROM names WHERE id = ?', [req.params.id], (err, row) => {
+    if (err) return res.status(500).json({ message: 'Failed to fetch name' });
+    if (!row) return res.status(404).json({ message: 'Name not found' });
+    res.json(row);
+  });
+});
+
+// Update a name
+app.put('/api/names/:id', (req, res) => {
+  const { name, type, priority, units } = req.body;
+  db.run(`
+    UPDATE names SET name = ?, type = ?, priority = ?, units = ?
+    WHERE id = ?
+  `, [name, type, priority, units, req.params.id], function (err) {
+    if (err) return res.status(500).json({ message: 'Failed to update name', error: err.message });
+    if (this.changes === 0) return res.status(404).json({ message: 'Name not found' });
+    res.json({ message: 'Name updated successfully' });
   });
 });
 
 // ==================== PRODUCT ROUTES ====================
 app.post('/api/products', (req, res) => {
+  console.log('Incoming POST /api/products', req.body);
   const p = req.body;
-  const values = [p.vegName, p.topPriority, p.units, p.itemType, p.dateOfEntry, p.entryTime];
+  const values = [p.nameId, p.topPriority, p.units, p.itemType, p.dateOfEntry, p.entryTime];
+
   db.run(`
-    INSERT INTO products (vegName, topPriority, units, itemType, dateOfEntry, entryTime)
+    INSERT INTO products (nameId, topPriority, units, itemType, dateOfEntry, entryTime)
     VALUES (?, ?, ?, ?, ?, ?)`, values, function (err) {
-    if (err) return res.status(500).json({ message: 'Failed to save product' });
+    if (err) {
+      console.error('❌ SQL Error:', err); // 👈 Log it
+      return res.status(500).json({ message: 'Failed to save product', error: err.message });
+    }
     res.status(201).json({ message: 'Product saved successfully', id: this.lastID });
   });
 });
@@ -108,9 +243,9 @@ app.get('/api/products/:id', (req, res) => {
 
 app.put('/api/products/:id', (req, res) => {
   const p = req.body;
-  const values = [p.vegName, p.topPriority, p.units, p.itemType, p.dateOfEntry, p.entryTime, req.params.id];
+  const values = [p.nameId, p.topPriority, p.units, p.itemType, p.dateOfEntry, p.entryTime, req.params.id];
   db.run(`
-    UPDATE products SET vegName=?, topPriority=?, units=?, itemType=?, dateOfEntry=?, entryTime=?
+    UPDATE products SET nameId=?, topPriority=?, units=?, itemType=?, dateOfEntry=?, entryTime=?
     WHERE id=?`, values, function (err) {
     if (err) return res.status(500).json({ message: 'Failed to update product' });
     res.json({ message: 'Product updated successfully' });
