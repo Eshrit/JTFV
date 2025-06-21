@@ -1,5378 +1,2072 @@
 [
   {
-    "Name":"ARBI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500GM"
+    "Name": "AFFRICOT INDION",
+    "Units": "1 PKT",
+    "Type": "vegetable",
+    "Priority": "Yes"
   },
   {
-    "Name":"ARBI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "AMERICAN CORN",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "250GM"
   },
   {
-    "Name":"AMERICAN CORNS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"2PC"
+    "Name": "AMERICAN CORNS",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "2PC"
   },
   {
-    "Name":"AMERICAN CORN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "ANJEER",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "6 PC"
   },
   {
-    "Name":"GREEN PEA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "APPLE BABY",
+    "Units": "1 PKT",
+    "Type": "fruit",
+    "Priority": "Yes"
   },
   {
-    "Name":"CHILLY ACHAR",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
+    "Name": "APPLE ETAILION",
+    "Units": "6 PC",
+    "Type": "fruit",
+    "Priority": "Yes"
   },
   {
-    "Name":"CHILLY ACHAR",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "APPLE ETAILION",
+    "Units": "4 PC",
+    "Type": "fruit",
+    "Priority": "Yes"
   },
   {
-    "Name":"CHILLY ACHAR",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500GM"
+    "Name": "APPLE FUJI",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "4 PC"
   },
   {
-    "Name":"GARLIC CHINA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500GM"
+    "Name": "APPLE FUJI",
+    "Units": "6PC",
+    "Type": "fruit",
+    "Priority": "Yes"
   },
   {
-    "Name":"KANDH LARGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "APPLE GOLDEN",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "6 PC"
   },
   {
-    "Name":"KANDH MED",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "APPLE GOLDEN",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "4 PC"
   },
   {
-    "Name":"KANDH SMALL",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "APPLE GOLDEN IMPORTED",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "6 PC"
   },
   {
-    "Name":"PHANAS L",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "APPLE GREEN",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "4PC"
   },
   {
-    "Name":"PHANAS M",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "APPLE GREEN",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "6 PC"
   },
   {
-    "Name":"PHANAS S",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "APPLE INDIAN",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "4 PC"
   },
   {
-    "Name":"CELERY",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "APPLE INDIAN",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "6 PC"
   },
   {
-    "Name":"SALAD LEAVES",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "APPLE NEWZEALAND ROSE",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "6 PC"
   },
   {
-    "Name":"TOMATO CHERRY",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"100GM"
+    "Name": "APPLE NEWZEALAND ROSE",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "4 PC"
   },
   {
-    "Name":"CUT CAULIFLOWER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "APPLE NEWZEALAND ROYALGALA",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "6 PC"
   },
   {
-    "Name":"GREEN PEAS SHELL",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "APPLE NEWZEALAND ROYALGALA",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "4 PC"
   },
   {
-    "Name":"SPROUT MUNG",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "APPLE WASHINGTON",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "4 PC"
   },
   {
-    "Name":"SPROUT MATKI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "APPLE WASHINGTON",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "6 PC"
   },
   {
-    "Name":"SPROUT CHANA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "ARBI",
+    "Units": "500 GM",
+    "Type": "vegetable",
+    "Priority": "Yes"
   },
   {
-    "Name":"SAMBHAR MIX",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1 PKT"
+    "Name": "AVACADOO IMP",
+    "Units": "1PC",
+    "Type": "vegetable",
+    "Priority": "Yes"
   },
   {
-    "Name":"SALAD MIX",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "AVACADOO S",
+    "Units": "1PC",
+    "Type": "vegetable",
+    "Priority": "Yes"
   },
   {
-    "Name":"CUT TENDLI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "AWLA",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "500 GM"
   },
   {
-    "Name":"CUT FRENCH BEANS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "BANANA ELAICHI",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "12 PC"
   },
   {
-    "Name":"CUT CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "BANANA ELAICHI",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "6 PC"
   },
   {
-    "Name":"CUT BHENDI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "BANANA GOLDEN",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "5PC"
   },
   {
-    "Name":"CUT BITTER GOURD",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "BANANA RAW 5PCS",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": ""
   },
   {
-    "Name":"GUNDA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1 PKT"
+    "Name": "BEANS",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "250GM"
   },
   {
-    "Name":"KAKDI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "BEET ROOT",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "500GM"
   },
   {
-    "Name":"KAKDI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500GM"
+    "Name": "BHINDI",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "500GM"
   },
   {
-    "Name":"KAKDI GREEN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"3PC"
+    "Name": "BHINDI",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "250GM"
   },
   {
-    "Name":"KAKDI GREEN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500GM"
+    "Name": "BITTER GOURD",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "500GM"
   },
   {
-    "Name":"KAKDI LONG",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500GM"
+    "Name": "BITTER GROUND",
+    "Units": "300 GM",
+    "Type": "vegetable",
+    "Priority": "Yes"
   },
   {
-    "Name":"KAKDI MADRAS S",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "BLUE BERRIES",
+    "Units": "1 PKT",
+    "Type": "vegetable",
+    "Priority": "Yes"
   },
   {
-    "Name":"KAKDI MADRAS L",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "BOR",
+    "Units": "1 PKT",
+    "Type": "vegetable",
+    "Priority": "Yes"
   },
   {
-    "Name":"KAKDI MADRAS M",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "BRINJAL BHARTA",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "750 GM"
   },
   {
-    "Name":"BITTER GOURD",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "BRINJAL BHARTA",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "300 GM"
   },
   {
-    "Name":"LEEK L",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1 PKT"
+    "Name": "BRINJAL BHARTA",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "600 GM"
   },
   {
-    "Name":"LEEK M",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1 PKT"
+    "Name": "BRINJAL BHARTA",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "950 GM"
   },
   {
-    "Name":"CHINESE SPRT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1 PKT"
+    "Name": "BRINJAL BHARTA",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "850 GM"
   },
   {
-    "Name":"CHINESE CABBAGE S",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "BRINJAL BHARTA",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "250 GM"
   },
   {
-    "Name":"CHINESE CABBAGE M",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "BRINJAL BHARTA",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "450 GM"
   },
   {
-    "Name":"CHILLY RED",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"100GM"
+    "Name": "BRINJAL BHARTA",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "800 GM"
   },
   {
-    "Name":"CHILLY BHAVNAGAR",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "BRINJAL BHARTA",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "400 GM"
   },
   {
-    "Name":"CHAULI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "BRINJAL BHARTA",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "550 GM"
   },
   {
-    "Name":"CAULIFLOWER S",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "BRINJAL BHARTA",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "350 GM"
   },
   {
-    "Name":"CAULIFLOWER M",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "BRINJAL BHARTA",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "500 GM"
   },
   {
-    "Name":"CAULIFLOWER L",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "BRINJAL BHARTA",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "650 GM"
   },
   {
-    "Name":"CARROT RED",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500GM"
+    "Name": "BRINJAL BHARTA",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "200 GM"
   },
   {
-    "Name":"CARROT RED",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
+    "Name": "BRINJAL BHARTA",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "700 GM"
   },
   {
-    "Name":"CARROT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500GM"
+    "Name": "BRINJAL BHARTA",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "900 GM"
   },
   {
-    "Name":"CARROT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "BRINJAL LONG",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "500GM"
   },
   {
-    "Name":"CAPSICUM YLW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"2PC"
+    "Name": "BRINJAL SMAL",
+    "Units": "250 GM",
+    "Type": "vegetable",
+    "Priority": "Yes"
   },
   {
-    "Name":"CAPSICUM RED",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"2PC"
+    "Name": "BRINJAL THORN",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "500GM"
   },
   {
-    "Name":"CAPSICUM RED & YLW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"2PC"
+    "Name": "BROCCOLI",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "550 GM"
   },
   {
-    "Name":"CAPSICUM",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500GM"
+    "Name": "BROCCOLI",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "300 GM"
   },
   {
-    "Name":"CAPSICUM",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "BROCCOLI",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "450 GM"
   },
   {
-    "Name":"CABBAGE S",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "BROCCOLI",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "500 GM"
   },
   {
-    "Name":"CABBAGE RED S",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "BROCCOLI",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "250 GM"
   },
   {
-    "Name":"CABBAGE RED M",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "BROCCOLI",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "350 GM"
   },
   {
-    "Name":"CABBAGE M",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "BROCCOLI",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "150 GM"
   },
   {
-    "Name":"CABBAGE L",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "BROCCOLI",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "200 GM"
   },
   {
-    "Name":"CABBAGE RED L",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "BROCCOLI",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "400 GM"
   },
   {
-    "Name":"BORCCOLI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "BROCKLI",
+    "Units": "600 GM",
+    "Type": "vegetable",
+    "Priority": "Yes"
   },
   {
-    "Name":"BROCCOLI S",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "CABBAGE",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "500 GM"
   },
   {
-    "Name":"BROCCOLI M",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "CABBAGE",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "600 GM"
   },
   {
-    "Name":"BROCCOLI L",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "CABBAGE",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "650 GM"
   },
   {
-    "Name":"BRINJAL THORN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500GM"
+    "Name": "CABBAGE",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "250 GM"
   },
   {
-    "Name":"BRINJAL THORN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "CABBAGE",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "750 GM"
   },
   {
-    "Name":"BRINJAL THAI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "CABBAGE",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "300 GM"
   },
   {
-    "Name":"BRINJAL SMALL",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "CABBAGE",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "950 GM"
   },
   {
-    "Name":"BRINJAL LONG",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500GM"
+    "Name": "CABBAGE",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "850 GM"
   },
   {
-    "Name":"BRINJAL LONG",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "CABBAGE",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "450 GM"
   },
   {
-    "Name":"BRINJAL BHARTA S",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "CABBAGE",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "900 GM"
   },
   {
-    "Name":"BRINJAL BHARTA M",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "CABBAGE",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "200 GM"
   },
   {
-    "Name":"BRINJAL BHARTA L",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "CABBAGE",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "350 GM"
   },
   {
-    "Name":"BITTER GOURD",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500GM"
+    "Name": "CABBAGE",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "800 GM"
   },
   {
-    "Name":"KARELA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "CABBAGE",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "700 GM"
   },
   {
-    "Name":"BHINDI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500GM"
+    "Name": "CABBAGE",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "550 GM"
   },
   {
-    "Name":"BHINDI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "CABBAGE",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "400 GM"
   },
   {
-    "Name":"BEET ROOT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500GM"
+    "Name": "CAPSICUM",
+    "Units": "350 GM",
+    "Type": "vegetable",
+    "Priority": "Yes"
   },
   {
-    "Name":"BEET ROOT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "CAPSICUM",
+    "Units": "300 GM",
+    "Type": "vegetable",
+    "Priority": "Yes"
   },
   {
-    "Name":"BEANS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "CAPSICUM RED & YLW",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "2PC"
   },
   {
-    "Name":"BATHUA SAAG",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "CARROT DELHI",
+    "Units": "500GM",
+    "Type": "vegetable",
+    "Priority": "Yes"
   },
   {
-    "Name":"BATHUA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "CARROT ENGLISH",
+    "Units": "500GM",
+    "Type": "vegetable",
+    "Priority": "Yes"
   },
   {
-    "Name":"BASIL",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "CAULIFLOWER",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "550 GM"
   },
   {
-    "Name":"BANANA RAW 3PCS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":""
+    "Name": "CAULIFLOWER",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "750 GM"
   },
   {
-    "Name":"BANANA RAW 5PCS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":""
+    "Name": "CAULIFLOWER",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "700 GM"
   },
   {
-    "Name":"BAMBOO SHOOT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "CAULIFLOWER",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "950 GM"
   },
   {
-    "Name":"PAPDI LILVA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "CAULIFLOWER",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "350 GM"
   },
   {
-    "Name":"PAPDI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "CAULIFLOWER",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "500 GM"
   },
   {
-    "Name":"PAPDI (VAL)",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "CAULIFLOWER",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "250 GM"
   },
   {
-    "Name":"PAPAYA RAW S",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "CAULIFLOWER",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "900 GM"
   },
   {
-    "Name":"PAPAYA RAW M",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "CAULIFLOWER",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "600 GM"
   },
   {
-    "Name":"PAPAYA RAW L",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "CAULIFLOWER",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "400 GM"
   },
   {
-    "Name":"PALAK",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "CAULIFLOWER",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "300 GM"
   },
   {
-    "Name":"PAK CHOY PKT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":""
+    "Name": "CAULIFLOWER",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "800 GM"
   },
   {
-    "Name":"PADVAL DESI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500GM"
+    "Name": "CAULIFLOWER",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "200 GM"
   },
   {
-    "Name":"PADVAL DESI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "CAULIFLOWER",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "450 GM"
   },
   {
-    "Name":"PADVAL LONG",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500GM"
+    "Name": "CAULIFLOWER",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "650 GM"
   },
   {
-    "Name":"ONION",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
+    "Name": "CAULIFLOWER",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "850 GM"
   },
   {
-    "Name":"MUSHROOM PKT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":""
+    "Name": "CELERY",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "1PKT"
   },
   {
-    "Name":"METHI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "CHAULI",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "250GM"
   },
   {
-    "Name":"MANGO RAW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "CHERRY",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "500 GM"
   },
   {
-    "Name":"MANGO RAW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500GM"
+    "Name": "CHERRY",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "250 GM"
   },
   {
-    "Name":"LETUCE LEAVES PKT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":""
+    "Name": "CHERRY IMP",
+    "Units": "250 GM",
+    "Type": "vegetable",
+    "Priority": "Yes"
   },
   {
-    "Name":"LEMON GRASS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "CHIKKO",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "9 PC"
   },
   {
-    "Name":"LEMON 5PCS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":""
+    "Name": "CHIKKO",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "6 PC"
   },
   {
-    "Name":"LALMAT SAAG",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "CHILLY ACHAR",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "500GM"
   },
   {
-    "Name":"LAL MATH PKT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":""
+    "Name": "CHILLY BHAVNAGAR",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "250GM"
   },
   {
-    "Name":"ICE BERG S",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "COCONUT WHOLE",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "1 PC"
   },
   {
-    "Name":"ICE BERG M",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "CORIANDER",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "1PKT"
   },
   {
-    "Name":"HALDI RAW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "CORN BABY",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "100GM"
   },
   {
-    "Name":"GREEN PEAS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "CORN BABY",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "200GM"
   },
   {
-    "Name":"GREEN PEAS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500GM"
+    "Name": "CURRY LEAVES",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "1PKT"
   },
   {
-    "Name":"GREEN MASALA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "CUSTARD APPLE",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "4 PC"
   },
   {
-    "Name":"GREEN CHILLY THICK",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "CUSTARD APPLE",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "2 PC"
   },
   {
-    "Name":"GREEN CHILLY",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"100GM"
+    "Name": "DATES",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "500 GM"
   },
   {
-    "Name":"GREEN CHILLY LIGHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"100GM"
+    "Name": "DATES",
+    "Units": "1 PKT",
+    "Type": "fruit",
+    "Priority": "Yes"
   },
   {
-    "Name":"GINGER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "DRAGAN FRUIT L",
+    "Units": "",
+    "Type": "fruit",
+    "Priority": "Yes"
   },
   {
-    "Name":"GINGER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"100GM"
+    "Name": "DRAGON FRUITS L",
+    "Units": "",
+    "Type": "fruit",
+    "Priority": "Yes"
   },
   {
-    "Name":"GAVAR",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "DRUM STICK PKT",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": ""
   },
   {
-    "Name":"GARLIC DESI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500GM"
+    "Name": "DUDHI",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "900 GM"
   },
   {
-    "Name":"GARLIC DESI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "DUDHI",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "300 GM"
   },
   {
-    "Name":"GARLIC CHINA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "DUDHI",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "650 GM"
   },
   {
-    "Name":"GALKA 4PCS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":""
+    "Name": "DUDHI",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "500 GM"
   },
   {
-    "Name":"GALKA 3PCS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":""
+    "Name": "DUDHI",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "350 GM"
   },
   {
-    "Name":"GALKA 5PCS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":""
+    "Name": "DUDHI",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "600 GM"
   },
   {
-    "Name":"GALKA 2PCS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":""
+    "Name": "DUDHI",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "850 GM"
   },
   {
-    "Name":"GALKA 1PCS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":""
+    "Name": "DUDHI",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "700 GM"
   },
   {
-    "Name":"DRUM STICK PKT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":""
+    "Name": "DUDHI",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "250 GM"
   },
   {
-    "Name":"DRUM STICK",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500GM"
+    "Name": "DUDHI",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "950 GM"
   },
   {
-    "Name":"DHUDHI S",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "DUDHI",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "750 GM"
   },
   {
-    "Name":"DHUDHI M",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "DUDHI",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "450 GM"
   },
   {
-    "Name":"DHUDHI L",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "DUDHI",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "400 GM"
   },
   {
-    "Name":"DHNAYA PKT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":""
+    "Name": "DUDHI",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "800 GM"
   },
   {
-    "Name":"CURRY LEAVES",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "DUDHI",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "550 GM"
   },
   {
-    "Name":"CORN BABY",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"100GM"
+    "Name": "FHASHAN FRUITS",
+    "Units": "1 PKT",
+    "Type": "fruit",
+    "Priority": "Yes"
   },
   {
-    "Name":"CORIANDER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "FRUITS BASKET TOKERI",
+    "Units": "",
+    "Type": "fruit",
+    "Priority": "Yes"
   },
   {
-    "Name":"ZUCCHINI M",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "GALKA 4PCS",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": ""
   },
   {
-    "Name":"ZUCCHINI B",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "GARLIC DESI",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "500GM"
   },
   {
-    "Name":"WHITE ONION",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
+    "Name": "GARLIC LIVES",
+    "Units": "1 PKT",
+    "Type": "vegetable",
+    "Priority": "Yes"
   },
   {
-    "Name":"WHEAT GRASS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "GARLIC SHELLED",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "100 GM"
   },
   {
-    "Name":"TUWAR",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "GAVAR",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "250GM"
   },
   {
-    "Name":"TURIYA 3PCS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":""
+    "Name": "GINGER",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "250GM"
   },
   {
-    "Name":"TURIYA 2PCS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":""
+    "Name": "GRAPES BLK INDIAN",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "500GM"
   },
   {
-    "Name":"TOMATO RAW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "GRAPES GREEN IMP",
+    "Units": "500 GM",
+    "Type": "fruit",
+    "Priority": "Yes"
   },
   {
-    "Name":"TOMATO",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500GM"
+    "Name": "GRAPES IMP BLACK",
+    "Units": "500 GM",
+    "Type": "fruit",
+    "Priority": "Yes"
   },
   {
-    "Name":"TOMATO",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
+    "Name": "GRAPES RED GLOBAL",
+    "Units": "500 GM",
+    "Type": "fruit",
+    "Priority": "Yes"
   },
   {
-    "Name":"TENDLI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500GM"
+    "Name": "GRAPES SONAKA",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "500 GM"
   },
   {
-    "Name":"TENDLI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "GREEN CHILLY",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "100GM"
   },
   {
-    "Name":"TENDA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500GM"
+    "Name": "GREEN CHILLY LIGHT",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "100GM"
   },
   {
-    "Name":"TENDA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "GREEN CHILLY THICK",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "250GM"
   },
   {
-    "Name":"SUVA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "GREEN HARA BHARA",
+    "Units": "250GM",
+    "Type": "vegetable",
+    "Priority": "Yes"
   },
   {
-    "Name":"SURAN S",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "GREEN PEAS",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "500GM"
   },
   {
-    "Name":"SURAN M",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "GREEN PEAS",
+    "Units": "250 GM",
+    "Type": "vegetable",
+    "Priority": "Yes"
   },
   {
-    "Name":"SURAN L",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "GROUNDNUT",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "500GM"
   },
   {
-    "Name":"SUGARCANE CUT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "GROUNDNUT",
+    "Units": "250 GM",
+    "Type": "vegetable",
+    "Priority": "Yes"
   },
   {
-    "Name":"SPRING ONION",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "GUAVA",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "6 PC"
   },
   {
-    "Name":"SHELGAM",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500GM"
+    "Name": "GUAVA",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "4 PC"
   },
   {
-    "Name":"SHELGAM",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "GUAVA IMPORTED",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "2 PC"
   },
   {
-    "Name":"SARSO SAAG",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "GUAVA IND",
+    "Units": "2 PC",
+    "Type": "fruit",
+    "Priority": "Yes"
   },
   {
-    "Name":"SALAD RED",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "GUAVA RED",
+    "Units": "6 PC",
+    "Type": "fruit",
+    "Priority": "Yes"
   },
   {
-    "Name":"SALAD LEAVES MIX PKT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":""
+    "Name": "GUAVA RED",
+    "Units": "4 PC",
+    "Type": "fruit",
+    "Priority": "Yes"
   },
   {
-    "Name":"SALAD GRN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "HALDI RAW",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "250GM"
   },
   {
-    "Name":"RAI SAAG",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "ICE BERG M",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "1PC"
   },
   {
-    "Name":"RADDISH 3PCS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":""
+    "Name": "ICE BERG S",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "1PC"
   },
   {
-    "Name":"RADDISH 2PCS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":""
+    "Name": "IMP GRAFRUITS",
+    "Units": "1 PC",
+    "Type": "fruit",
+    "Priority": "Yes"
   },
   {
-    "Name":"PUMPKIN WHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "IMP ORENGE",
+    "Units": "6PC",
+    "Type": "vegetable",
+    "Priority": "Yes"
   },
   {
-    "Name":"PUMPKIN WHT S",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "JACK FRUIT",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "250 GM"
   },
   {
-    "Name":"PUMPKIN WHT M",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "JAM FAL",
+    "Units": "1BOX",
+    "Type": "vegetable",
+    "Priority": "Yes"
   },
   {
-    "Name":"PUMPKIN WHT L",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "JAMOON",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "1 BOX"
   },
   {
-    "Name":"PUMPKIN RED WHOLE S",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "JAMUN",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "1PKT"
   },
   {
-    "Name":"PUMPKIN RED WHOLE M",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "KAKDI",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "500GM"
   },
   {
-    "Name":"PUMPKIN RED WHOLE L",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "KAKDI GREEN",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "500GM"
   },
   {
-    "Name":"PUMPKIN RED S",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "KAKDI LONG",
+    "Units": "500 GM",
+    "Type": "vegetable",
+    "Priority": "Yes"
   },
   {
-    "Name":"PUMPKIN RED M",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "KAKDI MADRAS L",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "1PC"
   },
   {
-    "Name":"PUMPKIN RED L",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "KAKDI MADRAS S",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "1PC"
   },
   {
-    "Name":"PUMPKIN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "KAMAL KAKADI",
+    "Units": "500 GM",
+    "Type": "vegetable",
+    "Priority": "Yes"
   },
   {
-    "Name":"POTATO SWEET",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500GM"
+    "Name": "KAMAL KAKADI",
+    "Units": "500GM",
+    "Type": "vegetable",
+    "Priority": "Yes"
   },
   {
-    "Name":"POTATO SWEET",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "KANDH LARGE",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "1PC"
   },
   {
-    "Name":"POTATO DUM ALOO",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500GM"
+    "Name": "KANDH MED",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "1PC"
   },
   {
-    "Name":"POTATO BABY",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500GM"
+    "Name": "KANDH SMALL",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "1PC"
   },
   {
-    "Name":"POTATO",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500GM"
+    "Name": "KANTOLA",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "500 GM"
   },
   {
-    "Name":"POTATO",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
+    "Name": "KANTOLA",
+    "Units": "250 GM",
+    "Type": "vegetable",
+    "Priority": "Yes"
   },
   {
-    "Name":"PHUDIN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500GM"
+    "Name": "KARELA",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "250GM"
   },
   {
-    "Name":"PARWAR",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500GM"
+    "Name": "KIWI",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "3 PC"
   },
   {
-    "Name":"PARSELY",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "KIWI",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "4 PC"
   },
   {
-    "Name":"PAPDI SURATI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "LEMON 5PCS",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": ""
   },
   {
-    "Name":"APPLE GREEN",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6 PC"
+    "Name": "LICHI INDIAN M",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "1PKT"
   },
   {
-    "Name":"APPLE GREEN",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"5 PC"
+    "Name": "LIME LIVES",
+    "Units": "1 PKT",
+    "Type": "vegetable",
+    "Priority": "Yes"
   },
   {
-    "Name":"APPLE GOLDEN IMPORTED",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6 PC"
+    "Name": "LOLO ROSO",
+    "Units": "1 PKT",
+    "Type": "vegetable",
+    "Priority": "Yes"
   },
   {
-    "Name":"APPLE GOLDEN",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6 PC"
+    "Name": "MADRAS ONION",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "500 GM"
   },
   {
-    "Name":"APPLE GOLDEN",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4 PC"
+    "Name": "MALTA",
+    "Units": "6 PC",
+    "Type": "vegetable",
+    "Priority": "Yes"
   },
   {
-    "Name":"APPLE GOLDEN",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"2 PC"
+    "Name": "MANGO ALPHANSO",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "4 PC"
   },
   {
-    "Name":"APPLE FUJI",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"3 PC"
+    "Name": "MANGO ALPHANSO (L)",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "1 DOZ"
   },
   {
-    "Name":"APPLE FUJI",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6 PC"
+    "Name": "MANGO ALPHANSO (L)",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "6 PC"
   },
   {
-    "Name":"APPLE FUJI",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4 PC"
+    "Name": "MANGO ALPHANSO (M)",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "6 PC"
   },
   {
-    "Name":"APPLE FUJI",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"2 PC"
+    "Name": "MANGO ALPHANSO (M)",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "1 DOZ"
   },
   {
-    "Name":"APPLE CHILLE",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6 PC"
+    "Name": "MANGO ALPHANSO (M)",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "2 DOZ"
   },
   {
-    "Name":"APPLE CHILLE",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"5 PC"
+    "Name": "MANGO ALPHANSO (S)",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "6 PC"
   },
   {
-    "Name":"APPLE CHILLE",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4 PC"
+    "Name": "MANGO ALPHANSO (S)",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "1 DOZ"
   },
   {
-    "Name":"APPLE BABY",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"500GM"
+    "Name": "MANGO BADAMI",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "4 PC"
   },
   {
-    "Name":"ANJEER",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6 PC"
+    "Name": "MANGO CHOASA",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "4 PC"
   },
   {
-    "Name":"ANJEER",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4 PC"
+    "Name": "MANGO DASERI",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "4 PC"
   },
   {
-    "Name":"WATERMELON",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "MANGO KESAR",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "4 PC"
   },
   {
-    "Name":"ORANGE KINO",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"5 PC"
+    "Name": "MANGO LALBAG",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "4 PC"
   },
   {
-    "Name":"TAMRIND SWEET BOX",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":""
+    "Name": "MANGO LALBAG",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "6PC"
   },
   {
-    "Name":"RASBERRY PACKET",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":""
+    "Name": "MANGO LANGDA",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "4 PC"
   },
   {
-    "Name":"PEACH IMPORTED",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4 PC"
+    "Name": "MANGO PAYRI",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "6PC"
   },
   {
-    "Name":"PEACH IMPORTED",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6 PC"
+    "Name": "MANGO PAYRI [L]",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "1 DOZ"
   },
   {
-    "Name":"PEACH IMPORTED",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"5 PC"
+    "Name": "MANGO RAW",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "500GM"
   },
   {
-    "Name":"GUAVA IMPORTED",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"2 PC"
+    "Name": "MANGO TOTA PURI",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "4PC"
   },
   {
-    "Name":"KARVANDA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "METHI",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "1PKT"
   },
   {
-    "Name":"JAMUN",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "MIX FRUIT",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "1 PKT"
   },
   {
-    "Name":"MANGO ALPHANSO (L)",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6 PC"
+    "Name": "MOSAMBI",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "6 PC"
   },
   {
-    "Name":"MANGO ALPHANSO (L)",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1 DOZ"
+    "Name": "MUSHROOM PKT",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": ""
   },
   {
-    "Name":"MANGO ALPHANSO (M)",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1 DOZ"
+    "Name": "MUSK MELON LARGE",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "1PC"
   },
   {
-    "Name":"MANGO ALPHANSO (S)",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1 DOZ"
+    "Name": "MUSK MELON MED",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "1PC"
   },
   {
-    "Name":"MANGO ALPHANSO (M)",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6 PC"
+    "Name": "MUSK MELON SMALL",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "1PC"
   },
   {
-    "Name":"MANGO ALPHANSO (S)",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6 PC"
+    "Name": "NAKA",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "500 GM"
   },
   {
-    "Name":"MANGO ALPHANSO",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4 PC"
+    "Name": "NASPATI",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "500 GM"
   },
   {
-    "Name":"MANGO ALPHANSO",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"5 PC"
+    "Name": "NETREEK",
+    "Units": "4 PC",
+    "Type": "vegetable",
+    "Priority": "Yes"
   },
   {
-    "Name":"MANGO ALPHANSO (L)",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"2 DOZ"
+    "Name": "ONION",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "1KG"
   },
   {
-    "Name":"MANGO ALPHANSO (M)",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"2 DOZ"
+    "Name": "ORANGE IMPORTED",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "4 PC"
   },
   {
-    "Name":"MANGO ALPHANSO (S)",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"2 DOZ"
+    "Name": "ORANGE IMPORTED",
+    "Units": "6PC",
+    "Type": "fruit",
+    "Priority": "Yes"
   },
   {
-    "Name":"APPLE AUSTRALIAN",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4 PC"
+    "Name": "ORANGE INDIAN",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "6 PC"
   },
   {
-    "Name":"APPLE AUSTRALIAN",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"5 PC"
+    "Name": "ORANGE KINO",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "6PC"
   },
   {
-    "Name":"APPLE AUSTRALIAN",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6 PC"
+    "Name": "ORENGE MINI",
+    "Units": "1PACKET",
+    "Type": "vegetable",
+    "Priority": "Yes"
   },
   {
-    "Name":"MANGO BADAMI",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"2 PC"
+    "Name": "PADVAL DESI",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "500GM"
   },
   {
-    "Name":"MANGO BADAMI",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4 PC"
+    "Name": "PADVAL LONG",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "500GM"
   },
   {
-    "Name":"MANGO BADAMI",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"5 PC"
+    "Name": "PAK CHOY PKT",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": ""
   },
   {
-    "Name":"MANGO BADAMI",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6 PC"
+    "Name": "PALAK",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "1PKT"
   },
   {
-    "Name":"MANGO DASERI",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6 PC"
+    "Name": "PAPAYA LARGE",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "1PC"
   },
   {
-    "Name":"MANGO LANGDA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6 PC"
+    "Name": "PAPAYA MEDIUM",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "1PC"
   },
   {
-    "Name":"MANGO LANGDA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4 PC"
+    "Name": "PAPAYA SMALL",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "1PC"
   },
   {
-    "Name":"MANGO LANGDA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"5 PC"
+    "Name": "PAPDI",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "250GM"
   },
   {
-    "Name":"MANGO KESAR",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6 PC"
+    "Name": "PAYARI MANGO",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "12 PC"
   },
   {
-    "Name":"MANGO KESAR",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4 PC"
+    "Name": "PEACH",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "6PC"
   },
   {
-    "Name":"GUAVA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"5 PC"
+    "Name": "PEACH",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "6 PC"
   },
   {
-    "Name":"GUAVA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4 PC"
+    "Name": "PEACH",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "4PC"
   },
   {
-    "Name":"GUAVA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"3 PC"
+    "Name": "PEACH IMP",
+    "Units": "1 KG",
+    "Type": "fruit",
+    "Priority": "Yes"
   },
   {
-    "Name":"GUAVA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6 PC"
+    "Name": "PEACH IMPORTED",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "4 PC"
   },
   {
-    "Name":"GROUNDNUT",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"500GM"
+    "Name": "PEACH IMPORTED",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "6 PC"
   },
   {
-    "Name":"GRAPES SONAKA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"500 GM"
+    "Name": "PEAR INDIAN",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "6 PC"
   },
   {
-    "Name":"GRAPES RED IMP",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"500 GM"
+    "Name": "PEAR INDIAN",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "4 PC"
   },
   {
-    "Name":"GRAPES RED IMP",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"250 GM"
+    "Name": "PEAR RED IMP",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "4 PC"
   },
   {
-    "Name":"GRAPES INDIAN MIX",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"500 GM"
+    "Name": "PEAR RED IMP",
+    "Units": "6 PC",
+    "Type": "fruit",
+    "Priority": "Yes"
   },
   {
-    "Name":"GRAPES INDIAN",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"500 GM"
+    "Name": "PEAR RED INDIAN",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "4PC"
   },
   {
-    "Name":"GRAPES INDIAN",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"250 GM"
+    "Name": "PEAR SOUTHAFRICA",
+    "Units": "4 PC",
+    "Type": "fruit",
+    "Priority": "Yes"
   },
   {
-    "Name":"GRAPES INDIAN",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1 KG"
+    "Name": "PEAR SOUTHAFRICA",
+    "Units": "6 PC",
+    "Type": "fruit",
+    "Priority": "Yes"
   },
   {
-    "Name":"GRAPES BLK IMP",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"500GM"
+    "Name": "PHANAS L",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "1PC"
   },
   {
-    "Name":"GRAPES BLK IMP",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "PHANAS M",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "1PC"
   },
   {
-    "Name":"GRAPES BLK IMP",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1 KG"
+    "Name": "PHANAS S",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "1PC"
   },
   {
-    "Name":"GRAPES BLK INDIAN",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"500GM"
+    "Name": "PIKADOR",
+    "Units": "250 GM",
+    "Type": "vegetable",
+    "Priority": "Yes"
   },
   {
-    "Name":"GRAPES BLK INDIAN",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"250GM"
+    "Name": "PLUM",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "500 GM"
   },
   {
-    "Name":"GRAPES IMPORTED",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"500 GM"
+    "Name": "PLUM IMPORTED",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "6 PC"
   },
   {
-    "Name":"GRAPES IMPORTED",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"250 GM"
+    "Name": "POMEGRANATE RED",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "2 PC"
   },
   {
-    "Name":"GRAPE FRUIT",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1 PC"
+    "Name": "POMEGRANATE RED",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "4 PC"
   },
   {
-    "Name":"DATES",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"500 GM"
+    "Name": "POMEGRANATE RED SHELLED",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "100 GM"
   },
   {
-    "Name":"DATES",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"250 GM"
+    "Name": "POMEGRANATE RED SHELLED",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "250 GM"
   },
   {
-    "Name":"CUSTARD APPLE",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4 PC"
+    "Name": "POODHINA",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "1PKT"
   },
   {
-    "Name":"CUSTARD APPLE",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"2 PC"
+    "Name": "POTATO",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "1KG"
   },
   {
-    "Name":"COCONUT WHOLE",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1 PC"
+    "Name": "POTATO DUM ALOO",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "500GM"
   },
   {
-    "Name":"CHIKKO",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"9 PC"
+    "Name": "POTATO NEW",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "1KG"
   },
   {
-    "Name":"CHIKKO",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6 PC"
+    "Name": "POTATO SWEET",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "500GM"
   },
   {
-    "Name":"CHIKKO",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"12 PC"
+    "Name": "POTETO SWEET",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "1KG"
   },
   {
-    "Name":"CHERRY",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"500 GM"
+    "Name": "PUMPKIN RED",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "250 GM"
   },
   {
-    "Name":"CHERRY",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"250 GM"
+    "Name": "PUMPKIN RED",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "700 GM"
   },
   {
-    "Name":"BOR",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"500 GM"
+    "Name": "PUMPKIN RED",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "950 GM"
   },
   {
-    "Name":"BOR",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1 KG"
+    "Name": "PUMPKIN RED",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "450 GM"
   },
   {
-    "Name":"BANANA RED",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"5 PC"
+    "Name": "PUMPKIN RED",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "850 GM"
   },
   {
-    "Name":"BANANA RED",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"3 PC"
+    "Name": "PUMPKIN RED",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "650 GM"
   },
   {
-    "Name":"BANANA GOLDEN",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"5PC"
+    "Name": "PUMPKIN RED",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "300 GM"
   },
   {
-    "Name":"BANANA ELAICHI",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6 PC"
+    "Name": "PUMPKIN RED",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "750 GM"
   },
   {
-    "Name":"BANANA ELAICHI",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"12 PC"
+    "Name": "PUMPKIN RED",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "350 GM"
   },
   {
-    "Name":"BANANA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6 PC"
+    "Name": "PUMPKIN RED",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "800 GM"
   },
   {
-    "Name":"BANANA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"12 PC"
+    "Name": "PUMPKIN RED",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "400 GM"
   },
   {
-    "Name":"AVLA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"250 GM"
+    "Name": "PUMPKIN RED",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "550 GM"
   },
   {
-    "Name":"APPLE WASHINGTON",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"2 PC"
+    "Name": "PUMPKIN RED",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "500 GM"
   },
   {
-    "Name":"APPLE WASHINGTON",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6 PC"
+    "Name": "PUMPKIN RED",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "900 GM"
   },
   {
-    "Name":"APPLE WASHINGTON",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"5 PC"
+    "Name": "PUMPKIN RED",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "600 GM"
   },
   {
-    "Name":"APPLE WASHINGTON",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4 PC"
+    "Name": "PUMPKIN WHITE",
+    "Units": "200 GM",
+    "Type": "vegetable",
+    "Priority": "Yes"
   },
   {
-    "Name":"APPLE NEWZEALAND",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"5 PC"
+    "Name": "PUMPKIN WHT",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "350 GM"
   },
   {
-    "Name":"APPLE NEWZEALAND",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4 PC"
+    "Name": "PUMPKIN WHT",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "400 GM"
   },
   {
-    "Name":"APPLE INDIAN",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6 PC"
+    "Name": "PUMPKIN WHT",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "450 GM"
   },
   {
-    "Name":"APPLE INDIAN",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"5 PC"
+    "Name": "PUMPKIN WHT",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "250 GM"
   },
   {
-    "Name":"APPLE INDIAN",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4 PC"
+    "Name": "PUMPKIN WHT",
+    "Units": "300 GM",
+    "Type": "vegetable",
+    "Priority": "Yes"
   },
   {
-    "Name":"APPLE INDIAN",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"2 PC"
+    "Name": "RADDISH 3PCS",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": ""
   },
   {
-    "Name":"APPLE NEWZEALAND",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6PC"
+    "Name": "RAM FAL",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "4PC"
   },
   {
-    "Name":"WATERMELON CHINA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "RAM FAL",
+    "Units": "2PC",
+    "Type": "vegetable",
+    "Priority": "Yes"
   },
   {
-    "Name":"WATERMELON CUT L",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "RASBERRY PACKET",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": ""
   },
   {
-    "Name":"WATERMELON CUT M",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "ROSE I M P",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "4 PC"
   },
   {
-    "Name":"WATERMELON CUT S",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "RUM BUTAN",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "1PKT"
   },
   {
-    "Name":"STRABERRY BIG",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":""
+    "Name": "SALAD GRN",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "1PKT"
   },
   {
-    "Name":"POMEGRANATE RED SHELLED",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"250 GM"
+    "Name": "SALAD RED",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "1PKT"
   },
   {
-    "Name":"POMEGRANATE RED SHELLED",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"100 GM"
+    "Name": "SARSO SAAG",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "1PKT"
   },
   {
-    "Name":"POMEGRANATE RED",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"5 PC"
+    "Name": "SHELGAM",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "500GM"
   },
   {
-    "Name":"POMEGRANATE RED",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4 PC"
+    "Name": "SHIMARAN",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "4 PC"
   },
   {
-    "Name":"POMEGRANATE RED",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"2 PC"
+    "Name": "SIMARAN FRUITS",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "4PC"
   },
   {
-    "Name":"POMEGRANATE PINK",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"2 PC"
+    "Name": "SIMARAN FRUITS",
+    "Units": "6PC",
+    "Type": "fruit",
+    "Priority": "Yes"
   },
   {
-    "Name":"PLUM IMPORTED",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6 PC"
+    "Name": "SINGHADA",
+    "Units": "1PKT",
+    "Type": "vegetable",
+    "Priority": "Yes"
   },
   {
-    "Name":"PLUM IMPORTED",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"3 PC"
+    "Name": "SPRING ONION",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "1PKT"
   },
   {
-    "Name":"PLUM IMPORTED",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4 PC"
+    "Name": "SPROUT CHANA",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "1PKT"
   },
   {
-    "Name":"PLUM",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"500 GM"
+    "Name": "SPROUT MATKI",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "1PKT"
   },
   {
-    "Name":"PLUM",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"250 GM"
+    "Name": "SPROUT MUNG",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "1PKT"
   },
   {
-    "Name":"PINEAPPLE WHOLE",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "STRABERRY",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "1BOX"
   },
   {
-    "Name":"PINEAPPLE CUT",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1BOX"
+    "Name": "STRABERRY",
+    "Units": "1 PACKET",
+    "Type": "fruit",
+    "Priority": "Yes"
   },
   {
-    "Name":"PEAR RED IMP",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4 PC"
+    "Name": "SURAN",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "450 GM"
   },
   {
-    "Name":"PEAR RED IMP",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"2 PC"
+    "Name": "SURAN",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "850 GM"
   },
   {
-    "Name":"PEAR INDIAN",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6 PC"
+    "Name": "SURAN",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "550 GM"
   },
   {
-    "Name":"PEAR INDIAN",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4 PC"
+    "Name": "SURAN",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "500 GM"
   },
   {
-    "Name":"PEAR IMPORTED",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4 PC"
+    "Name": "SURAN",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "350 GM"
   },
   {
-    "Name":"PEAR IMPORTED",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6 PC"
+    "Name": "SURAN",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "200 GM"
   },
   {
-    "Name":"PEAR CHINA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6 PC"
+    "Name": "SURAN",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "800 GM"
   },
   {
-    "Name":"PEAR CHINA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"5 PC"
+    "Name": "SURAN",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "400 GM"
   },
   {
-    "Name":"PEAR CHINA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4 PC"
+    "Name": "SURAN",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "600 GM"
   },
   {
-    "Name":"PEACH",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6 PC"
+    "Name": "SURAN",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "650 GM"
   },
   {
-    "Name":"PAPAYA SMALL",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "SURAN",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "250 GM"
   },
   {
-    "Name":"PAPAYA MEDIUM",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "SURAN",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "700 GM"
   },
   {
-    "Name":"PAPAYA LARGE",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "SURAN",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "750 GM"
   },
   {
-    "Name":"ORANGE INDIAN",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6 PC"
+    "Name": "SURAN",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "300 GM"
   },
   {
-    "Name":"ORANGE INDIAN",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4 PC"
+    "Name": "SURAN L",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "1PKT"
   },
   {
-    "Name":"ORANGE IMPORTED",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4 PC"
+    "Name": "SURAN M",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "1PKT"
   },
   {
-    "Name":"ORANGE IMPORTED",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"5 PC"
+    "Name": "SURAN S",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "1PKT"
   },
   {
-    "Name":"NASPATI",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"500 GM"
+    "Name": "SUVA",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "1PKT"
   },
   {
-    "Name":"NAKA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"500 GM"
+    "Name": "TAMRIND SWEET BOX",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": ""
   },
   {
-    "Name":"NAKA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"250 GM"
+    "Name": "TENDA",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "500GM"
   },
   {
-    "Name":"MUSK MELON SMALL",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "TENDA",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "250GM"
   },
   {
-    "Name":"MUSK MELON MED",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "TENDLI",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "500GM"
   },
   {
-    "Name":"MUSK MELON LARGE",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1PC"
+    "Name": "TOMATO",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "1KG"
   },
   {
-    "Name":"MOSAMBI",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6 PC"
+    "Name": "TOMATO CHERRY",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "100GM"
   },
   {
-    "Name":"MOSAMBI",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4 PC"
+    "Name": "TOMATO RAW",
+    "Units": "500 GM",
+    "Type": "vegetable",
+    "Priority": "Yes"
   },
   {
-    "Name":"MIX FRUIT CUT",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1PKT"
+    "Name": "TOMETO CHERRY",
+    "Units": "200 GM",
+    "Type": "vegetable",
+    "Priority": "Yes"
   },
   {
-    "Name":"MIX FRUIT",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1 PKT"
+    "Name": "TURIYA 3PCS",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": ""
   },
   {
-    "Name":"LITCHI IMP",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1 BOX"
+    "Name": "WATERMELON",
+    "Type": "fruit",
+    "Priority": "Yes",
+    "Units": "1PC"
   },
   {
-    "Name":"KIWI",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4 PC"
+    "Name": "ZUCCHINI B",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "1PC"
   },
   {
-    "Name":"KIWI",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"3 PC"
+    "Name": "ZUCCHINI M",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "1PC"
   },
   {
-    "Name":"KIWI",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"2 PC"
+    "Name": "ZUCCHINI YLW",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "1KG"
   },
   {
-    "Name":"BADAM GREEN PKT",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":""
+    "Name": "ZUCCHINI.S",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": ""
   },
   {
-    "Name":"MANGO DASERI",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4 PC"
+    "Name": "ZUCHHINI GREEN",
+    "Units": "250 GM",
+    "Type": "vegetable",
+    "Priority": "Yes"
   },
   {
-    "Name":"CHERRY",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1 KG"
-  },
-  {
-    "Name":"POODHINA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
-  },
-  {
-    "Name":"APPLE FUJI",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"5PC"
-  },
-  {
-    "Name":"PEACH",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6PC"
-  },
-  {
-    "Name":"LICHI INDIAN L",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1PKT"
-  },
-  {
-    "Name":"LICHI INDIAN M",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1PKT"
-  },
-  {
-    "Name":"LICHI INDIAN S",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1PKT"
-  },
-  {
-    "Name":"TRIAL PRODUCT",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1 PKT"
-  },
-  {
-    "Name":"PEAR IMP",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"5 PC"
-  },
-  {
-    "Name":"KAMAL KAKADI     L",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
-  },
-  {
-    "Name":"KAMAL KAKADI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"POTETO DUM ALLOO",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"POTETO SWEET",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"POMEGRANATE RED",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6PC"
-  },
-  {
-    "Name":"APPLE BABY",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1PKT"
-  },
-  {
-    "Name":"CORIANDER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"CORIANDER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500GM"
-  },
-  {
-    "Name":"POTETO DUM ALOO",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"METHI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"PALLAK",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"BHINDI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"CHERRY",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"100 GM"
-  },
-  {
-    "Name":"PEAR INDIAN",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"2PC"
-  },
-  {
-    "Name":"PEAR INDIAN",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"5PC"
-  },
-  {
-    "Name":"CELERI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500 GM"
-  },
-  {
-    "Name":"CAPSICUM",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"BANANA LIVES",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
-  },
-  {
-    "Name":"RED CHILI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"GINGER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1 KG"
-  },
-  {
-    "Name":"MOSAMBI  BY 1GET 1 FREE",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6PC"
-  },
-  {
-    "Name":"INDIAN   APPLE  BY 1 GET 1 FREE",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6PC"
-  },
-  {
-    "Name":"GREEN CHILLI",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"ORENGE  BY 1 GET 1 FREE",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6PC"
-  },
-  {
-    "Name":"ANJEER",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"9PC"
-  },
-  {
-    "Name":"IMPORTED   FRUIT  BASKET",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":""
-  },
-  {
-    "Name":"ARBI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"AMERICAN  CORNS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"GREEN PEA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"GARLIC CHINA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"KANDH",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"PHANAS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"CELERY",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"SALAD  LEAVES",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"TOMATO CHERRY",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"CAULIFLOWER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"SPROUT   MUNG",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"SPROUT  MATKI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"SPROUT  CHANA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"SAMBHAR",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"SALAD",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"TENDLI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"FRENCH  BEANS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"BITTER GOURD",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"GUNDA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"KAKDI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"KAKDI GREEN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"KAKDI  LONG",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"KAKDI  MADRAS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"LEEK",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"CHINESE  SPRT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"CHINESE   CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"CHILLY   RED",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"CHILLY BHAVNAGAR",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"CHAULI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"CAPSICUM  RED  YLW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"CARROT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"CABBAGE  RED",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"BROCCOLI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"BRINJAL  THORN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"BRINJAL THAI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"BRINJAL  SMALL",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"BRINJAL   LONG",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"BRINJAL   BHARTA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"BEET  ROOT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"BASIL",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"BANANA   RAW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"12PC"
-  },
-  {
-    "Name":"BANANA RAW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"BAMBOO  SHOOT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
-  },
-  {
-    "Name":"PAPDI LILVA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"PAPDI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"PAPDI [VAL]",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"PAPAYA RAW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"PALAK",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1BANCH"
-  },
-  {
-    "Name":"PAKCHOY",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"PADVAL DESI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"PADVAL LONG",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"METHI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1BANCH"
-  },
-  {
-    "Name":"MANGO RAW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"LEMON",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"LALMATSAAG",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1BANCH"
-  },
-  {
-    "Name":"ICE BERG",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"HALDI RAW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"GREEN PEAS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"GREEN CHILLI THICK",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"GINGER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"GAVAR",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"MUSHROOM",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"GARLIC DESI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"GALKA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"DRUM STICK",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"DHUDHI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"SOWA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1BANCH"
-  },
-  {
-    "Name":"CORN BABY",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"200GM"
-  },
-  {
-    "Name":"ZUCCINI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"TURIYA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"TOMETO RAW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"TENDA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"SUWA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1 BANCH"
-  },
-  {
-    "Name":"SURN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"SELGAM",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"SARSO SAAG",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1BANCH"
-  },
-  {
-    "Name":"SALAD RED",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"SALAD GRN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"RADDISH",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1 BANCH"
-  },
-  {
-    "Name":"RED PUMPKIN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"WHT PUMPKIN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"WHOLE PUMPKIN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"PAPDI SURATI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"POODHINA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1BANCH"
-  },
-  {
-    "Name":"PARSELY",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"SPRING  ONION",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1BANCH"
-  },
-  {
-    "Name":"CORIANDER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1BANCH"
-  },
-  {
-    "Name":"BEANS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"AVLA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"BRINJAL LONG GREEN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"MONGERI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"MONGERI RED",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"GREEN CHILLI PIKADOR",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"BRINJAL THORN GREEN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"CURRY  LEVEAS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"DUDHI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250 GM"
-  },
-  {
-    "Name":"DUDHI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"300 GM"
-  },
-  {
-    "Name":"DUDHI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"350 GM"
-  },
-  {
-    "Name":"DUDHI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"400 GM"
-  },
-  {
-    "Name":"DUDHI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"450 GM"
-  },
-  {
-    "Name":"DUDHI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500 GM"
-  },
-  {
-    "Name":"DUDHI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"550 GM"
-  },
-  {
-    "Name":"DUDHI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"600 GM"
-  },
-  {
-    "Name":"DUDHI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"650 GM"
-  },
-  {
-    "Name":"DUDHI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"700 GM"
-  },
-  {
-    "Name":"DUDHI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"750 GM"
-  },
-  {
-    "Name":"DUDHI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"800 GM"
-  },
-  {
-    "Name":"DUDHI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"850 GM"
-  },
-  {
-    "Name":"DUDHI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"900 GM"
-  },
-  {
-    "Name":"DUDHI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"950 GM"
-  },
-  {
-    "Name":"DUDHI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1100 GM"
-  },
-  {
-    "Name":"DUDHI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1050 GM"
-  },
-  {
-    "Name":"CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250 GM"
-  },
-  {
-    "Name":"CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"300 GM"
-  },
-  {
-    "Name":"CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"350 GM"
-  },
-  {
-    "Name":"CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"400 GM"
-  },
-  {
-    "Name":"CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"450 GM"
-  },
-  {
-    "Name":"CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500 GM"
-  },
-  {
-    "Name":"CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"550 GM"
-  },
-  {
-    "Name":"CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"600 GM"
-  },
-  {
-    "Name":"CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"650 GM"
-  },
-  {
-    "Name":"CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"700 GM"
-  },
-  {
-    "Name":"CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"750 GM"
-  },
-  {
-    "Name":"CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"800 GM"
-  },
-  {
-    "Name":"CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"850 GM"
-  },
-  {
-    "Name":"CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"900 GM"
-  },
-  {
-    "Name":"CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"950 GM"
-  },
-  {
-    "Name":"CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1100 GM"
-  },
-  {
-    "Name":"CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1050 GM"
-  },
-  {
-    "Name":"CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1200 GM"
-  },
-  {
-    "Name":"CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1300 GM"
-  },
-  {
-    "Name":"CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1350 GM"
-  },
-  {
-    "Name":"CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1400 GM"
-  },
-  {
-    "Name":"CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1500 GM"
-  },
-  {
-    "Name":"CAULIFLOWER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250 GM"
-  },
-  {
-    "Name":"CAULIFLOWER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"300 GM"
-  },
-  {
-    "Name":"CAULIFLOWER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"350 GM"
-  },
-  {
-    "Name":"CAULIFLOWER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"400 GM"
-  },
-  {
-    "Name":"CAULIFLOWER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"450 GM"
-  },
-  {
-    "Name":"CAULIFLOWER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500 GM"
-  },
-  {
-    "Name":"CAULIFLOWER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"600 GM"
-  },
-  {
-    "Name":"CAULIFLOWER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"650 GM"
-  },
-  {
-    "Name":"CAULIFLOWER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"700 GM"
-  },
-  {
-    "Name":"CAULIFLOWER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"750 GM"
-  },
-  {
-    "Name":"CAULIFLOWER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"800 GM"
-  },
-  {
-    "Name":"CAULIFLOWER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"850 GM"
-  },
-  {
-    "Name":"CAULIFLOWER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"550 GM"
-  },
-  {
-    "Name":"CAULIFLOWER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"900 GM"
-  },
-  {
-    "Name":"CAULIFLOWER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"950 GM"
-  },
-  {
-    "Name":"CAULIFLOWER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1100 GM"
-  },
-  {
-    "Name":"CAULIFLOWER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1050 GM"
-  },
-  {
-    "Name":"CAULIFLOWER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1200 GM"
-  },
-  {
-    "Name":"CAULI FLOWER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1250 GM"
-  },
-  {
-    "Name":"CAULI FLOWER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1300 GM"
-  },
-  {
-    "Name":"CAULI FLOWER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1350 GM"
-  },
-  {
-    "Name":"CAULIFLOWER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1400 GM"
-  },
-  {
-    "Name":"CAULI FLOWER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1450 GM"
-  },
-  {
-    "Name":"CAULIFLOWER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1500 GM"
-  },
-  {
-    "Name":"BRINJAL BHARTA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250 GM"
-  },
-  {
-    "Name":"BRINJAL BHARTA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"300 GM"
-  },
-  {
-    "Name":"BRINJAL BHARTA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"350 GM"
-  },
-  {
-    "Name":"BRINJAL BHARTA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"400 GM"
-  },
-  {
-    "Name":"BRINJAL BHARTA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"450 GM"
-  },
-  {
-    "Name":"BRINJAL BHARTA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500 GM"
-  },
-  {
-    "Name":"BRINJAL BHARTA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"550 GM"
-  },
-  {
-    "Name":"BRINJAL BHARTA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"600 GM"
-  },
-  {
-    "Name":"BRINJAL BHARTA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"650 GM"
-  },
-  {
-    "Name":"BRINJAL BHARTA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"700 GM"
-  },
-  {
-    "Name":"BRINJAL BHARTA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"750 GM"
-  },
-  {
-    "Name":"BRINJAL BHARTA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"800 GM"
-  },
-  {
-    "Name":"BRINJAL BHARTA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"850 GM"
-  },
-  {
-    "Name":"BRINJAL BHARTA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"900 GM"
-  },
-  {
-    "Name":"BRINJAL BHARTA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"950 GM"
-  },
-  {
-    "Name":"BRINJAL BHARTA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1100 GM"
-  },
-  {
-    "Name":"BRINJAL BHARTA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1050 GM"
-  },
-  {
-    "Name":"BRINJAL BHARTA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1200 GM"
-  },
-  {
-    "Name":"BRINJAL BHARTA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1250 GM"
-  },
-  {
-    "Name":"BRINJAL BHARTA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1300 GM"
-  },
-  {
-    "Name":"PUMPKIN RED",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250 GM"
-  },
-  {
-    "Name":"PUMPKIN RED",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"300 GM"
-  },
-  {
-    "Name":"PUMPKIN RED",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"350 GM"
-  },
-  {
-    "Name":"PUMPKIN RED",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"400 GM"
-  },
-  {
-    "Name":"PUM PKIN RED",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"450 GM"
-  },
-  {
-    "Name":"PUMPKIN RED",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500 GM"
-  },
-  {
-    "Name":"PUMPKIN RED",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"550 GM"
-  },
-  {
-    "Name":"PUMPKIN RED",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"600 GM"
-  },
-  {
-    "Name":"PUMPKIN RED",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"650 GM"
-  },
-  {
-    "Name":"PUMPKIN RED",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"700 GM"
-  },
-  {
-    "Name":"PUMPKIN RED",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"750 GM"
-  },
-  {
-    "Name":"PUMPKIN RED",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"800 GM"
-  },
-  {
-    "Name":"PUMPKIN RED",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"850 GM"
-  },
-  {
-    "Name":"PUMPKIN RED",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"900 GM"
-  },
-  {
-    "Name":"PUMPKIN RED",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"950 GM"
-  },
-  {
-    "Name":"PUMPKIN RED",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1100 GM"
-  },
-  {
-    "Name":"PUMPKIN RED",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1050 GM"
-  },
-  {
-    "Name":"PUMPKIN RED1250 GM",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":""
-  },
-  {
-    "Name":"PUMPKIN RED",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1200 GM"
-  },
-  {
-    "Name":"PUMOKIN RED",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1300 GM"
-  },
-  {
-    "Name":"PAPAYA RAW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250 GM"
-  },
-  {
-    "Name":"PAPAYA RAW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"300 GM"
-  },
-  {
-    "Name":"PAPAYA RAW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"350 GM"
-  },
-  {
-    "Name":"PAPAYA RAW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"400 GM"
-  },
-  {
-    "Name":"PAPAYA RAW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"450 GM"
-  },
-  {
-    "Name":"PAPAYA RAW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500 GM"
-  },
-  {
-    "Name":"PAPAYA RAW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"550 GM"
-  },
-  {
-    "Name":"PAPAYA RAW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"600 GM"
-  },
-  {
-    "Name":"PAPAYA RAW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"650 GM"
-  },
-  {
-    "Name":"PAPAYA RAW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"700 GM"
-  },
-  {
-    "Name":"PAPAYA RAW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"750 GM"
-  },
-  {
-    "Name":"PAPAYA RAW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"800 GM"
-  },
-  {
-    "Name":"PAPAYA RAW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"850 GM"
-  },
-  {
-    "Name":"PAPAYA RAW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"900 GM"
-  },
-  {
-    "Name":"PAPAYA RAW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"950 GM"
-  },
-  {
-    "Name":"PAPAYA RAW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1100 GM"
-  },
-  {
-    "Name":"PAPAYA RAW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1050 GM"
-  },
-  {
-    "Name":"PAPAYA RAW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1200 GM"
-  },
-  {
-    "Name":"PAPAYA RAW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1250 GM"
-  },
-  {
-    "Name":"PAPAYA RAW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1300 GM"
-  },
-  {
-    "Name":"PAPAYA RAW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1350 GM"
-  },
-  {
-    "Name":"PAPAYA RAW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1400 GM"
-  },
-  {
-    "Name":"PAPAYA RAW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1450 GM"
-  },
-  {
-    "Name":"PAPAYA RAW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1500 GM"
-  },
-  {
-    "Name":"SNOW PIEC",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
-  },
-  {
-    "Name":"BROCCOLI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"100 GM"
-  },
-  {
-    "Name":"BROCCOLI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"150 GM"
-  },
-  {
-    "Name":"BROCCOLI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"200 GM"
-  },
-  {
-    "Name":"BROCCOLI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250 GM"
-  },
-  {
-    "Name":"BROCCOLI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"300 GM"
-  },
-  {
-    "Name":"BROCCOLI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"350 GM"
-  },
-  {
-    "Name":"BROCCOLI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"400 GM"
-  },
-  {
-    "Name":"BROCCOLI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"450 GM"
-  },
-  {
-    "Name":"BROCCOLI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500 GM"
-  },
-  {
-    "Name":"BROCCOLI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"550 GM"
-  },
-  {
-    "Name":"BROCCOLI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"600 GM"
-  },
-  {
-    "Name":"BROCCOLI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"650 GM"
-  },
-  {
-    "Name":"BROCCOLI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"700 GM"
-  },
-  {
-    "Name":"BROCCOLI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"750 GM"
-  },
-  {
-    "Name":"PAPAYA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"250 GM"
-  },
-  {
-    "Name":"PAPAYA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"300 GM"
-  },
-  {
-    "Name":"PAPAYA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"350 GM"
-  },
-  {
-    "Name":"PAPAYA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"400 GM"
-  },
-  {
-    "Name":"PAPAYA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"450 GM"
-  },
-  {
-    "Name":"PAPAYA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"500 GM"
-  },
-  {
-    "Name":"PAPAYA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"550 GM"
-  },
-  {
-    "Name":"PAPAYA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"600 GM"
-  },
-  {
-    "Name":"PAPAYA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"650 GM"
-  },
-  {
-    "Name":"PAPAYA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"700 GM"
-  },
-  {
-    "Name":"PAPAYA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"750 GM"
-  },
-  {
-    "Name":"PAPAYA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"800 GM"
-  },
-  {
-    "Name":"PAPAYA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"850 GM"
-  },
-  {
-    "Name":"PAPAYA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"900 GM"
-  },
-  {
-    "Name":"PAPAYA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"950 GM"
-  },
-  {
-    "Name":"PAPAYA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1KGS"
-  },
-  {
-    "Name":"PAPAYA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1100 GM"
-  },
-  {
-    "Name":"PAPAYA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1200 GM"
-  },
-  {
-    "Name":"PAPAYA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1250 GM"
-  },
-  {
-    "Name":"PAPAYA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1300 GM"
-  },
-  {
-    "Name":"PAPAYA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1350 GM"
-  },
-  {
-    "Name":"PAPAYA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1400 GM"
-  },
-  {
-    "Name":"PAPAYA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1500 GM"
-  },
-  {
-    "Name":"PAPAYA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1550 GM"
-  },
-  {
-    "Name":"PAPAYA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1600 GM"
-  },
-  {
-    "Name":"PAPAYA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1650 GM"
-  },
-  {
-    "Name":"PAPAYA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1700 GM"
-  },
-  {
-    "Name":"PAPAYA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1750 GM"
-  },
-  {
-    "Name":"PAPAYA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1800 GM"
-  },
-  {
-    "Name":"PAPAYA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1850 GM"
-  },
-  {
-    "Name":"PAPAYA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1900 GM"
-  },
-  {
-    "Name":"PAPAYA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1950 GM"
-  },
-  {
-    "Name":"PAPAYA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"2 KGS"
-  },
-  {
-    "Name":"PAPAYA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"2250 GM"
-  },
-  {
-    "Name":"PUMPKIN WHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250 GM"
-  },
-  {
-    "Name":"PUMPKIN  WHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"300 GM"
-  },
-  {
-    "Name":"PUMPKIN WHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"350 GM"
-  },
-  {
-    "Name":"PUMPKIN WHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"400 GM"
-  },
-  {
-    "Name":"PUMPKIN WHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"450 GM"
-  },
-  {
-    "Name":"PUMPKIN WHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500 GM"
-  },
-  {
-    "Name":"PUMPKIN WHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"600 GM"
-  },
-  {
-    "Name":"PUMPKIN WHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"700 GM"
-  },
-  {
-    "Name":"PUMPKIN WHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"750 GM"
-  },
-  {
-    "Name":"PUMPKIN WHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"800 GM"
-  },
-  {
-    "Name":"PUMPKIN WHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"850 GM"
-  },
-  {
-    "Name":"PUMPKIN WHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"900 GM"
-  },
-  {
-    "Name":"PUMPKIN WHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"950 GM"
-  },
-  {
-    "Name":"PUMPKIN WHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KGS"
-  },
-  {
-    "Name":"PUMPKIN WHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1100 GM"
-  },
-  {
-    "Name":"PUMPKIN WHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1200 GM"
-  },
-  {
-    "Name":"PUMPKIN WHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1250 GM"
-  },
-  {
-    "Name":"PUMPKIN WHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1300 GM"
-  },
-  {
-    "Name":"PUMPKIN WHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1350 GM"
-  },
-  {
-    "Name":"PUMPKIN WHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1400 GM"
-  },
-  {
-    "Name":"PUMPKIN WHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1450 GM"
-  },
-  {
-    "Name":"PUMPKIN WHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1500 GM"
-  },
-  {
-    "Name":"PUMPKIN WHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1550 GM"
-  },
-  {
-    "Name":"PUMPKIN WHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1600 GM"
-  },
-  {
-    "Name":"PUMPKIN WHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1650 GM"
-  },
-  {
-    "Name":"PUMPKIN WHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1700 GM"
-  },
-  {
-    "Name":"PUMPKIN WHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1750 GM"
-  },
-  {
-    "Name":"PUMPKIN WHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1800 GM"
-  },
-  {
-    "Name":"PUMPKIN WHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1850 GM"
-  },
-  {
-    "Name":"PUMPKIN WHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1900 GM"
-  },
-  {
-    "Name":"PUMPKIN WHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1950 GM"
-  },
-  {
-    "Name":"PUMPKIN WHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"2 KGS"
-  },
-  {
-    "Name":"PUMPKIN WHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"2100 GM"
-  },
-  {
-    "Name":"PUMPKIN WHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"2200 GM"
-  },
-  {
-    "Name":"PUMPKINWHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"2300 GM"
-  },
-  {
-    "Name":"PUMPKIN WHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"2400 GM"
-  },
-  {
-    "Name":"PUMPKIN WHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"2500 GM"
-  },
-  {
-    "Name":"CHINESE CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250 GM"
-  },
-  {
-    "Name":"CHINESE CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"300 GM"
-  },
-  {
-    "Name":"CHINESE CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"350 GM"
-  },
-  {
-    "Name":"CHINESE CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"400 GM"
-  },
-  {
-    "Name":"CHINESE CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"450 GM"
-  },
-  {
-    "Name":"CHINESE CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500 GM"
-  },
-  {
-    "Name":"CHINESE CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"550 GM"
-  },
-  {
-    "Name":"CHINESE CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"600 GM"
-  },
-  {
-    "Name":"CHINESE CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"650 GM"
-  },
-  {
-    "Name":"CHINESE CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"700 GM"
-  },
-  {
-    "Name":"CHINESE CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"750 GM"
-  },
-  {
-    "Name":"CHINESE CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"800 GM"
-  },
-  {
-    "Name":"CHINESE CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"850 GM"
-  },
-  {
-    "Name":"CHINESE CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"900 GM"
-  },
-  {
-    "Name":"CHINESE CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"950 GM"
-  },
-  {
-    "Name":"CHINESE CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KGS"
-  },
-  {
-    "Name":"CHINESE CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1100 GM"
-  },
-  {
-    "Name":"CHINESE CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1200 GM"
-  },
-  {
-    "Name":"CHINESE CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1250 GM"
-  },
-  {
-    "Name":"SURAN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"200 GM"
-  },
-  {
-    "Name":"SURAN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250 GM"
-  },
-  {
-    "Name":"SURAN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"300 GM"
-  },
-  {
-    "Name":"SURAN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"350 GM"
-  },
-  {
-    "Name":"SURAN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"400 GM"
-  },
-  {
-    "Name":"SURAN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"450 GM"
-  },
-  {
-    "Name":"SURAN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500 GM"
-  },
-  {
-    "Name":"SURAN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"550 GM"
-  },
-  {
-    "Name":"SURAN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"600 GM"
-  },
-  {
-    "Name":"SURAN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"650 GM"
-  },
-  {
-    "Name":"SURAN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"700 GM"
-  },
-  {
-    "Name":"SURAN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"750 GM"
-  },
-  {
-    "Name":"SURAN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"800 GM"
-  },
-  {
-    "Name":"SURAN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"850 GM"
-  },
-  {
-    "Name":"SURAN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"900 GM"
-  },
-  {
-    "Name":"SURAN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"950 GM"
-  },
-  {
-    "Name":"SURAN 1",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"050 GM"
-  },
-  {
-    "Name":"SURAN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1100 GM"
-  },
-  {
-    "Name":"SURAN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1150 GM"
-  },
-  {
-    "Name":"SURAN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1200 GM"
-  },
-  {
-    "Name":"SURAN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1250 GM"
-  },
-  {
-    "Name":"KAKDI MADRAS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250 GM"
-  },
-  {
-    "Name":"KAKDI MADRAS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"300 GM"
-  },
-  {
-    "Name":"KAKDI MADRAS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"350 GM"
-  },
-  {
-    "Name":"KAKDI MADRAS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"400 GM"
-  },
-  {
-    "Name":"KAKDI MADRAS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"450 GM"
-  },
-  {
-    "Name":"KAKDI MADRAS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500 GM"
-  },
-  {
-    "Name":"KAKDI MADRAS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"550 GM"
-  },
-  {
-    "Name":"KAKDI MADRAS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"600 GM"
-  },
-  {
-    "Name":"KAKDI MADRAS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"650 GM"
-  },
-  {
-    "Name":"KAKDI MADRAS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"700 GM"
-  },
-  {
-    "Name":"KAKDI MADRAS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"750 GM"
-  },
-  {
-    "Name":"KAKDI MADRAS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"800 GM"
-  },
-  {
-    "Name":"KAKDI MADRAS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"900 GM"
-  },
-  {
-    "Name":"KAKDI MADRAS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"950  GM"
-  },
-  {
-    "Name":"KAKDI MADRAS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1.100 KGS"
-  },
-  {
-    "Name":"ICE BERG",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"300 GM"
-  },
-  {
-    "Name":"BROCCOLI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"800 GM"
-  },
-  {
-    "Name":"CHINESE CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"200 GM"
-  },
-  {
-    "Name":"MONGERI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"200 GM"
-  },
-  {
-    "Name":"MONGERI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250 GM"
-  },
-  {
-    "Name":"CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1450 GM"
-  },
-  {
-    "Name":"CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1250 GM"
-  },
-  {
-    "Name":"CAULIFLOWER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1000 GM"
-  },
-  {
-    "Name":"CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1000 GM"
-  },
-  {
-    "Name":"DUDHI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1000 GM"
-  },
-  {
-    "Name":"PUMPKIN RED",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1000 GM"
-  },
-  {
-    "Name":"PUMPKIN WHT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1000 GM"
-  },
-  {
-    "Name":"PUMPKIN WHITE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1000 GM"
-  },
-  {
-    "Name":"KAKDI MADRAS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1000 GM"
-  },
-  {
-    "Name":"PAPAYA RAW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1000 GM"
-  },
-  {
-    "Name":"ELO BEERA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
-  },
-  {
-    "Name":"PUMPKIN RED",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"450 GM"
-  },
-  {
-    "Name":"BRINJAL BHARTA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"150 GM"
-  },
-  {
-    "Name":"BRINJAL BHARTA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"200 GM"
-  },
-  {
-    "Name":"ORANGE KINO",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6PC"
-  },
-  {
-    "Name":"CAULIFLOWER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1550 GM"
-  },
-  {
-    "Name":"CAULIFLOWER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1600 GM"
-  },
-  {
-    "Name":"CAULIFLOWER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1650 GM"
-  },
-  {
-    "Name":"CAULIFLOWER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1700 GM"
-  },
-  {
-    "Name":"CAULIFLOWER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1750 GM"
-  },
-  {
-    "Name":"CAULIFLOWER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1800 GM"
-  },
-  {
-    "Name":"STRABERRY",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1BOX"
-  },
-  {
-    "Name":"CAULI FLOWER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1150 GM"
-  },
-  {
-    "Name":"BROCCOLI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"850 GM"
-  },
-  {
-    "Name":"CAULIFLOWER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"200 GM"
-  },
-  {
-    "Name":"CAULIFLOWER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"150GM"
-  },
-  {
-    "Name":"GREEN MUTE BHAJI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
-  },
-  {
-    "Name":"BROCCOLI .",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1000 GM"
-  },
-  {
-    "Name":"POTATO NEW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"AWLA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500 GM"
-  },
-  {
-    "Name":"ANJEER",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1BOX"
-  },
-  {
-    "Name":"PAPANUS",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1PC"
-  },
-  {
-    "Name":"BRINJAL LONG GREEN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500 GM"
-  },
-  {
-    "Name":"GRAPES SONAKA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"ZUCCHINI.S",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":""
-  },
-  {
-    "Name":"RAM  FAL",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"2PC"
-  },
-  {
-    "Name":"RAM FAL",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4PC"
-  },
-  {
-    "Name":"DUDHI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1200 GM"
-  },
-  {
-    "Name":"JAM  FAL",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1BOX"
-  },
-  {
-    "Name":"APPLE  GOLDEN",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"5PC"
-  },
-  {
-    "Name":"TUMARI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"BRINJAL THORN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"LEVER  CHARGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":""
-  },
-  {
-    "Name":"BROCCOLI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"900 GM"
-  },
-  {
-    "Name":"PUMPKIN RED",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"CAPSICUM RED",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"CAPSICUM YLW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"RIDDISH",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
-  },
-  {
-    "Name":"BANANA GOLDEN",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1BOX"
-  },
-  {
-    "Name":"BANANA ELAICHI",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"ORANGE INDIAN",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1PC"
-  },
-  {
-    "Name":"WATER MELON",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"MUSK MELON",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"CELERY",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1BANCH"
-  },
-  {
-    "Name":"CHIKOO",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"BANANA GREEN",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1PC"
-  },
-  {
-    "Name":"GROUNDNUT",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"GRAPES IMP",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1BOX"
-  },
-  {
-    "Name":"JAMUN",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1BOX"
-  },
-  {
-    "Name":"TOMATO CHERRY YLW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"HOLKOL",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
-  },
-  {
-    "Name":"BANANA FUL  RED",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"GUNDA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500 GM"
-  },
-  {
-    "Name":"CHERRY",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1BOX"
-  },
-  {
-    "Name":"MANGO ALPHANSO",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"10 PC"
-  },
-  {
-    "Name":"MANGO ALPHANSO  BY 1GET 1FREE",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6PC"
-  },
-  {
-    "Name":"PEACH",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4PC"
-  },
-  {
-    "Name":"LEMON",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"4PC"
-  },
-  {
-    "Name":"AVAGADO L",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
-  },
-  {
-    "Name":"AVAGADO M",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
-  },
-  {
-    "Name":"AVAGADO S",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
-  },
-  {
-    "Name":"ASSPAIRA GRASH",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"5PC"
-  },
-  {
-    "Name":"BRINJAL SMALL",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500GM"
-  },
-  {
-    "Name":"PEAR RED INDIAN",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4PC"
-  },
-  {
-    "Name":"AFRICOT",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1PKT"
-  },
-  {
-    "Name":"LEMON",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"10 PC"
-  },
-  {
-    "Name":"CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1150 GM"
-  },
-  {
-    "Name":"DHUDHI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1150 GM"
-  },
-  {
-    "Name":"BRINJAL BHARTA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1000 GM"
-  },
-  {
-    "Name":"MANGO CHOASA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4 PC"
-  },
-  {
-    "Name":"KANTOLA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500 GM"
-  },
-  {
-    "Name":"APPLE INDIAN  BY 1 GET 1 FREE",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6 PC"
-  },
-  {
-    "Name":"SURAN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1000 GM"
-  },
-  {
-    "Name":"CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"200 GM"
-  },
-  {
-    "Name":"AMAR FAL",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"5 PC"
-  },
-  {
-    "Name":"AMAR FAL",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"4 PC"
-  },
-  {
-    "Name":"ZUCCHINI GREEN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"ZUCCHINI YLW",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"CUSTARD APPLE",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6PC"
-  },
-  {
-    "Name":"CAULI FLOWER",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"150GM"
-  },
-  {
-    "Name":"RUM BUTAN",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1PKT"
-  },
-  {
-    "Name":"LEMON",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PC"
-  },
-  {
-    "Name":"MANGO STEEM",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1 PKT"
-  },
-  {
-    "Name":"SHIMARAN",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4 PC"
-  },
-  {
-    "Name":"ROSE I M P",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4 PC"
-  },
-  {
-    "Name":"AMERICORN APPLES",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
-  },
-  {
-    "Name":"CABBAGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"150 GM"
-  },
-  {
-    "Name":"DHUDHI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1300 GM"
-  },
-  {
-    "Name":"MADRAS ONION",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"500 GM"
-  },
-  {
-    "Name":"APPLE GREEN",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4PC"
-  },
-  {
-    "Name":"APPLE GOLDEN",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1PKT"
-  },
-  {
-    "Name":"GARLIC SHELLED",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"100 GM"
-  },
-  {
-    "Name":"MANGO LALBAG",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4 PC"
-  },
-  {
-    "Name":"MANGO LALBAG",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"5 PC"
-  },
-  {
-    "Name":"MANGO LALBAG",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6PC"
-  },
-  {
-    "Name":"GARLIC GREEN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
-  },
-  {
-    "Name":"GRAPES BLK  INDIAN",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1KG"
-  },
-  {
-    "Name":"MANGO PAYRI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"6PC"
-  },
-  {
-    "Name":"BUT CHILLY",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
-  },
-  {
-    "Name":"DIRY MUSHROOM",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
-  },
-  {
-    "Name":"GALANGAR",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
-  },
-  {
-    "Name":"MIX SPROUT",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":""
-  },
-  {
-    "Name":"JAMOON",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1 BOX"
-  },
-  {
-    "Name":"JACK FRUIT",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"250 GM"
-  },
-  {
-    "Name":"MANGO TOTA PURI",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6 PC"
-  },
-  {
-    "Name":"MANGO TOTA PURI",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4PC"
-  },
-  {
-    "Name":"APPLE NEWZEALAND",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"2PC"
-  },
-  {
-    "Name":"MANGO NILAM",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6PC"
-  },
-  {
-    "Name":"APPLE WASHINGTON SMALL",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"6PC"
-  },
-  {
-    "Name":"CUSTARD APPLE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"5PC"
-  },
-  {
-    "Name":"DATES IMP",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"250 GM"
-  },
-  {
-    "Name":"TURGAN FRUITS L",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":""
-  },
-  {
-    "Name":"TURGAN FRUITS M",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":""
-  },
-  {
-    "Name":"TURGAN FRUITS S",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":""
-  },
-  {
-    "Name":"APPLE CHINA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4PC"
-  },
-  {
-    "Name":"APPLE CHINA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"5PC"
-  },
-  {
-    "Name":"APPLE CHINA",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"6PC"
-  },
-  {
-    "Name":"SIMARAN FRUITS",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"4PC"
-  },
-  {
-    "Name":"IMP MINI ORANGE",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":""
-  },
-  {
-    "Name":"PAYARI MANGO",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"12 PC"
-  },
-  {
-    "Name":"CUT GAVAR",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
-  },
-  {
-    "Name":"BIRIYANI MIX",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
-  },
-  {
-    "Name":"CHINESE  MIX",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
-  },
-  {
-    "Name":"CUT PAPDI",
-    "Type":"vegetable",
-    "Priority":"Yes",
-    "Units":"1PKT"
-  },
-  {
-    "Name":"MANGO PAYRI [L]",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"1 DOZ"
-  },
-  {
-    "Name":"APPLE WASHINGTON  SMALL",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"5 PC"
-  },
-  {
-    "Name":"APPLE NEWZEALAND  SMALL",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6 PC"
-  },
-  {
-    "Name":"APPLE NEWZEALAND  SMALL",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"5 PC"
-  },
-  {
-    "Name":"APPLE NEWZEALAND ROYALGALA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6 PC"
-  },
-  {
-    "Name":"APPLE NEWZEALAND ROYALGALA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"5 PC"
-  },
-  {
-    "Name":"APPLE NEWZEALAND ROYALGALA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4 PC"
-  },
-  {
-    "Name":"APPLE NEWZEALAND ROSE",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"6 PC"
-  },
-  {
-    "Name":"APPLE NEWZEALAND ROSE",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"5 PC"
-  },
-  {
-    "Name":"APPLE NEWZEALAND ROSE",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4 PC"
-  },
-  {
-    "Name":"MANGO RAJAPURI",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"4 PC"
-  },
-  {
-    "Name":"MANGO RAJAPURI",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"2 PC"
-  },
-  {
-    "Name":"MANGO KESAR",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"9 PC"
-  },
-  {
-    "Name":"MANGO LANGADA",
-    "Type":"fruit",
-    "Priority":"Yes",
-    "Units":"9 PC"
+    "Name": "ZUCHHINI YELLOW",
+    "Units": "250 GM",
+    "Type": "vegetable",
+    "Priority": "Yes"
   }
 ]

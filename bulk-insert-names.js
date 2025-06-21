@@ -2,14 +2,23 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 
-// Load JSON file with names
-const filePath = path.join(__dirname, 'bulk-insert-names.json');
-const names = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+// Use CLI argument or default file
+const inputFile = process.argv[2] || 'bulk-insert-names.json';
+const filePath = path.join(__dirname, inputFile);
 
-// API endpoint
+// Load and parse JSON
+let names;
+try {
+  const data = fs.readFileSync(filePath, 'utf-8');
+  names = JSON.parse(data);
+} catch (err) {
+  console.error(`❌ Failed to read or parse JSON file: ${filePath}`);
+  process.exit(1);
+}
+
 const API_URL = 'http://localhost:3001/api/names';
 
-// Normalize string (trim + uppercase)
+// Normalize name
 function normalizeName(name) {
   return name.replace(/\s+/g, ' ').trim().toUpperCase();
 }
@@ -19,36 +28,40 @@ const unique = new Set();
 const uniqueNames = [];
 
 for (const item of names) {
-  const key = `${normalizeName(item.Name)}|${item.Type}`;
+  const name = normalizeName(item.Name || '');
+  const type = item.Type || 'vegetable';
+  const key = `${name}|${type}`;
   if (!unique.has(key)) {
     unique.add(key);
-    uniqueNames.push(item);
+    uniqueNames.push({
+      name,
+      type,
+      priority: item.Priority || 'Yes',
+      units: item.Units || ''
+    });
   }
 }
 
-// Insert into DB
 async function insertNames() {
-  for (const item of uniqueNames) {
-    const payload = {
-      name: normalizeName(item.Name),
-      type: item.Type,
-      priority: item.Priority || 'Yes',
-      units: item.Units || ''
-    };
+  console.log(`🚀 Starting insert of ${uniqueNames.length} entries...\n`);
+  let success = 0, fail = 0;
 
+  for (const item of uniqueNames) {
     try {
-      await axios.post(API_URL, payload, {
+      await axios.post(API_URL, item, {
         headers: { 'Content-Type': 'application/json' }
       });
-      console.log(`✅ Inserted: ${payload.name} (${payload.type})`);
+      console.log(`✅ Inserted: ${item.name}`);
+      success++;
     } catch (error) {
       const status = error.response?.status;
       const msg = error.response?.data?.message || error.message;
-      console.error(`❌ ${payload.name} (${payload.type}): ${status || ''} ${msg}`);
+      console.error(`❌ Failed: ${item.name} (${status || 'NO STATUS'}) - ${msg}`);
+      fail++;
     }
   }
 
-  console.log(`\n🎯 Done. Total inserted: ${uniqueNames.length}`);
+  console.log(`\n🎯 Done. Inserted: ${success}, Failed: ${fail}`);
 }
 
 insertNames();

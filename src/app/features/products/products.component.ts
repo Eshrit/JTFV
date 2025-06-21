@@ -20,7 +20,7 @@ export class ProductsComponent implements OnInit {
   ngOnInit(): void {
     this.productService.getNames().subscribe(names => {
       this.products = names;
-      this.filteredProducts = [...this.products];
+      this.filteredProducts = [...this.products].sort((a, b) => a.name.localeCompare(b.name));
     });
   }
 
@@ -32,6 +32,21 @@ export class ProductsComponent implements OnInit {
         (product[this.searchBy] || '').toLowerCase().includes(this.searchText.toLowerCase())
       );
     }
+
+    // ✅ Always sort by name alphabetically
+    this.filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  sortAsc: boolean = true; // toggle flag
+
+  sortByType(): void {
+    this.sortAsc = !this.sortAsc;
+
+    this.filteredProducts.sort((a, b) => {
+      const typeA = (a.type || '').toLowerCase();
+      const typeB = (b.type || '').toLowerCase();
+      return this.sortAsc ? typeA.localeCompare(typeB) : typeB.localeCompare(typeA);
+    });
   }
 
   onEdit(productId: number): void {

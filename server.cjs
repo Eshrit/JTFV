@@ -102,12 +102,11 @@ db.serialize(() => {
   `);
 });
 
-
   db.run(`
     CREATE TABLE IF NOT EXISTS bills (
     id INTEGER PRIMARY KEY AUTOINCREMENT, 
     clientName TEXT, 
-    address TEXT, 
+    address TEXT,
     billNumber TEXT, 
     billDate TEXT, 
     discount REAL, 
@@ -121,8 +120,8 @@ db.serialize(() => {
     CREATE TABLE IF NOT EXISTS barcodes (
     id INTEGER PRIMARY KEY AUTOINCREMENT, 
     productName TEXT, 
-    mrp REAL, 
-    category TEXT, 
+    mrp REAL,
+    category TEXT,
     expiryDays INTEGER, 
     expiryDate TEXT, 
     barcode TEXT
