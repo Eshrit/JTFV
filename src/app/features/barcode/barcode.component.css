@@ -204,6 +204,58 @@ input[name^="productName"] {
 
 /* Print Rules */
 @media print {
+  html, body {
+    width: 144px; /* 38mm */
+    height: 159px; /* 42mm */
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .print-section {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    margin: 0;
+    padding: 0;
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  .barcode-label {
+    width: 144px;
+    height: 159px;
+    box-sizing: border-box;
+    padding: 4px;
+    margin: 0;
+    font-size: 9px;
+    page-break-inside: avoid;
+    break-inside: avoid;
+    overflow: hidden;
+    white-space: normal;
+    border: none;
+  }
+
+  svg, canvas, img {
+    width: 120px;
+    height: 30px;
+    display: block;
+    margin: 0 auto;
+  }
+
+  .label-info-compact {
+    display: flex;
+    justify-content: space-between;
+    font-size: 8px;
+  }
+
+  .label-footer {
+    font-size: 8px;
+    line-height: 1.2;
+    text-align: center;
+    margin-top: 2px;
+  }
+
   body * {
     visibility: hidden;
   }
@@ -213,26 +265,6 @@ input[name^="productName"] {
     visibility: visible;
   }
 
-  .print-section {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-  }
-
-  .barcode-label {
-    page-break-inside: avoid;
-  }
-}
-
-/* Print/Screen view toggles */
-.print-toggle .print-view {
-  display: none;
-}
-
-@media print {
   .print-toggle input,
   .print-toggle select {
     display: none !important;
@@ -240,5 +272,37 @@ input[name^="productName"] {
 
   .print-toggle .print-view {
     display: inline !important;
+  }
+
+  .print-style-group {
+  margin: 20px 0;
+}
+
+  .print-style-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 16px;
+    color: #333;
+  }
+
+  .print-style-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;           /* Adds spacing between label and select */
+    margin-bottom: 10px;
+  }
+
+  .print-style-label {
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+  }
+
+  .print-style-select {
+    width: 160px;
+    padding: 4px 8px;
+    font-size: 14px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
   }
 }

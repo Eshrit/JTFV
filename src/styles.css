@@ -10,3 +10,4 @@ html, body {
   overflow-x: hidden; /* ✅ avoid horizontal scroll but allow vertical */
   height: 100%;
 }
+.small-text { font-size: 7px; line-height: 1.2; }

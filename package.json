@@ -4,17 +4,17 @@
   "description": "A desktop application for billing and barcode generation built with Angular, Express, and Electron.",
   "author": "Shailesh Shahu",
   "main": "main-electron.js",
+  "private": true,
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build --configuration production --base-href ./",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "electron": "electron --trace-warnings .",
+    "electron": "electron .",
     "pack": "electron-builder --dir",
-    "dist": "npm run build && electron-builder && exit 0"
+    "dist": "npm run build && electron-builder"
   },
-  "private": true,
   "dependencies": {
     "@angular/animations": "^16.0.0",
     "@angular/cdk": "^16.0.4",
@@ -26,10 +26,10 @@
     "@angular/platform-browser": "^16.0.0",
     "@angular/platform-browser-dynamic": "^16.0.0",
     "@angular/router": "^16.0.0",
-    "angular": "^1.6.10",
     "axios": "^1.9.0",
     "bcrypt": "^5.1.1",
     "body-parser": "^2.2.0",
+    "bwip-js": "^4.6.0",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^4.18.2",
@@ -61,18 +61,18 @@
     "appId": "com.jtfv.billing",
     "productName": "JTFV Billing App",
     "files": [
-      "**/*",
       "!**/*.map",
       "!**/*.ts",
+      "!src",
       "!angular.json",
-      "!tsconfig.json",
-      "!tslint.json",
+      "!tsconfig*.json",
       "!karma.conf.js",
       "!README.md",
-      "!src"
-    ],
-    "asarUnpack": [
-      "app_data/**"
+      "dist/my-login-app/**",
+      "main-electron.js",
+      "server.cjs",
+      "database.db",
+      "node_modules/**"
     ],
     "extraResources": [
       {
@@ -88,9 +88,12 @@
         "to": "app_data/node_modules"
       },
       {
-        "from": "database.db",
+        "from": "userdata/database.db",
         "to": "app_data/database.db"
       }
+    ],
+    "asarUnpack": [
+      "app_data/**"
     ],
     "directories": {
       "buildResources": "assets"
@@ -98,6 +101,9 @@
     "win": {
       "target": "nsis",
       "icon": "D:/Project/JTFV/assets/logo.ico"
+    },
+    "mac": {
+      "target": []
     },
     "nsis": {
       "oneClick": false,
