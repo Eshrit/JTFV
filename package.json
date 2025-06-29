@@ -40,7 +40,8 @@
     "rxjs": "~7.8.0",
     "sqlite3": "^5.1.7",
     "tslib": "^2.3.0",
-    "zone.js": "~0.13.0"
+    "zone.js": "~0.13.0",
+    "bwip-js": "^4.6.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^16.0.5",
@@ -88,7 +89,7 @@
         "to": "app_data/node_modules"
       },
       {
-        "from": "database.db",
+        "from": "userdata/database.db",
         "to": "app_data/database.db"
       }
     ],
@@ -97,7 +98,7 @@
     },
     "win": {
       "target": "nsis",
-      "icon": "D:/Project/JTFV/assets/logo.ico"
+      "icon": "assets/logo.ico"
     },
     "nsis": {
       "oneClick": false,
