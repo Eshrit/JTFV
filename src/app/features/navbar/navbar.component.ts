@@ -9,8 +9,8 @@ import { Router } from '@angular/router';
 export class NavbarComponent {
   constructor(private router: Router) {}
 
-  logout() {
-    localStorage.clear();
+  logout(): void {
+    localStorage.removeItem('isLoggedIn'); // Clear login state
     this.router.navigate(['/login']);
   }
 }

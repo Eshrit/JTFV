@@ -48,6 +48,11 @@ const createWindow = () => {
   });
 
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    if (url === 'about:blank') {
+      return { action: 'allow' };
+    }
+
+    // For external URLs
     shell.openExternal(url);
     return { action: 'deny' };
   });

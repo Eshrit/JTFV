@@ -116,8 +116,6 @@ export class EditBillsComponent implements OnInit {
 
     this.billItems = printableItems;
 
-    alert('Please uncheck "Headers and footers" in the print dialog for cleaner output.');
-
     setTimeout(() => {
       window.print();
       this.billItems = allItems;

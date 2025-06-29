@@ -24,13 +24,22 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.logoUrl = 'assets/logo.jpg'; // Ensure this path is valid
+    this.logoUrl = 'assets/logo.jpg';
+
+    // ✅ Redirect if already logged in
+    if (localStorage.getItem('isLoggedIn') === 'true') {
+      this.router.navigate(['/dashboard']);
+    }
   }
 
   onSubmit(): void {
     if (this.loginForm.valid) {
       this.http.post('http://localhost:3001/api/login', this.loginForm.value).subscribe({
-        next: () => this.router.navigate(['/dashboard']),
+        next: () => {
+          // ✅ Save login state
+          localStorage.setItem('isLoggedIn', 'true');
+          this.router.navigate(['/dashboard']);
+        },
         error: () => alert('Invalid email or password. Please try again.')
       });
     }

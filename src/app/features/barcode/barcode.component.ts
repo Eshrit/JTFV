@@ -85,17 +85,22 @@ export class BarcodeComponent implements OnInit {
   printSelected() {
     this.preparePrintItems();
 
-    setTimeout(() => {
-      const printWindow = window.open('', '_blank');
-      if (!printWindow) return;
-
+    setTimeout(async () => {
+      const originalHTML = document.body.innerHTML;
       const html = this.generatePrintHTML();
-      printWindow.document.write(html);
-      printWindow.document.close();
 
-      setTimeout(async () => {
-        await this.renderBarcodesInWindow(printWindow);
-      }, 500); // smaller delay since rendering now handles sync
+      document.body.innerHTML = html;
+
+      // Wait for barcodes to render
+      await this.renderBarcodesInWindow(window);
+
+      window.print();
+
+      // Restore original page after a short delay
+      setTimeout(() => {
+        document.body.innerHTML = originalHTML;
+        location.reload(); // optional, reinitializes component
+      }, 1000);
     }, 200);
   }
 
