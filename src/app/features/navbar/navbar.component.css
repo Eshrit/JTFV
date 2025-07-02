@@ -101,3 +101,22 @@ mat-menu .mat-menu-item {
 mat-menu .mat-menu-item:hover {
   background-color: rgba(63, 81, 181, 0.1);
 }
+
+/* Cloud Sync Button */
+.sync-button {
+  margin-right: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  text-transform: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  transition: transform 0.3s, background-color 0.3s;
+  background-color: #00796b;
+  color: white;
+}
+
+.sync-button:hover {
+  background-color: #004d40;
+  transform: translateY(-2px);
+}

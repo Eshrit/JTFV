@@ -64,6 +64,7 @@
               "browserTarget": "my-login-app:build:production"
             },
             "development": {
+              "proxyConfig": "proxy.conf.json",
               "browserTarget": "my-login-app:build:development"
             }
           },

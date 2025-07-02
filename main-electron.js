@@ -7,6 +7,8 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+const isDev = !app.isPackaged;
+
 // ⏰ IST time formatter for logs
 function getISTTime() {
   const date = new Date();
@@ -35,7 +37,9 @@ const createWindow = () => {
     }
   });
 
-  const url = 'http://localhost:3001';
+  const url = isDev
+    ? 'http://localhost:3001'
+    : `file://${path.join(angularDistPath, 'index.html')}`;
   mainWindow.loadURL(url);
   log(`Loaded URL: ${url}`);
 
@@ -64,7 +68,6 @@ const createWindow = () => {
 };
 
 app.whenReady().then(() => {
-  const isDev = !app.isPackaged;
 
   // ✅ Use unified unpacked folder in production: app_data
   const basePath = isDev

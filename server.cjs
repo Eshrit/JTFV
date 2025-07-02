@@ -1,5 +1,5 @@
 const express = require('express');
-const sqlite3 = require('sqlite3');
+const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
@@ -448,4 +448,213 @@ process.on('uncaughtException', (err) => {
 });
 process.on('exit', (code) => {
   console.log(`Process exiting with code: ${code}`);
+});
+
+// ==================== FIREBASE INITIALIZATION ====================
+const admin = require('firebase-admin');
+
+const serviceAccount = require(path.join(__dirname, 'firebase-service-account.json'));
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+
+const firestore = admin.firestore();
+
+const cron = require('node-cron');
+const localDb = new sqlite3.Database(path.join(__dirname, 'userdata', 'database.db'));
+
+// ==================== DAILY SYNC TO FIREBASE ====================
+// Run every day at 2:00 AM
+// Manual trigger for testing
+async function runManualSync() {
+  console.log('[SYNC][Manual] Starting manual sync...');
+
+  // --- Sync merchants table ---
+  localDb.all('SELECT * FROM clients', async (err, rows) => {
+      if (err) {
+      console.error('[SYNC][merchants] DB error:', err);
+      return;
+    }
+
+    for (const row of rows) {
+      try {
+        await firestore.collection('merchants').doc(String(row.id)).set(row);
+      } catch (e) {
+        console.warn(`[SYNC][merchants] Failed to upload row ${row.id}:`, e.message);
+      }
+    }
+
+    console.log('[SYNC][merchants] Synced', rows.length, 'rows.');
+  });
+
+  // --- Sync bills ---
+  localDb.all('SELECT * FROM bills', async (err, rows) => {
+    if (err) return console.error('[SYNC][bills] DB error:', err);
+
+    for (const row of rows) {
+      try {
+        const billData = { ...row };
+
+        try {
+          billData.billItems = JSON.parse(billData.billItems); // convert JSON string to array
+        } catch (e) {
+          console.warn(`[SYNC][bills] Failed to parse billItems for bill ID ${row.id}`);
+        }
+
+        await firestore.collection('bills').doc(String(row.id)).set(billData);
+      } catch (e) {
+        console.error(`[SYNC][bills] Failed to upload row ${row.id}:`, e.message);
+      }
+    }
+    console.log('[SYNC][bills] Manual sync complete.', rows.length, 'rows.');
+  });
+
+  // --- Sync names ---
+  localDb.all('SELECT * FROM names', async (err, rows) => {
+    if (err) return console.error('[SYNC][names] DB error:', err);
+
+    for (const row of rows) {
+      try {
+        await firestore.collection('names').doc(String(row.id)).set(row);
+      } catch (e) {
+        console.error(`[SYNC][names] Failed to upload row ${row.id}:`, e.message);
+      }
+    }
+    console.log('[SYNC][names] Manual sync complete.', rows.length, 'rows.');
+  });
+}
+
+// Run this manually for testing
+runManualSync();
+
+// ==================== MANUAL SYNC ENDPOINT ====================
+app.post('/api/manual-sync', async (req, res) => {
+  console.log('[SYNC][Manual] Triggered by frontend');
+
+  try {
+    // --- Sync merchants table ---
+    localDb.all('SELECT * FROM clients', async (err, rows) => {
+      if (err) {
+      console.error('[SYNC][merchants] DB error:', err);
+      return;
+    }
+
+      for (const row of rows) {
+        try {
+          await firestore.collection('merchants').doc(String(row.id)).set(row);
+        } catch (e) {
+          console.warn(`[SYNC][merchants] Failed to upload row ${row.id}:`, e.message);
+        }
+      }
+
+      console.log('[SYNC][merchants] Synced', rows.length, 'rows.');
+    });
+
+    // --- Sync bills ---
+    localDb.all('SELECT * FROM bills', async (err, rows) => {
+      if (err) return res.status(500).json({ error: 'Error reading bills' });
+
+      for (const row of rows) {
+        try {
+          const billData = { ...row };
+          billData.billItems = JSON.parse(billData.billItems);
+          await firestore.collection('bills').doc(String(row.id)).set(billData);
+        } catch (e) {
+          console.warn(`[SYNC][bills] Failed to sync bill ${row.id}:`, e.message);
+        }
+      }
+      console.log('[SYNC][bills] Manual sync complete.', rows.length, 'rows.');
+
+      // --- Sync names ---
+      localDb.all('SELECT * FROM names', async (err2, rows2) => {
+        if (err2) return res.status(500).json({ error: 'Error reading names' });
+
+        for (const row of rows2) {
+          try {
+            await firestore.collection('names').doc(String(row.id)).set(row);
+          } catch (e) {
+            console.warn(`[SYNC][names] Failed to sync name ${row.id}:`, e.message);
+          }
+        }
+        console.log('[SYNC][names] Manual sync complete.', rows2.length, 'rows.');
+
+        // ✅ Final response
+        res.status(200).json({ message: 'Manual sync completed successfully.' });
+      });
+    });
+  } catch (e) {
+    console.error('[SYNC][Manual] Unexpected error:', e);
+    res.status(500).json({ error: 'Unexpected sync failure.' });
+  }
+});
+
+// ==================== RESTORE FROM CLOUD ENDPOINT ====================
+app.post('/api/restore-from-cloud', async (req, res) => {
+  console.log('[RESTORE] Restoring data from Firebase...');
+
+  try {
+    // --- Restore merchants (from 'merchants' collection to 'clients' table) ---
+    const merchantsSnap = await firestore.collection('merchants').get();
+    for (const doc of merchantsSnap.docs) {
+      const m = doc.data();
+
+      localDb.run(
+        `INSERT OR REPLACE INTO clients (
+          id, name, gstin, mobile, address, date, time
+        ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [
+          m.id,
+          m.name || '',
+          m.gstin || '',
+          m.mobile || '',
+          m.address || '',
+          m.date || '',
+          m.time || ''
+        ]
+      );
+    }
+
+    // --- Restore bills ---
+    const billsSnap = await firestore.collection('bills').get();
+    for (const doc of billsSnap.docs) {
+      const bill = doc.data();
+      const billItems = JSON.stringify(bill.billItems || []);
+      localDb.run(
+        `INSERT OR REPLACE INTO bills (id, billDate, address, billItems) VALUES (?, ?, ?, ?)`,
+        [bill.id, 
+        bill.billDate, 
+        bill.address || '', 
+        billItems]
+      );
+    }
+
+    // --- Restore names ---
+    const namesSnap = await firestore.collection('names').get();
+    for (const doc of namesSnap.docs) {
+      const name = doc.data();
+      localDb.run(
+        `INSERT OR REPLACE INTO names (id, firstName, lastName, city, mobile, phone, email, landmark, address1, date, time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          name.id,
+          name.firstName || '',
+          name.lastName || '',
+          name.city || '',
+          name.mobile || '',
+          name.phone || '',
+          name.email || '',
+          name.landmark || '',
+          name.address1 || '',
+          name.date || '',
+          name.time || ''
+        ]
+      );
+    }
+
+    console.log('[RESTORE] Completed.');
+    res.status(200).json({ message: 'Data restored from cloud.' });
+  } catch (err) {
+    console.error('[RESTORE] Error:', err);
+    res.status(500).json({ error: 'Restore failed.' });
+  }
 });

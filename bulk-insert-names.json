@@ -174,10 +174,10 @@
     "Units": "5PC"
   },
   {
-    "Name": "BANANA RAW 5PCS",
+    "Name": "BANANA RAW",
     "Type": "vegetable",
     "Priority": "Yes",
-    "Units": ""
+    "Units": "5PCS"
   },
   {
     "Name": "BEANS",
@@ -733,21 +733,16 @@
   },
   {
     "Name": "DRAGAN FRUIT L",
-    "Units": "",
     "Type": "fruit",
-    "Priority": "Yes"
-  },
-  {
-    "Name": "DRAGON FRUITS L",
-    "Units": "",
-    "Type": "fruit",
-    "Priority": "Yes"
-  },
-  {
-    "Name": "DRUM STICK PKT",
-    "Type": "vegetable",
     "Priority": "Yes",
     "Units": ""
+
+  },
+  {
+    "Name": "DRUM STICK",
+    "Type": "vegetable",
+    "Priority": "Yes",
+    "Units": "PKT"
   },
   {
     "Name": "DUDHI",
@@ -852,10 +847,10 @@
     "Priority": "Yes"
   },
   {
-    "Name": "GALKA 4PCS",
+    "Name": "GALKA",
     "Type": "vegetable",
     "Priority": "Yes",
-    "Units": ""
+    "Units": "4PCS"
   },
   {
     "Name": "GARLIC DESI",
@@ -1146,10 +1141,10 @@
     "Units": "4 PC"
   },
   {
-    "Name": "LEMON 5PCS",
+    "Name": "LEMON",
     "Type": "vegetable",
     "Priority": "Yes",
-    "Units": ""
+    "Units": "5PCS"
   },
   {
     "Name": "LICHI INDIAN M",
@@ -1314,10 +1309,10 @@
     "Units": "6 PC"
   },
   {
-    "Name": "MUSHROOM PKT",
+    "Name": "MUSHROOM",
     "Type": "vegetable",
     "Priority": "Yes",
-    "Units": ""
+    "Units": "PKT"
   },
   {
     "Name": "MUSK MELON LARGE",
@@ -1404,10 +1399,10 @@
     "Units": "500GM"
   },
   {
-    "Name": "PAK CHOY PKT",
+    "Name": "PAK CHOY",
     "Type": "vegetable",
     "Priority": "Yes",
-    "Units": ""
+    "Units": "PKT"
   },
   {
     "Name": "PALAK",
@@ -1746,10 +1741,10 @@
     "Priority": "Yes"
   },
   {
-    "Name": "RADDISH 3PCS",
+    "Name": "RADDISH",
     "Type": "vegetable",
     "Priority": "Yes",
-    "Units": ""
+    "Units": "3PCS"
   },
   {
     "Name": "RAM FAL",
@@ -2022,10 +2017,10 @@
     "Priority": "Yes"
   },
   {
-    "Name": "TURIYA 3PCS",
+    "Name": "TURIYA",
     "Type": "vegetable",
     "Priority": "Yes",
-    "Units": ""
+    "Units": "3PCS"
   },
   {
     "Name": "WATERMELON",
