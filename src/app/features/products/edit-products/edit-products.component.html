@@ -4,13 +4,7 @@
   <h2>Edit Product Name</h2>
   <form #productForm="ngForm" (ngSubmit)="onSubmit(productForm)">
     <div class="form-row">
-      <input
-        type="text"
-        name="name"
-        placeholder="Product Name"
-        [(ngModel)]="product.name"
-        required
-      />
+      <input type="text" name="name" placeholder="Product Name" [(ngModel)]="product.name" required />
 
       <select name="type" [(ngModel)]="product.type" required>
         <option value="" disabled>Select Type</option>
@@ -19,32 +13,11 @@
         <option value="others">Others</option>
       </select>
 
-      <input
-        type="text"
-        name="priority"
-        placeholder="Priority (e.g., High, Low)"
-        [(ngModel)]="product.priority"
-        required
-      />
-
-      <input
-        type="text"
-        name="units"
-        placeholder="Units (e.g., kg, dozen)"
-        [(ngModel)]="product.units"
-        required
-      />
+      <input type="text" name="priority" placeholder="Priority (e.g., High, Low)" [(ngModel)]="product.priority" required/>
+      <input type="text" name="units" placeholder="Units (e.g., kg, dozen)" [(ngModel)]="product.units" required/>
     </div>
 
-    <div class="form-row">
-      <input
-        type="text"
-        name="createdAt"
-        [value]="product.createdAt"
-        disabled
-      />
-    </div>
-
+    <input type="text" name="createdAt" [(ngModel)]="product.createdAt" readonly />
     <div class="form-buttons">
       <button type="submit">Save</button>
       <button type="button" (click)="backToProducts()">Back To Products</button>

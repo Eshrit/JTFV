@@ -1,33 +1,48 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ProductService, Name } from 'src/app/core/services/products.service';
-import JsBarcode from 'jsbarcode';
 import bwipjs from 'bwip-js';
+
+/**
+ * Supported label styles:
+ *  - "old-dmart"  ➜ your previous 38×25 mm D‑Mart layout (unchanged)
+ *  - "dmart"      ➜ *new* D‑Mart layout copied from the photo you sent
+ *  - "reliance"   ➜ Reliance 50×50 mm layout
+ */
+export type LabelStyle = 'old-dmart' | 'dmart' | 'reliance';
 
 @Component({
   selector: 'app-barcode',
   templateUrl: './barcode.component.html',
-  styleUrls: ['./barcode.component.css']
+  styleUrls: ['./barcode.component.css'],
 })
 export class BarcodeComponent implements OnInit {
+  /*──────────────────────────────  DATA  ──────────────────────────────*/
   products: any[] = [];
   printItems: any[] = [];
   nameOptions: Name[] = [];
   currentDate: string = new Date().toISOString().substring(0, 10);
-  selectedPrintStyle: 'dmart' | 'reliance' = 'dmart';
+  selectedPrintStyle: LabelStyle = 'old-dmart';
 
   constructor(
     private cdRef: ChangeDetectorRef,
-    private productService: ProductService
+    private productService: ProductService,
   ) {}
 
   ngOnInit(): void {
     for (let i = 0; i < 5; i++) this.addRow();
+
     this.productService.getNames().subscribe({
-      next: (names) => this.nameOptions = names,
+      next: (names) => {
+        // Sort by name alphabetically
+        this.nameOptions = names.sort((a, b) =>
+          (`${a.name} ${a.units}`).localeCompare(`${b.name} ${b.units}`)
+        );
+      },
       error: (err) => console.error('Failed to load names:', err)
     });
   }
 
+  /*─────────────────────────  FORM HELPERS  ───────────────────────────*/
   addRow() {
     this.products.push({
       productName: '',
@@ -36,7 +51,7 @@ export class BarcodeComponent implements OnInit {
       quantity: 1,
       expiryDays: 1,
       expiryDate: this.currentDate,
-      barcode: this.generateBarcodeValue()
+      barcode: this.generateBarcodeValue(),
     });
   }
 
@@ -54,7 +69,7 @@ export class BarcodeComponent implements OnInit {
   onProductSelect(i: number, event: Event) {
     const target = event.target as HTMLSelectElement;
     const nameId = Number(target.value);
-    const selected = this.nameOptions.find(n => n.id === nameId);
+    const selected = this.nameOptions.find((n) => n.id === nameId);
     if (selected) {
       this.products[i].productName = `${selected.name} ${selected.units}`;
       this.products[i].category = selected.type
@@ -63,8 +78,11 @@ export class BarcodeComponent implements OnInit {
     }
   }
 
+  /*───────────────────────────  BARCODE UTILS  ───────────────────────*/
   generateBarcodeValue(): string {
-    const base = Math.floor(Math.random() * 1e11).toString().padStart(11, '0');
+    const base = Math.floor(Math.random() * 1e11)
+      .toString()
+      .padStart(11, '0');
     return base + this.calculateUPCCheckDigit(base);
   }
 
@@ -77,6 +95,7 @@ export class BarcodeComponent implements OnInit {
     return ((10 - (sum % 10)) % 10).toString();
   }
 
+  /*──────────────────────────  RESET / PRINT  ─────────────────────────*/
   resetForm() {
     this.products = [];
     for (let i = 0; i < 10; i++) this.addRow();
@@ -86,27 +105,26 @@ export class BarcodeComponent implements OnInit {
     this.preparePrintItems();
 
     setTimeout(async () => {
-      const originalHTML = document.body.innerHTML;
-      const html = this.generatePrintHTML();
+      const win = window.open('', '', 'width=800,height=1000');
+      if (!win) {
+        alert('Popup blocked. Please allow pop‑ups for this site.');
+        return;
+      }
 
-      document.body.innerHTML = html;
+      win.document.open();
+      win.document.write(this.generatePrintHTML());
+      win.document.close();
 
-      // Wait for barcodes to render
-      await this.renderBarcodesInWindow(window);
+      // Wait until barcodes are rendered, then trigger print
+      await this.renderBarcodesInWindow(win);
 
-      window.print();
-
-      // Restore original page after a short delay
-      setTimeout(() => {
-        document.body.innerHTML = originalHTML;
-        location.reload(); // optional, reinitializes component
-      }, 1000);
+      win.onafterprint = () => win.close();
     }, 200);
   }
 
   private preparePrintItems() {
     this.printItems = [];
-    this.products.forEach(p => {
+    this.products.forEach((p) => {
       if (p.quantity > 0 && p.productName && p.mrp > 0) {
         for (let i = 0; i < p.quantity; i++) {
           const barcodeValue = this.generateBarcodeValue();
@@ -117,118 +135,97 @@ export class BarcodeComponent implements OnInit {
     this.cdRef.detectChanges();
   }
 
+  /*────────────────────────────  HTML BUILD  ──────────────────────────*/
   private generatePrintHTML(): string {
-    return `
-      <html>
-        <head>
-          <title>Print Barcodes</title>
-          <style>
-            body {
-              margin: 0;
-              padding: 0;
-              font-family: monospace;
-            }
+    const head = `\n<meta charset="UTF-8">\n<meta name="viewport" content="width=240px">\n<title>Print Barcodes</title>`;
 
-            .print-section {
-              display: flex;
-              flex-wrap: wrap;
-              justify-content: flex-start;
-              gap: 6px;
-              padding: 6px;
-            }
+    /*──────────  CSS PER STYLE  ──────────*/
+    const oldDmartStyles = `
+      @media print {
+        @page { size: 38mm 25mm; margin: 0; }
+        body,html{margin:0;padding:0}
+        .print-section{display:flex;flex-wrap:wrap;gap:0;margin:0;padding:0}
+        .old-dmart-label{page-break-after:always;break-after:page}
+      }
+      .old-dmart-label{width:144px;height:96px;margin:0;
+        font-size:9px;font-family:monospace;text-align:center;
+        box-sizing:border-box;display:flex;flex-direction:column;
+        justify-content:space-between;align-items:center}
+      .old-dmart-label img{width:120px;height:28px}
+      .label-header{font-weight:bold}
+      .label-product{font-weight:bold;margin:1px 0}
+      .barcode-value{font-size:7px}
+      .label-info-compact{display:flex;justify-content:space-between;
+        width:100%;font-size:8px;padding:0 2px}
+      .label-footer{font-size:7px;white-space:nowrap}`;
 
-            /* D-Mart Label */
-            .dmart-label {
-              width: 189px;
-              height: 189px;
-              padding: 4px;
-              box-sizing: border-box;
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              justify-content: flex-start;
-              page-break-inside: avoid;
-              font-size: 10px;
-              line-height: 1.2;
-              text-align: center;
-              font-family: monospace;
-            }
+    const newDmartStyles = `
+      @media print {
+        @page { size: 38mm 25mm; margin: 0; }
+        body,html{margin:0;padding:0}
+        .print-section{display:flex;flex-wrap:wrap;gap:0;margin:0;padding:0}
+      }
+      .dmart-label{position:relative;width:144px;height:96px;
+        box-sizing:border-box;padding:2px 2px 0;
+        font-size:9px;font-family:monospace;text-align:center;
+        display:flex;flex-direction:column;align-items:center}
+      .dmart-label img{width:120px;height:28px}
+      .side-brand{position:absolute;right:-4px;top:25%;
+        transform:rotate(-90deg) translateY(-50%);
+        transform-origin:right top;font-size:10px;font-weight:bold}
+      .label-header{font-weight:bold}
+      .label-product{font-weight:bold;margin:1px 0}
+      .barcode-value{font-size:7px}
+      .price-row{display:flex;gap:4px;font-weight:bold}
+      .subinfo{display:flex;justify-content:space-between;width:100%;font-size:8px}
+      .label-footer{font-size:7px;margin-top:auto}`;
 
-            /* Reliance Label */
-            .reliance-label {
-              width: 240px;
-              height: 189px;
-              padding: 6px 10px;
-              box-sizing: border-box;
-              display: flex;
-              flex-direction: column;
-              justify-content: space-between;
-              font-family: Arial, sans-serif;
-              font-size: 10px;
-              line-height: 1.2;
-              page-break-inside: avoid;
-              text-align: left;
-            }
+    const relianceStyles = `
+      @media print {
+        @page { size: 50mm 50mm; margin: 0; }
+        body{margin:0;padding:0}
+        .print-section{margin:0;padding:6px;display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-start}
+      }
+      .reliance-label{width:240px;height:189px;padding:6px 10px;box-sizing:border-box;
+        display:flex;flex-direction:column;justify-content:space-between;
+        font-family:Arial,sans-serif;font-size:10px;line-height:1.2;text-align:left;
+        page-break-inside:avoid}
+      canvas{display:block;margin:2px auto;width:160px;height:40px}
+      .barcode-value{font-size:11px;letter-spacing:1px;margin:2px 0;text-align:center}
+      .label-product{font-size:11px;font-weight:bold;margin:2px 0}
+      .label-bold{font-weight:bold}`;
 
-            svg, canvas {
-              display: block;
-              margin: 2px auto;
-              width: 160px;
-              height: 40px;
-            }
+    /*──────────  BODY PER STYLE  ──────────*/
+    let css = '';
+    let body = '';
+    switch (this.selectedPrintStyle) {
+      case 'old-dmart':
+        css = oldDmartStyles;
+        body = this.generateOldDmartBody();
+        break;
+      case 'dmart':
+        css = newDmartStyles;
+        body = this.generateNewDmartBody();
+        break;
+      case 'reliance':
+      default:
+        css = relianceStyles;
+        body = this.generateRelianceBody();
+        break;
+    }
 
-            .barcode-value {
-              font-size: 11px;
-              letter-spacing: 1px;
-              margin: 2px 0;
-              text-align: center;
-            }
-
-            .label-header {
-              font-size: 10px;
-              font-weight: bold;
-            }
-
-            .label-product {
-              font-size: 11px;
-              font-weight: bold;
-              margin: 2px 0;
-            }
-
-            .label-info-compact {
-              display: flex;
-              justify-content: space-between;
-              width: 100%;
-              font-size: 9px;
-              margin-top: 4px;
-            }
-
-            .label-footer {
-              font-size: 8px;
-              margin-top: 4px;
-              white-space: nowrap;
-              text-align: center;
-            }
-
-            .label-bold {
-              font-weight: bold;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="print-section">
-            ${this.selectedPrintStyle === 'dmart' ? this.generateDmartContent() : this.generateRelianceContent()}
-          </div>
-        </body>
-      </html>`;
+    return `<!DOCTYPE html><html><head>${head}<style>${css}</style></head><body><div class="print-section">${body}</div></body></html>`;
   }
 
-  private generateDmartContent(): string {
-    return this.printItems.map((p, i) => `
-      <div class="dmart-label">
-        <div class="label-header">J T FRUITS & VEG</div>
-        <div class="label-product"><strong>${p.productName}</strong></div>
-        <svg id="print-barcode-${i}"></svg>
+  /*────────────────────────────  BODY BUILDERS  ───────────────────────*/
+  private generateOldDmartBody(): string {
+    return this.printItems
+      .map(
+        (p, i) => `
+      <div class="old-dmart-label">
+        <div class="label-header">J T FRUITS &amp; VEG</div>
+        <div class="label-product">${p.productName}</div>
+        <img id="old-dmart-bar-${i}" />
         <div class="barcode-value">${p.barcode}</div>
         <div class="label-info-compact">
           <div><strong>MRP</strong><br>₹${p.mrp}</div>
@@ -236,57 +233,70 @@ export class BarcodeComponent implements OnInit {
           <div><strong>Exp</strong><br>${p.expiryDate}</div>
         </div>
         <div class="label-footer">Incl. of all Taxes</div>
-      </div>
-    `).join('');
+      </div>`
+      )
+      .join('');
   }
 
-private generateRelianceContent(): string {
-  return this.printItems.map((p, i) => `
-    <div class="reliance-label">
-      <div style="text-align: left;"><b>J T FRUITS & VEG</b></div>
-      <div style="text-align: center; font-size: 12px; font-weight: bold;">${p.productName}</div>
-      <img id="rel-barcode-img-${i}" style="width: 180px; height: 40px;" />
-      <div style="text-align: center; font-size: 11px;">${p.barcode}</div>
-      <div style="display: flex; justify-content: space-between;"><div><b>M.R.P :</b></div><div>₹${p.mrp}/-</div></div>
-      <div style="display: flex; justify-content: space-between;"><div><b>PACKED ON :</b></div><div>${this.currentDate}</div></div>
-      <div style="display: flex; justify-content: space-between;"><div><b>BEST BEFORE :</b></div><div><b>${p.expiryDays} DAYS</b></div></div>
-      <div style="text-align: center; font-size: 9px;">
-        <div><b>FSSAI No. 11517011000128</b></div>
-        <div>Shop No. 31-32, Bldg No. 27,</div>
-        <div>EMP Op Jogers Park, Thakur Village,</div>
-        <div>Kandivali(E)</div>
-        <div>Customer Care No. 9594117456</div>
-      </div>
-    </div>
-  `).join('');
-}
+  private generateNewDmartBody(): string {
+    return this.printItems
+      .map(
+        (p, i) => `
+      <div class="dmart-label">
+        <span class="side-brand">Dmart</span>
+        <div class="label-header">J T FRUITS &amp; VEG</div>
+        <div class="label-product">${p.productName}</div>
+        <img id="dmart-bar-${i}" />
+        <div class="barcode-value">${p.barcode}</div>
+        <div class="price-row">M.R.P.&nbsp;₹${p.mrp}</div>
+        <div class="subinfo"><span>Pkd. On&nbsp;${this.currentDate}</span><span>Exp. Dt.&nbsp;${p.expiryDate}</span></div>
+        <div class="label-footer">Incl. of all Taxes </div>
+      </div>`
+      )
+      .join('');
+  }
 
+  private generateRelianceBody(): string {
+    return this.printItems
+      .map(
+        (p, i) => `
+      <div class="reliance-label">
+        <div><b>J T FRUITS &amp; VEG</b></div>
+        <div style="text-align:center;font-size:12px;font-weight:bold;">${p.productName}</div>
+        <img id="rel-barcode-img-${i}" style="width:180px;height:40px;" />
+        <div class="barcode-value">${p.barcode}</div>
+        <div style="display:flex;justify-content:space-between;"><div><b>M.R.P :</b></div><div>₹${p.mrp}/-</div></div>
+        <div style="display:flex;justify-content:space-between;"><div><b>PACKED ON :</b></div><div>${this.currentDate}</div></div>
+        <div style="display:flex;justify-content:space-between;"><div><b>BEST BEFORE :</b></div><div><b>${p.expiryDays} DAYS</b></div></div>
+        <div style="text-align:center;font-size:9px;">
+          <div><b>FSSAI No. 11517011000128</b></div>
+          <div>Shop No. 31-32, Bldg No. 27,</div>
+          <div>EMP Op Jogers Park, Thakur Village,</div>
+          <div>Kandivali(E)</div>
+          <div>Customer Care No. 9594117456</div>
+        </div>
+      </div>`
+      )
+      .join('');
+  }
+
+  /*──────────────────────────  BARCODE RENDER  ────────────────────────*/
   private async renderBarcodesInWindow(win: Window) {
-    const renderTasks: Promise<void>[] = [];
+    const tasks: Promise<void>[] = [];
 
     this.printItems.forEach((p, i) => {
-      // For D-Mart style (SVG)
-      const svgEl = win.document.getElementById(`print-barcode-${i}`);
-      if (svgEl && p.barcode?.length === 12) {
-        JsBarcode(svgEl, p.barcode, {
-          format: 'UPC',
-          lineColor: '#000000',
-          background: '#ffffff',
-          width: 1.2,           // reduced width
-          height: 30,           // reduced height
-          displayValue: true,
-          fontOptions: 'bold',
-          font: 'monospace',
-          textMargin: 1,
-          fontSize: 9,
-          margin: 0
-        });
-      }
+      const imgId =
+        this.selectedPrintStyle === 'old-dmart'
+          ? `old-dmart-bar-${i}`
+          : this.selectedPrintStyle === 'dmart'
+          ? `dmart-bar-${i}`
+          : `rel-barcode-img-${i}`;
 
-      // For Reliance style (render to img via canvas)
-      const imgEl = win.document.getElementById(`rel-barcode-img-${i}`) as HTMLImageElement;
-      if (imgEl && p.barcode?.length === 12) {
-        const renderPromise = new Promise<void>((resolve, reject) => {
+      const imgEl = win.document.getElementById(imgId) as HTMLImageElement;
+      if (!imgEl || p.barcode.length !== 12) return;
+
+      tasks.push(
+        new Promise<void>((resolve, reject) => {
           const canvas = document.createElement('canvas');
           try {
             bwipjs.toCanvas(canvas, {
@@ -295,32 +305,29 @@ private generateRelianceContent(): string {
               scale: 2,
               height: 10,
               includetext: false,
-              backgroundcolor: 'FFFFFF'
+              backgroundcolor: 'FFFFFF',
             });
-
-            // convert canvas to base64
-            const dataURL = canvas.toDataURL('image/png');
-            imgEl.src = dataURL;
+            imgEl.src = canvas.toDataURL('image/png');
             resolve();
           } catch (e) {
             console.error('bwip-js render error:', e);
             reject(e);
           }
-        });
-
-        renderTasks.push(renderPromise);
-      }
+        }),
+      );
     });
 
     try {
-      await Promise.all(renderTasks);
+      await Promise.all(tasks);
       win.focus();
       win.print();
-    } catch (err) {
+    } catch {
       console.error('One or more barcodes failed to render.');
     }
   }
-  onPrintStyleChange(style: 'dmart' | 'reliance') {
+
+  /*───────────────────────────  UI HELPERS  ───────────────────────────*/
+  onPrintStyleChange(style: LabelStyle) {
     this.selectedPrintStyle = style;
     this.cdRef.detectChanges();
   }

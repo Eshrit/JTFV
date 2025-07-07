@@ -62,6 +62,23 @@ async function insertNames() {
   }
 
   console.log(`\n🎯 Done. Inserted: ${success}, Failed: ${fail}`);
+
+  try {
+  await axios.post(API_URL, item, {
+    headers: { 'Content-Type': 'application/json' },
+    timeout: 5000
+  });
+  console.log(`✅ Inserted: ${item.name}`);
+  success++;
+} catch (error) {
+  const status = error.response?.status;
+  const msg = error.response?.data?.message || error.message;
+  const raw = error.toJSON ? JSON.stringify(error.toJSON()) : error.message;
+  console.error(`❌ Failed: ${item.name} (${status || 'NO STATUS'}) - ${msg}`);
+  console.error(`➡️ Full error: ${raw}`);
+  fail++;
+}
+
 }
 
 insertNames();
