@@ -104,19 +104,12 @@ export class BarcodeComponent implements OnInit {
     win.document.close();
 
     const checkReady = () => {
-      // Wait for the document to finish loading
       if (win.document.readyState === 'complete') {
-        this.renderBarcodesInWindow(win).then(() => {
-          win.focus();
-          win.print();
-          win.onafterprint = () => win.close();
-        });
+        this.renderBarcodesInWindow(win);
       } else {
-        // Retry shortly until DOM is ready
         setTimeout(checkReady, 50);
       }
     };
-
     checkReady();
   }
 
@@ -380,7 +373,6 @@ export class BarcodeComponent implements OnInit {
 
         const dataUrl = canvas.toDataURL('image/png');
 
-        // Create a promise that resolves when the <img> is actually loaded
         const loadPromise = new Promise<void>((resolve, reject) => {
           imgEl.onload = () => resolve();
           imgEl.onerror = () => reject();
@@ -395,13 +387,22 @@ export class BarcodeComponent implements OnInit {
 
     try {
       await Promise.all(promises);
+
+      // ✅ Only call print ONCE here — no onafterprint, no media query listener
       win.focus();
       win.print();
+
+      // Optional safe delay to close the print window
+      setTimeout(() => {
+        if (!win.closed) win.close();
+      }, 3000);
+
     } catch (e) {
       console.error('Error loading one or more barcode images:', e);
     }
   }
 
+  // Handle print style change from UI
   onPrintStyleChange(style: LabelStyle) {
     this.selectedPrintStyle = style;
     this.cdRef.detectChanges();
