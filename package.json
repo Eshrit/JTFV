@@ -4,6 +4,7 @@
   "description": "A desktop application for billing and barcode generation built with Angular, Express, and Electron.",
   "author": "Shailesh Shahu",
   "main": "main-electron.js",
+  "type": "module",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
