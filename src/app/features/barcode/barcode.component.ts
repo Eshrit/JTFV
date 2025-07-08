@@ -2,11 +2,6 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ProductService, Name } from 'src/app/core/services/products.service';
 import bwipjs from 'bwip-js';
 
-/**
- * Supported label styles:
- *  - "dmart"      ➜ D‑Mart layout copied from the photo you sent
- *  - "reliance"   ➜ Reliance 50×50 mm layout
- */
 export type LabelStyle = 'dmart' | 'reliance';
 
 @Component({
@@ -98,21 +93,31 @@ export class BarcodeComponent implements OnInit {
   printSelected() {
     this.preparePrintItems();
 
-    setTimeout(async () => {
-      const win = window.open('', '', 'width=800,height=1000');
-      if (!win) {
-        alert('Popup blocked. Please allow pop‑ups for this site.');
-        return;
+    const win = window.open('', '', 'width=800,height=1000');
+    if (!win) {
+      alert('Popup blocked. Please allow pop‑ups for this site.');
+      return;
+    }
+
+    win.document.open();
+    win.document.write(this.generatePrintHTML());
+    win.document.close();
+
+    const checkReady = () => {
+      // Wait for the document to finish loading
+      if (win.document.readyState === 'complete') {
+        this.renderBarcodesInWindow(win).then(() => {
+          win.focus();
+          win.print();
+          win.onafterprint = () => win.close();
+        });
+      } else {
+        // Retry shortly until DOM is ready
+        setTimeout(checkReady, 50);
       }
+    };
 
-      win.document.open();
-      win.document.write(this.generatePrintHTML());
-      win.document.close();
-
-      await this.renderBarcodesInWindow(win);
-
-      win.onafterprint = () => win.close();
-    }, 200);
+    checkReady();
   }
 
   private preparePrintItems() {
@@ -351,7 +356,7 @@ export class BarcodeComponent implements OnInit {
   }
 
   private async renderBarcodesInWindow(win: Window) {
-    const tasks: Promise<void>[] = [];
+    const promises: Promise<void>[] = [];
 
     this.printItems.forEach((p, i) => {
       const imgId =
@@ -362,34 +367,38 @@ export class BarcodeComponent implements OnInit {
       const imgEl = win.document.getElementById(imgId) as HTMLImageElement;
       if (!imgEl || p.barcode.length !== 12) return;
 
-      tasks.push(
-        new Promise<void>((resolve, reject) => {
-          const canvas = document.createElement('canvas');
-          try {
-            bwipjs.toCanvas(canvas, {
-              bcid: 'ean13',
-              text: p.barcode,
-              scale: 2,
-              height: 10,
-              includetext: false,
-              backgroundcolor: 'FFFFFF',
-            });
-            imgEl.src = canvas.toDataURL('image/png');
-            resolve();
-          } catch (e) {
-            console.error('bwip-js render error:', e);
-            reject(e);
-          }
-        }),
-      );
+      const canvas = document.createElement('canvas');
+      try {
+        bwipjs.toCanvas(canvas, {
+          bcid: 'ean13',
+          text: p.barcode,
+          scale: 2,
+          height: 10,
+          includetext: false,
+          backgroundcolor: 'FFFFFF',
+        });
+
+        const dataUrl = canvas.toDataURL('image/png');
+
+        // Create a promise that resolves when the <img> is actually loaded
+        const loadPromise = new Promise<void>((resolve, reject) => {
+          imgEl.onload = () => resolve();
+          imgEl.onerror = () => reject();
+          imgEl.src = dataUrl;
+        });
+
+        promises.push(loadPromise);
+      } catch (e) {
+        console.error('bwip-js render error:', e);
+      }
     });
 
     try {
-      await Promise.all(tasks);
+      await Promise.all(promises);
       win.focus();
       win.print();
-    } catch {
-      console.error('One or more barcodes failed to render.');
+    } catch (e) {
+      console.error('Error loading one or more barcode images:', e);
     }
   }
 
