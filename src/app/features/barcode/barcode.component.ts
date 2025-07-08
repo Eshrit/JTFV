@@ -147,7 +147,7 @@ export class BarcodeComponent implements OnInit {
         .print-section{display:flex;flex-wrap:wrap;gap:0;margin:0;padding:0}
         .old-dmart-label{page-break-after:always;break-after:page}
       }
-      .old-dmart-label{width:144px;height:96px;margin:0;
+      .old-dmart-label{width:140px;height:93px;margin:0;
         font-size:9px;font-family:monospace;text-align:center;
         box-sizing:border-box;display:flex;flex-direction:column;
         justify-content:space-between;align-items:center}
@@ -156,7 +156,7 @@ export class BarcodeComponent implements OnInit {
       .label-product{font-weight:bold;margin:1px 0}
       .barcode-value{font-size:7px}
       .label-info-compact{display:flex;justify-content:space-between;
-        width:100%;font-size:8px;padding:0 2px}
+        width:120px;font-size:8px;padding:0 2px}
       .label-footer{font-size:7px;white-space:nowrap}`;
 
     const newDmartStyles = `
@@ -172,7 +172,7 @@ export class BarcodeComponent implements OnInit {
       .dmart-label img{width:120px;height:28px}
       .side-brand{position:absolute;right:-4px;top:25%;
         transform:rotate(-90deg) translateY(-50%);
-        transform-origin:right top;font-size:10px;font-weight:bold}
+        transform-origin:right top;font-size:15px;font-weight:bold}
       .label-header{font-weight:bold}
       .label-product{font-weight:bold;margin:1px 0}
       .barcode-value{font-size:7px}
