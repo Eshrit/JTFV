@@ -4,11 +4,10 @@ import bwipjs from 'bwip-js';
 
 /**
  * Supported label styles:
- *  - "old-dmart"  ➜ your previous 38×25 mm D‑Mart layout (unchanged)
- *  - "dmart"      ➜ *new* D‑Mart layout copied from the photo you sent
+ *  - "dmart"      ➜ D‑Mart layout copied from the photo you sent
  *  - "reliance"   ➜ Reliance 50×50 mm layout
  */
-export type LabelStyle = 'old-dmart' | 'dmart' | 'reliance';
+export type LabelStyle = 'dmart' | 'reliance';
 
 @Component({
   selector: 'app-barcode',
@@ -16,12 +15,11 @@ export type LabelStyle = 'old-dmart' | 'dmart' | 'reliance';
   styleUrls: ['./barcode.component.css'],
 })
 export class BarcodeComponent implements OnInit {
-  /*──────────────────────────────  DATA  ──────────────────────────────*/
   products: any[] = [];
   printItems: any[] = [];
   nameOptions: Name[] = [];
   currentDate: string = new Date().toISOString().substring(0, 10);
-  selectedPrintStyle: LabelStyle = 'old-dmart';
+  selectedPrintStyle: LabelStyle = 'dmart';
 
   constructor(
     private cdRef: ChangeDetectorRef,
@@ -33,7 +31,6 @@ export class BarcodeComponent implements OnInit {
 
     this.productService.getNames().subscribe({
       next: (names) => {
-        // Sort by name alphabetically
         this.nameOptions = names.sort((a, b) =>
           (`${a.name} ${a.units}`).localeCompare(`${b.name} ${b.units}`)
         );
@@ -42,7 +39,6 @@ export class BarcodeComponent implements OnInit {
     });
   }
 
-  /*─────────────────────────  FORM HELPERS  ───────────────────────────*/
   addRow() {
     this.products.push({
       productName: '',
@@ -78,7 +74,6 @@ export class BarcodeComponent implements OnInit {
     }
   }
 
-  /*───────────────────────────  BARCODE UTILS  ───────────────────────*/
   generateBarcodeValue(): string {
     const base = Math.floor(Math.random() * 1e11)
       .toString()
@@ -95,7 +90,6 @@ export class BarcodeComponent implements OnInit {
     return ((10 - (sum % 10)) % 10).toString();
   }
 
-  /*──────────────────────────  RESET / PRINT  ─────────────────────────*/
   resetForm() {
     this.products = [];
     for (let i = 0; i < 10; i++) this.addRow();
@@ -115,7 +109,6 @@ export class BarcodeComponent implements OnInit {
       win.document.write(this.generatePrintHTML());
       win.document.close();
 
-      // Wait until barcodes are rendered, then trigger print
       await this.renderBarcodesInWindow(win);
 
       win.onafterprint = () => win.close();
@@ -135,77 +128,175 @@ export class BarcodeComponent implements OnInit {
     this.cdRef.detectChanges();
   }
 
-  /*────────────────────────────  HTML BUILD  ──────────────────────────*/
   private generatePrintHTML(): string {
     const head = `\n<meta charset="UTF-8">\n<meta name="viewport" content="width=240px">\n<title>Print Barcodes</title>`;
 
-    /*──────────  CSS PER STYLE  ──────────*/
-    const oldDmartStyles = `
+    const dmartStyles = `
       @media print {
-        @page { size: 38mm 25mm; margin: 0; }
-        body,html{margin:0;padding:0}
-        .print-section{display:flex;flex-wrap:wrap;gap:0;margin:0;padding:0}
-        .old-dmart-label{page-break-after:always;break-after:page}
+        @page {
+          size: 38mm 25mm;
+          margin: 0;
+        }
+        body, html {
+          margin: 0;
+          padding: 0;
+        }
+        .print-section {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0;
+          margin: 0;
+          padding: 0;
+        }
       }
-      .old-dmart-label{width:140px;height:93px;margin:0;
-        font-size:9px;font-family:monospace;text-align:center;
-        box-sizing:border-box;display:flex;flex-direction:column;
-        justify-content:space-between;align-items:center}
-      .old-dmart-label img{width:120px;height:28px}
-      .label-header{font-weight:bold}
-      .label-product{font-weight:bold;margin:1px 0}
-      .barcode-value{font-size:7px}
-      .label-info-compact{display:flex;justify-content:space-between;
-        width:120px;font-size:8px;padding:0 2px}
-      .label-footer{font-size:7px;white-space:nowrap}`;
 
-    const newDmartStyles = `
-      @media print {
-        @page { size: 38mm 25mm; margin: 0; }
-        body,html{margin:0;padding:0}
-        .print-section{display:flex;flex-wrap:wrap;gap:0;margin:0;padding:0}
+      .dmart-label {
+        position: relative;
+        width: 144px;
+        height: 96px;
+        box-sizing: border-box;
+        padding: 2px 2px 0;
+        font-size: 9px;
+        font-family: monospace;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
       }
-      .dmart-label{position:relative;width:144px;height:96px;
-        box-sizing:border-box;padding:2px 2px 0;
-        font-size:9px;font-family:monospace;text-align:center;
-        display:flex;flex-direction:column;align-items:center}
-      .dmart-label img{width:120px;height:28px}
-      .side-brand{position:absolute;right:-4px;top:25%;
-        transform:rotate(-90deg) translateY(-50%);
-        transform-origin:right top;font-size:15px;font-weight:bold}
-      .label-header{font-weight:bold}
-      .label-product{font-weight:bold;margin:1px 0}
-      .barcode-value{font-size:7px}
-      .price-row{display:flex;gap:4px;font-weight:bold}
-      .subinfo{display:flex;justify-content:space-between;width:100%;font-size:8px}
-      .label-footer{font-size:7px;margin-top:auto}`;
+
+      .dmart-label img {
+        width: 120px;
+        height: 28px;
+      }
+
+      .side-brand {
+        position: absolute;
+        right: -4px;
+        top: 25%;
+        transform: rotate(-90deg) translateY(-50%);
+        transform-origin: right top;
+        font-size: 14px;
+        font-weight: bold;
+      }
+
+      .label-header {
+        font-weight: bold;
+      }
+
+      .label-product {
+        font-weight: bold;
+        margin: 1px 0;
+        font-size: 9.5px;
+        line-height: 1.1;
+      }
+
+      .barcode-value {
+        font-size: 7px;
+        margin-top: 1px;
+      }
+
+      .price-row {
+        display: flex;
+        gap: 4px;
+        font-weight: bold;
+        margin: 1px 0;
+      }
+
+      .subinfo {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        font-size: 8px;
+        padding: 0 2px;
+      }
+
+      .label-footer {
+        font-size: 7px;
+        margin-top: auto;
+      }
+    `;
 
     const relianceStyles = `
       @media print {
-        @page { size: 50mm 50mm; margin: 0; }
-        body{margin:0;padding:0}
-        .print-section{margin:0;padding:6px;display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-start}
+        @page {
+          size: 50mm 50mm;
+          margin: 0;
+        }
+        body {
+          margin: 0;
+          padding: 0;
+        }
+        .print-section {
+          margin: 0;
+          padding: 6px;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 6px;
+          justify-content: flex-start;
+        }
       }
-      .reliance-label{width:240px;height:189px;padding:6px 10px;box-sizing:border-box;
-        display:flex;flex-direction:column;justify-content:space-between;
-        font-family:Arial,sans-serif;font-size:10px;line-height:1.2;text-align:left;
-        page-break-inside:avoid}
-      canvas{display:block;margin:2px auto;width:160px;height:40px}
-      .barcode-value{font-size:11px;letter-spacing:1px;margin:2px 0;text-align:center}
-      .label-product{font-size:11px;font-weight:bold;margin:2px 0}
-      .label-bold{font-weight:bold}`;
 
-    /*──────────  BODY PER STYLE  ──────────*/
+      .reliance-label {
+        width: 240px;
+        height: 189px;
+        padding: 6px 10px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        font-family: Arial, sans-serif;
+        font-size: 10px;
+        line-height: 1.2;
+        text-align: left;
+        page-break-inside: avoid;
+        border: 1px solid transparent; /* optional: helps with visual debugging */
+      }
+
+      .reliance-label canvas {
+        display: block;
+        margin: 2px auto;
+        width: 160px;
+        height: 40px;
+      }
+
+      .barcode-value {
+        font-size: 11px;
+        letter-spacing: 1px;
+        margin: 2px 0;
+        text-align: center;
+      }
+
+      .label-product {
+        font-size: 11px;
+        font-weight: bold;
+        margin: 2px 0;
+        text-align: center;
+      }
+
+      .label-bold {
+        font-weight: bold;
+      }
+
+      .label-info-row {
+        display: flex;
+        justify-content: space-between;
+        margin: 2px 0;
+      }
+
+      .reliance-footer {
+        text-align: center;
+        font-size: 9px;
+        line-height: 1.1;
+        margin-top: 4px;
+      }
+    `;
+
     let css = '';
     let body = '';
     switch (this.selectedPrintStyle) {
-      case 'old-dmart':
-        css = oldDmartStyles;
-        body = this.generateOldDmartBody();
-        break;
       case 'dmart':
-        css = newDmartStyles;
-        body = this.generateNewDmartBody();
+        css = dmartStyles;
+        body = this.generateDmartBody();
         break;
       case 'reliance':
       default:
@@ -217,28 +308,7 @@ export class BarcodeComponent implements OnInit {
     return `<!DOCTYPE html><html><head>${head}<style>${css}</style></head><body><div class="print-section">${body}</div></body></html>`;
   }
 
-  /*────────────────────────────  BODY BUILDERS  ───────────────────────*/
-  private generateOldDmartBody(): string {
-    return this.printItems
-      .map(
-        (p, i) => `
-      <div class="old-dmart-label">
-        <div class="label-header">J T FRUITS &amp; VEG</div>
-        <div class="label-product">${p.productName}</div>
-        <img id="old-dmart-bar-${i}" />
-        <div class="barcode-value">${p.barcode}</div>
-        <div class="label-info-compact">
-          <div><strong>MRP</strong><br>₹${p.mrp}</div>
-          <div><strong>Pkd</strong><br>${this.currentDate}</div>
-          <div><strong>Exp</strong><br>${p.expiryDate}</div>
-        </div>
-        <div class="label-footer">Incl. of all Taxes</div>
-      </div>`
-      )
-      .join('');
-  }
-
-  private generateNewDmartBody(): string {
+  private generateDmartBody(): string {
     return this.printItems
       .map(
         (p, i) => `
@@ -280,15 +350,12 @@ export class BarcodeComponent implements OnInit {
       .join('');
   }
 
-  /*──────────────────────────  BARCODE RENDER  ────────────────────────*/
   private async renderBarcodesInWindow(win: Window) {
     const tasks: Promise<void>[] = [];
 
     this.printItems.forEach((p, i) => {
       const imgId =
-        this.selectedPrintStyle === 'old-dmart'
-          ? `old-dmart-bar-${i}`
-          : this.selectedPrintStyle === 'dmart'
+        this.selectedPrintStyle === 'dmart'
           ? `dmart-bar-${i}`
           : `rel-barcode-img-${i}`;
 
@@ -326,7 +393,6 @@ export class BarcodeComponent implements OnInit {
     }
   }
 
-  /*───────────────────────────  UI HELPERS  ───────────────────────────*/
   onPrintStyleChange(style: LabelStyle) {
     this.selectedPrintStyle = style;
     this.cdRef.detectChanges();
