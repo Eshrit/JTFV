@@ -57,7 +57,7 @@ export class BillsComponent implements OnInit {
       });
     });
 
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 20; i++) {
       this.billItems.push({
         productId: null,
         productName: '',

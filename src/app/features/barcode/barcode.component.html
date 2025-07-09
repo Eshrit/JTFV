@@ -31,6 +31,7 @@
           <td><input type="number" class="form-control" [(ngModel)]="item.mrp" name="mrp{{i}}" required /></td>
           <td>
             <select class="form-control" [(ngModel)]="item.category" name="category{{i}}">
+              <option value=""> Select </option>
               <option value="Fruit">Fruit</option>
               <option value="Vegetable">Vegetable</option>
             </select>

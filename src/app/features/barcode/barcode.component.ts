@@ -38,7 +38,7 @@ export class BarcodeComponent implements OnInit {
     this.products.push({
       productName: '',
       mrp: 0,
-      category: 'Fruit',
+      category: '',
       quantity: 1,
       expiryDays: 1,
       expiryDate: this.currentDate,
@@ -95,7 +95,7 @@ export class BarcodeComponent implements OnInit {
 
     const win = window.open('', '', 'width=800,height=1000');
     if (!win) {
-      alert('Popup blocked. Please allow pop‑ups for this site.');
+      alert('Popup blocked. Please allow pop-ups for this site.');
       return;
     }
 
