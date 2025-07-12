@@ -47,9 +47,9 @@ export class BillsComponent implements OnInit {
     this.titleService.setTitle('Invoice - J.T. Fruits & Vegetables');
 
     // ✅ Fetch product names from names table
-    this.productService.getNames().subscribe(names => {
-      this.products = names;
-      this.namesMap = Object.fromEntries(names.map(n => [n.id, n.name]));
+    this.productService.getNames().subscribe((names: Name[]) => {
+      this.products = names.sort((a, b) => a.name.localeCompare(b.name));
+      this.namesMap = Object.fromEntries(this.products.map(n => [n.id, n.name]));
 
       this.route.paramMap.subscribe(params => {
         const billNumber = params.get('billNumber');
@@ -136,6 +136,13 @@ export class BillsComponent implements OnInit {
   }
 
   emailBill(): void {
+    const validItems = this.billItems.filter(item =>
+      item.productId !== null &&
+      item.productName &&
+      item.quantity > 0 &&
+      item.price > 0
+    );
+
     const billData = {
       clientName: this.clientName,
       address: this.address,
@@ -144,7 +151,7 @@ export class BillsComponent implements OnInit {
       discount: this.discount,
       totalAmount: this.totalAmount,
       finalAmount: this.finalAmount,
-      billItems: this.billItems
+      billItems: validItems
     };
 
     this.billsService.sendBillByEmail(billData).subscribe({

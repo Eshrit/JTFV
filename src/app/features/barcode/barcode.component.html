@@ -48,14 +48,9 @@
 
     <div class="print-style-wrapper no-print">
       <label class="print-style-label">
-        <span class="print-icon">🖨️</span>
-        <span class="print-text">Select Print Style:</span>
+        🖨️ Select Print Style:
       </label>
-      <select
-        class="form-select print-style-select"
-        [(ngModel)]="selectedPrintStyle"
-        name="printStyle"
-      >
+      <select class="form-select print-style-select" [(ngModel)]="selectedPrintStyle" name="printStyle">
         <option value="dmart">D-Mart</option>
         <option value="reliance">Reliance</option>
       </select>

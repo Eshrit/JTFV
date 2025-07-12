@@ -46,8 +46,8 @@ export class EditBillsComponent implements OnInit {
 
     // ✅ Get product names from names table
     this.productService.getNames().subscribe((names: Name[]) => {
-      this.products = names;
-      this.namesMap = Object.fromEntries(names.map(n => [n.id, n.name]));
+      this.products = names.sort((a, b) => a.name.localeCompare(b.name));
+      this.namesMap = Object.fromEntries(this.products.map(n => [n.id, n.name]));
 
       this.route.paramMap.subscribe(params => {
         const billNumber = params.get('billNumber');
@@ -123,6 +123,13 @@ export class EditBillsComponent implements OnInit {
   }
 
   emailBill(): void {
+    const validItems = this.billItems.filter(item =>
+      item.productId !== null &&
+      item.productName &&
+      item.quantity > 0 &&
+      item.price > 0
+    );
+
     const billData = {
       clientName: this.clientName,
       address: this.address,
@@ -131,14 +138,14 @@ export class EditBillsComponent implements OnInit {
       discount: this.discount,
       totalAmount: this.totalAmount,
       finalAmount: this.finalAmount,
-      billItems: this.billItems
+      billItems: validItems
     };
 
     this.billsService.sendBillByEmail(billData).subscribe({
-      next: () => alert('Email sent!'),
+      next: () => alert('Email Sent!'),
       error: (err) => {
         console.error('Email failed:', err);
-        alert('Failed to send email.');
+        alert('Failed to send email. Please try again.');
       }
     });
   }

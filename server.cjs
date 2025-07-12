@@ -73,34 +73,35 @@ const db = new sqlite3.Database(dbPath, (err) => {
     )
     `);
 
-db.run(`
-  CREATE TABLE IF NOT EXISTS names (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    type TEXT, -- 'vegetable', 'fruit', or null
-    priority TEXT,
-    units TEXT,
-    createdAt TEXT DEFAULT (datetime('now')),
-    UNIQUE(name, type)
-  )
-`);
-
-db.serialize(() => {
-  db.run(`DROP TABLE IF EXISTS products`);
-
   db.run(`
-    CREATE TABLE IF NOT EXISTS products (
+    CREATE TABLE IF NOT EXISTS names (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      nameId INTEGER NOT NULL,
-      topPriority TEXT,
+      barcode TEXT UNIQUE,
+      name TEXT NOT NULL,
+      type TEXT,
+      priority TEXT,
       units TEXT,
-      itemType TEXT,
-      dateOfEntry TEXT,
-      entryTime TEXT,
-      FOREIGN KEY(nameId) REFERENCES names(id)
+      createdAt TEXT DEFAULT (datetime('now')),
+      UNIQUE(barcode)
     )
   `);
-});
+
+  db.serialize(() => {
+    db.run(`DROP TABLE IF EXISTS products`);
+
+    db.run(`
+      CREATE TABLE IF NOT EXISTS products (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        Barcode TEXT NOT NULL,
+        topPriority TEXT,
+        units TEXT,
+        itemType TEXT,
+        dateOfEntry TEXT,
+        entryTime TEXT,
+        FOREIGN KEY(Barcode) REFERENCES names(barcode)
+      )
+    `);
+  });
 
   db.run(`
     CREATE TABLE IF NOT EXISTS bills (
@@ -173,14 +174,14 @@ app.get('/api/names', (req, res) => {
 
 // Get all names
 app.post('/api/names', (req, res) => {
-  const { name, type, priority, units } = req.body;
+  const { name, type, priority, units, barcode } = req.body;
   if (!name) return res.status(400).json({ message: 'Name is required' });
 
-  const query = `
-    INSERT OR IGNORE INTO names (name, type, priority, units) 
-    VALUES (?, ?, ?, ?)
-  `;
-  db.run(query, [name.trim(), type || null, priority || '', units || ''], function (err) {
+    const query = `
+      INSERT OR IGNORE INTO names (barcode, name, type, priority, units) 
+      VALUES (?, ?, ?, ?, ?)
+    `;
+    db.run(query, [barcode || '', name.trim(), type || null, priority || '', units || ''], function (err) {
     if (err) return res.status(500).json({ message: 'Failed to add name', error: err.message });
     res.status(201).json({ message: 'Name added', id: this.lastID });
   });
@@ -208,14 +209,32 @@ app.put('/api/names/:id', (req, res) => {
   });
 });
 
+app.delete('/api/names', (req, res) => {
+  db.run('DELETE FROM names', function (err) {
+    if (err) return res.status(500).json({ message: 'Failed to delete names', error: err.message });
+
+    // Optional: Reset autoincrement counter
+    db.run("DELETE FROM sqlite_sequence WHERE name='names'", () => {
+      res.status(200).json({ message: 'All names deleted successfully' });
+    });
+  });
+});
+app.delete('/api/names/:id', (req, res) => {
+  db.run('DELETE FROM names WHERE id = ?', [req.params.id], function (err) {
+    if (err) return res.status(500).json({ message: 'Failed to delete name', error: err.message });
+    if (this.changes === 0) return res.status(404).json({ message: 'Name not found' });
+    res.json({ message: 'Name deleted successfully' });
+  });
+});
+
 // ==================== PRODUCT ROUTES ====================
 app.post('/api/products', (req, res) => {
   console.log('Incoming POST /api/products', req.body);
   const p = req.body;
-  const values = [p.nameId, p.topPriority, p.units, p.itemType, p.dateOfEntry, p.entryTime];
+  const values = [p.Barcode, p.topPriority, p.units, p.itemType, p.dateOfEntry, p.entryTime];
 
   db.run(`
-    INSERT INTO products (nameId, topPriority, units, itemType, dateOfEntry, entryTime)
+    INSERT INTO products (Barcode, topPriority, units, itemType, dateOfEntry, entryTime)
     VALUES (?, ?, ?, ?, ?, ?)`, values, function (err) {
     if (err) {
       console.error('❌ SQL Error:', err); // 👈 Log it
@@ -242,9 +261,9 @@ app.get('/api/products/:id', (req, res) => {
 
 app.put('/api/products/:id', (req, res) => {
   const p = req.body;
-  const values = [p.nameId, p.topPriority, p.units, p.itemType, p.dateOfEntry, p.entryTime, req.params.id];
+  const values = [p.Barcode, p.topPriority, p.units, p.itemType, p.dateOfEntry, p.entryTime, req.params.id];
   db.run(`
-    UPDATE products SET nameId=?, topPriority=?, units=?, itemType=?, dateOfEntry=?, entryTime=?
+    UPDATE products SET Barcode=?, topPriority=?, units=?, itemType=?, dateOfEntry=?, entryTime=?
     WHERE id=?`, values, function (err) {
     if (err) return res.status(500).json({ message: 'Failed to update product' });
     res.json({ message: 'Product updated successfully' });
@@ -379,21 +398,21 @@ app.post('/api/send-bill', (req, res) => {
 
   const mailOptions = {
     from: 'riteshshahu2600@gmail.com',
-    to: 'riteshshahu2600@gmail.com',
+    to: 'riteshshahu2603@gmail.com',
     subject: `Invoice - ${bill.billNumber}`,
     html: `
       <h2>Invoice - ${bill.billNumber}</h2>
       <p><strong>Client:</strong> ${bill.clientName}</p>
       <p><strong>Address:</strong> ${bill.address}</p>
       <p><strong>Date:</strong> ${bill.billDate}</p>
+      <p><strong>Total Amount:</strong> ₹${bill.totalAmount.toFixed(2)}</p>
+      <p><strong>Discount:</strong> ${bill.discount.toFixed(2)}%</p>
       <p><strong>Total:</strong> ₹${bill.finalAmount.toFixed(2)}</p>
       <br/>
       <h3>Items:</h3>
-      <ul>
-        ${bill.billItems.map(item => `
-          <li>${item.productName} - Qty: ${item.quantity}, Price: ₹${item.price}, Total: ₹${item.total}</li>
-        `).join('')}
-      </ul>
+      ${bill.billItems.map((item, index) => `
+        <p>${index + 1}. ${item.productName} - Qty: ${item.quantity}, Price: ₹${item.price}, Total: ₹${item.total}</p>
+      `).join('')}
     `
   };
 

@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 
 // ✅ Add Name interface for product names from 'names' table
 export interface Name {
+  barcode: string;
   id: number;
   name: string;
   type: 'fruit' | 'vegetable' | 'others' | null;

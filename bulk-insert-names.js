@@ -1,6 +1,11 @@
-const axios = require('axios');
-const fs = require('fs');
-const path = require('path');
+import axios from 'axios';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Resolve __dirname for ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Use CLI argument or default file
 const inputFile = process.argv[2] || 'bulk-insert-names.json';
@@ -23,24 +28,14 @@ function normalizeName(name) {
   return name.replace(/\s+/g, ' ').trim().toUpperCase();
 }
 
-// Deduplicate by name + type
-const unique = new Set();
-const uniqueNames = [];
+const uniqueNames = names.map(item => ({
+  barcode: item.Barcode || '',
+  name: normalizeName(item.Name || ''),
+  type: item.Type || 'vegetable',
+  priority: item.Priority || 'Yes',
+  units: item.Units || '',
+}));
 
-for (const item of names) {
-  const name = normalizeName(item.Name || '');
-  const type = item.Type || 'vegetable';
-  const key = `${name}|${type}`;
-  if (!unique.has(key)) {
-    unique.add(key);
-    uniqueNames.push({
-      name,
-      type,
-      priority: item.Priority || 'Yes',
-      units: item.Units || ''
-    });
-  }
-}
 
 async function insertNames() {
   console.log(`🚀 Starting insert of ${uniqueNames.length} entries...\n`);
@@ -49,36 +44,22 @@ async function insertNames() {
   for (const item of uniqueNames) {
     try {
       await axios.post(API_URL, item, {
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
+        timeout: 5000
       });
       console.log(`✅ Inserted: ${item.name}`);
       success++;
     } catch (error) {
       const status = error.response?.status;
       const msg = error.response?.data?.message || error.message;
+      const raw = error.toJSON ? JSON.stringify(error.toJSON()) : error.message;
       console.error(`❌ Failed: ${item.name} (${status || 'NO STATUS'}) - ${msg}`);
+      console.error(`➡️ Full error: ${raw}`);
       fail++;
     }
   }
 
   console.log(`\n🎯 Done. Inserted: ${success}, Failed: ${fail}`);
-
-  try {
-  await axios.post(API_URL, item, {
-    headers: { 'Content-Type': 'application/json' },
-    timeout: 5000
-  });
-  console.log(`✅ Inserted: ${item.name}`);
-  success++;
-} catch (error) {
-  const status = error.response?.status;
-  const msg = error.response?.data?.message || error.message;
-  const raw = error.toJSON ? JSON.stringify(error.toJSON()) : error.message;
-  console.error(`❌ Failed: ${item.name} (${status || 'NO STATUS'}) - ${msg}`);
-  console.error(`➡️ Full error: ${raw}`);
-  fail++;
-}
-
 }
 
 insertNames();
