@@ -1,3 +1,4 @@
+// bills.component.ts
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Title } from '@angular/platform-browser';
@@ -19,14 +20,12 @@ interface BillItem {
   styleUrls: ['./bills.component.css']
 })
 export class BillsComponent implements OnInit {
-  products: Name[] = []; // from names table
+  products: Name[] = [];
   namesMap: { [id: number]: string } = {};
   billItems: BillItem[] = [];
-  clients: string[] = [
-    'HAIKO', 'AVENUE SUPER MARTS GR FLOOR SPECTRA BUILDING HIGH STREET CORNER',
-    'CHEK MARKET', 'AVENUE E-COMMERCE LIMITED', 'AVENUE E- COMMERCE LTD',
-    'HAIKO MARKET', 'AVENUE E-COMMERCE LTD'
-  ];
+
+  clients: any[] = []; // Full client objects
+  selectedClient: any = null;
   clientName: string = '';
   address: string = '';
   billNumber: string = '';
@@ -43,10 +42,33 @@ export class BillsComponent implements OnInit {
     private http: HttpClient
   ) {}
 
+  loadBillForEdit(billNumber: string) {
+  this.http.get<any>(`http://localhost:3001/api/bills/${billNumber}`).subscribe({
+    next: bill => {
+      this.clientName = bill.clientName;
+      this.address = bill.address;
+      this.billNumber = bill.billNumber;
+      this.billDate = bill.billDate;
+      this.discount = bill.discount;
+      this.totalAmount = bill.totalAmount;
+      this.finalAmount = bill.finalAmount;
+      this.billItems = bill.billItems || [];
+
+      this.billItems.forEach(item => {
+        item.productName = item.productId ? this.namesMap[item.productId] || '(Unknown)' : '';
+      });
+
+      // Match the selected client from full client list
+      const match = this.clients.find(c => c.firstName === bill.clientName);
+      if (match) this.selectedClient = match;
+    },
+    error: err => console.error('Failed to load bill for edit:', err)
+  });
+}
+
   ngOnInit(): void {
     this.titleService.setTitle('Invoice - J.T. Fruits & Vegetables');
 
-    // ✅ Fetch product names from names table
     this.productService.getNames().subscribe((names: Name[]) => {
       this.products = names.sort((a, b) => a.name.localeCompare(b.name));
       this.namesMap = Object.fromEntries(this.products.map(n => [n.id, n.name]));
@@ -57,42 +79,27 @@ export class BillsComponent implements OnInit {
       });
     });
 
+    this.http.get<any[]>('http://localhost:3001/api/clients').subscribe(data => {
+      this.clients = data;
+    });
+
     for (let i = 0; i < 20; i++) {
-      this.billItems.push({
-        productId: null,
-        productName: '',
-        quantity: 0,
-        price: 0,
-        total: 0
-      });
+      this.billItems.push({ productId: null, productName: '', quantity: 0, price: 0, total: 0 });
     }
 
     this.billsService.getLatestBillNumber().subscribe({
-      next: (res: { billNumber: string }) => {
-        this.billNumber = res.billNumber;
-      },
+      next: (res: { billNumber: string }) => this.billNumber = res.billNumber,
       error: () => this.billNumber = '001'
     });
   }
 
-  loadBillForEdit(billNumber: string) {
-    this.http.get<any>(`http://localhost:3001/api/bills/${billNumber}`).subscribe({
-      next: bill => {
-        this.clientName = bill.clientName;
-        this.address = bill.address;
-        this.billNumber = bill.billNumber;
-        this.billDate = bill.billDate;
-        this.discount = bill.discount;
-        this.totalAmount = bill.totalAmount;
-        this.finalAmount = bill.finalAmount;
-        this.billItems = bill.billItems || [];
-
-        this.billItems.forEach(item => {
-          item.productName = item.productId ? this.namesMap[item.productId] || '(Unknown)' : '';
-        });
-      },
-      error: err => console.error('Failed to load bill for edit:', err)
-    });
+  onClientChange(): void {
+    if (this.selectedClient) {
+      const c = this.selectedClient;
+      const parts = [c.address1, c.address2, c.area, c.city].filter(Boolean);
+      this.clientName = c.firstName;
+      this.address = parts.join(', ');
+    }
   }
 
   onProductChange(index: number): void {
@@ -120,15 +127,9 @@ export class BillsComponent implements OnInit {
 
   printBill(): void {
     const allItems = [...this.billItems];
-    const printableItems = allItems
-      .filter(item => item.productId !== null && item.productName && item.quantity > 0 && item.price > 0)
-      .map(item => ({
-        ...item,
-        productName: this.namesMap[item.productId!] || '(Unknown)'
-      }));
-
+    const printableItems = allItems.filter(item => item.productId !== null && item.productName && item.quantity > 0 && item.price > 0)
+                                   .map(item => ({ ...item, productName: this.namesMap[item.productId!] || '(Unknown)' }));
     this.billItems = printableItems;
-    
     setTimeout(() => {
       window.print();
       this.billItems = allItems;
@@ -136,13 +137,7 @@ export class BillsComponent implements OnInit {
   }
 
   emailBill(): void {
-    const validItems = this.billItems.filter(item =>
-      item.productId !== null &&
-      item.productName &&
-      item.quantity > 0 &&
-      item.price > 0
-    );
-
+    const validItems = this.billItems.filter(item => item.productId !== null && item.productName && item.quantity > 0 && item.price > 0);
     const billData = {
       clientName: this.clientName,
       address: this.address,
@@ -156,10 +151,7 @@ export class BillsComponent implements OnInit {
 
     this.billsService.sendBillByEmail(billData).subscribe({
       next: () => alert('Email Sent!'),
-      error: (err) => {
-        console.error('Email failed:', err);
-        alert('Failed to send email. Please try again.');
-      }
+      error: (err) => { console.error('Email failed:', err); alert('Failed to send email. Please try again.'); }
     });
   }
 
@@ -176,14 +168,8 @@ export class BillsComponent implements OnInit {
     };
 
     this.billsService.saveBill(billData).subscribe({
-      next: (response) => {
-        alert('Bill saved successfully!');
-        console.log('Saved bill response:', response);
-      },
-      error: (error: HttpErrorResponse) => {
-        alert('Failed to save bill. Please try again.');
-        console.error('Error saving bill:', error);
-      }
+      next: (response) => { alert('Bill saved successfully!'); console.log('Saved bill response:', response); },
+      error: (error: HttpErrorResponse) => { alert('Failed to save bill. Please try again.'); console.error('Error saving bill:', error); }
     });
   }
 

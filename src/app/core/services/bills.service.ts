@@ -6,7 +6,13 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class BillsService {
+
   constructor(private http: HttpClient) {}
+
+  // ✅ Return clients from the backend
+  getClients(): Observable<any[]> {
+    return this.http.get<any[]>('http://localhost:3001/api/clients');
+  }
 
   saveBill(billData: any): Observable<any> {
     return this.http.post('http://localhost:3001/api/bills', billData);
@@ -39,7 +45,4 @@ export class BillsService {
   deleteBill(billNumber: string): Observable<any> {
     return this.http.delete(`http://localhost:3001/api/bills/${billNumber}`);
   }  
-  
 }
-
-

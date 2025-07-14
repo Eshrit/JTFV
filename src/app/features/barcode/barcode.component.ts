@@ -175,7 +175,7 @@
         }
 
         .barcode-value {
-          font-size: 7px;
+          font-size: 9px;
           margin-top: 1px;
         }
 
@@ -244,7 +244,7 @@
         }
 
         .barcode-value {
-          font-size: 11px;
+          font-size: 14px;
           letter-spacing: 1px;
           margin: 2px 0;
           text-align: center;
@@ -315,7 +315,7 @@
         .map(
           (p, i) => `
         <div class="reliance-label">
-          <div><b>J T FRUITS &amp; VEG</b></div>
+          <div style="font-weight:bold;"><b>J T FRUITS &amp; VEG</b></div>
           <div style="text-align:center;font-size:12px;font-weight:bold;">${p.productName}</div>
           <img id="rel-barcode-img-${i}" style="width:180px;height:40px;" />
           <div class="barcode-value">${p.barcode}</div>

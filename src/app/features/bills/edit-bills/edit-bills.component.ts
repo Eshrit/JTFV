@@ -1,3 +1,4 @@
+// edit-bills.component.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Title } from '@angular/platform-browser';
@@ -28,11 +29,9 @@ export class EditBillsComponent implements OnInit {
   discount = 0;
   totalAmount = 0;
   finalAmount = 0;
-  clients: string[] = [
-    'HAIKO', 'AVENUE SUPER MARTS GR FLOOR SPECTRA BUILDING HIGH STREET CORNER',
-    'CHEK MARKET', 'AVENUE E-COMMERCE LIMITED', 'AVENUE E- COMMERCE LTD',
-    'HAIKO MARKET', 'AVENUE E-COMMERCE LTD'
-  ];
+
+  clients: any[] = []; // ✅ Full client objects
+  selectedClient: any = null;
 
   constructor(
     private productService: ProductService,
@@ -44,7 +43,6 @@ export class EditBillsComponent implements OnInit {
   ngOnInit(): void {
     this.titleService.setTitle('Edit Bill - J.T. Fruits & Vegetables');
 
-    // ✅ Get product names from names table
     this.productService.getNames().subscribe((names: Name[]) => {
       this.products = names.sort((a, b) => a.name.localeCompare(b.name));
       this.namesMap = Object.fromEntries(this.products.map(n => [n.id, n.name]));
@@ -53,6 +51,11 @@ export class EditBillsComponent implements OnInit {
         const billNumber = params.get('billNumber');
         if (billNumber) this.loadBillForEdit(billNumber);
       });
+    });
+
+    // ✅ Fetch full clients
+    this.billsService.getClients().subscribe((data: any[]) => {
+      this.clients = data;
     });
 
     for (let i = 0; i < 20; i++) {
@@ -75,12 +78,25 @@ export class EditBillsComponent implements OnInit {
         this.billItems.forEach(item => {
           item.productName = item.productId ? this.namesMap[item.productId] || '(Unknown)' : '';
         });
+
+        // ✅ Match client object
+        const match = this.clients.find(c => c.firstName === bill.clientName);
+        if (match) this.selectedClient = match;
       },
       error: err => {
         console.error('Failed to load bill:', err);
         alert('Failed to load bill.');
       }
     });
+  }
+
+  onClientChange(): void {
+    if (this.selectedClient) {
+      const c = this.selectedClient;
+      const parts = [c.address1, c.address2, c.area, c.city].filter(Boolean);
+      this.clientName = c.firstName;
+      this.address = parts.join(', ');
+    }
   }
 
   onProductChange(index: number): void {
