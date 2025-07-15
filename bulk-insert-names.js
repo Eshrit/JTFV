@@ -28,17 +28,38 @@ function normalizeName(name) {
   return name.replace(/\s+/g, ' ').trim().toUpperCase();
 }
 
-const uniqueNames = names.map(item => ({
-  barcode: item.Barcode || '',
-  name: normalizeName(item.Name || ''),
-  type: item.Type || 'vegetable',
-  priority: item.Priority || 'Yes',
-  units: item.Units || '',
-}));
+const allowedTypes = ['fruit', 'vegetable'];
 
+// Filter and normalize only vegetable entries
+const uniqueNames = names
+  .filter(item => {
+    const rawType = (item.Type || '').toLowerCase().trim();
+    return rawType === 'vegetable';
+  })
+  .map(item => {
+    return {
+      name: normalizeName(item.Name || ''),
+      type: 'vegetable',
+      priority: item.Priority || 'Yes',
+      units: item.Units || '',
+      barcode: item.Barcode || `AUTO-${Math.random().toString(36).slice(2, 10)}`
+    };
+  });
 
+// Step 1: Clear existing vegetables from DB
+async function clearVegetables() {
+  try {
+    await axios.delete(`${API_URL}/vegetables`);
+    console.log(`🥦 Cleared existing vegetable entries`);
+  } catch (err) {
+    console.error(`❌ Failed to clear vegetables:`, err.message);
+    process.exit(1);
+  }
+}
+
+// Step 2: Insert new entries
 async function insertNames() {
-  console.log(`🚀 Starting insert of ${uniqueNames.length} entries...\n`);
+  console.log(`🚀 Starting insert of ${uniqueNames.length} vegetable entries...\n`);
   let success = 0, fail = 0;
 
   for (const item of uniqueNames) {
@@ -62,4 +83,10 @@ async function insertNames() {
   console.log(`\n🎯 Done. Inserted: ${success}, Failed: ${fail}`);
 }
 
-insertNames();
+// Main runner
+async function run() {
+  await clearVegetables();  // Remove old vegetable data
+  await insertNames();      // Insert new vegetable list
+}
+
+run();

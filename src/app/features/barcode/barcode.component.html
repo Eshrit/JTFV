@@ -22,23 +22,31 @@
         <tr *ngFor="let item of products; let i = index">
           <td>
             <select class="form-control" name="productName{{i}}" (change)="onProductSelect(i, $event)">
-              <option value=""> Select Product </option>
-              <option *ngFor="let option of nameOptions" [value]="option.id">
+              <option value="">Select Product</option>
+              <option *ngFor="let option of filteredNameOptions" [value]="option.id">
                 {{ option.name }} {{ option.units }}
               </option>
             </select>
           </td>
-          <td><input type="number" class="form-control" [(ngModel)]="item.mrp" name="mrp{{i}}" required /></td>
           <td>
-            <select class="form-control" [(ngModel)]="item.category" name="category{{i}}">
-              <option value=""> Select </option>
+            <input type="number" class="form-control" [(ngModel)]="item.mrp" name="mrp{{i}}" (change)="generateBarcode(item)" />
+          </td>
+          <td>
+            <select class="form-control" [(ngModel)]="item.category" name="category{{i}}" (change)="generateBarcode(item)">
+              <option value="">Select</option>
               <option value="Fruit">Fruit</option>
               <option value="Vegetable">Vegetable</option>
             </select>
           </td>
-          <td><input type="number" class="form-control" [(ngModel)]="item.quantity" name="quantity{{i}}" /></td>
-          <td><input type="number" class="form-control" [(ngModel)]="item.expiryDays" name="expiryDays{{i}}" (change)="updateExpiry(i)" /></td>
-          <td><input type="date" class="form-control" [(ngModel)]="item.expiryDate" name="expiryDate{{i}}" /></td>
+          <td>
+            <input type="number" class="form-control" [(ngModel)]="item.quantity" name="quantity{{i}}" />
+          </td>
+          <td>
+            <input type="number" class="form-control" [(ngModel)]="item.expiryDays" name="expiryDays{{i}}" (change)="updateExpiry(i)" />
+          </td>
+          <td>
+            <input type="date" class="form-control" [(ngModel)]="item.expiryDate" name="expiryDate{{i}}" />
+          </td>
           <td class="no-print">
             <button type="button" class="btn btn-outline-danger delete-btn" (click)="removeRow(i)">Delete</button>
           </td>
@@ -47,18 +55,15 @@
     </table>
 
     <div class="print-style-wrapper no-print">
-      <label class="print-style-label">
-        🖨️ Select Print Style:
-      </label>
-      <select class="form-select print-style-select" [(ngModel)]="selectedPrintStyle" name="printStyle">
-        <option value="reliance">Reliance</option>
+      <label class="print-style-label">🖨️ Select Print Style:</label>
+      <select class="form-select print-style-select" [(ngModel)]="selectedPrintStyle" name="printStyle" (change)="onPrintStyleChange(selectedPrintStyle)">
         <option value="dmart">D-Mart</option>
+        <option value="reliance">Reliance</option>
       </select>
     </div>
 
     <div class="actions no-print">
       <button type="button" class="btn btn-outline-primary add-btn" (click)="addRow()">Add Row</button>
-      <!-- <button type="button" class="btn btn-success" (click)="saveAll()">Save</button> -->
       <button type="button" class="btn btn-warning" (click)="resetForm()">Refresh</button>
       <button type="button" class="btn btn-primary" (click)="printSelected()">Print</button>
     </div>

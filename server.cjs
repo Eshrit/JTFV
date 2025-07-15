@@ -76,7 +76,7 @@ const db = new sqlite3.Database(dbPath, (err) => {
   db.run(`
     CREATE TABLE IF NOT EXISTS names (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      barcode TEXT UNIQUE,
+      barcode TEXT,
       name TEXT NOT NULL,
       type TEXT,
       priority TEXT,
@@ -178,7 +178,7 @@ app.post('/api/names', (req, res) => {
   if (!name) return res.status(400).json({ message: 'Name is required' });
 
     const query = `
-      INSERT OR IGNORE INTO names (barcode, name, type, priority, units) 
+      INSERT INTO names (barcode, name, type, priority, units) 
       VALUES (?, ?, ?, ?, ?)
     `;
     db.run(query, [barcode || '', name.trim(), type || null, priority || '', units || ''], function (err) {
@@ -209,23 +209,18 @@ app.put('/api/names/:id', (req, res) => {
   });
 });
 
-app.delete('/api/names', (req, res) => {
-  db.run('DELETE FROM names', function (err) {
-    if (err) return res.status(500).json({ message: 'Failed to delete names', error: err.message });
-
-    // Optional: Reset autoincrement counter
-    db.run("DELETE FROM sqlite_sequence WHERE name='names'", () => {
-      res.status(200).json({ message: 'All names deleted successfully' });
-    });
-  });
-});
-app.delete('/api/names/:id', (req, res) => {
-  db.run('DELETE FROM names WHERE id = ?', [req.params.id], function (err) {
-    if (err) return res.status(500).json({ message: 'Failed to delete name', error: err.message });
-    if (this.changes === 0) return res.status(404).json({ message: 'Name not found' });
-    res.json({ message: 'Name deleted successfully' });
-  });
-});
+// // DELETE /api/names/vegetables — deletes only vegetable rows
+// app.delete('/api/names/vegetables', (req, res) => {
+//   db.run(`DELETE FROM names WHERE type = 'vegetable'`, function (err) {
+//     if (err) {
+//       console.error('❌ Failed to delete vegetable entries:', err.message);
+//       res.status(500).json({ message: 'Failed to delete vegetables' });
+//     } else {
+//       console.log('🥦 Deleted old vegetable entries');
+//       res.status(200).json({ message: 'Vegetables deleted' });
+//     }
+//   });
+// });
 
 // ==================== PRODUCT ROUTES ====================
 app.post('/api/products', (req, res) => {
