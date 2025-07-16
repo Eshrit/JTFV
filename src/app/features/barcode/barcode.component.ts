@@ -105,7 +105,7 @@
     printSelected() {
       this.preparePrintItems();
 
-      const win = window.open('', '', 'width=800,height=1000');
+      const win = window.open('', '', 'width=0,height=0');
       if (!win) {
         alert('Popup blocked. Please allow pop-ups for this site.');
         return;
@@ -365,7 +365,7 @@
               <div>Exp. Dt. ${exp}</div>
             </div>
 
-            <div class="label-footer">Incl. of all Taxes</div>
+            <div class="label-footer">Incl. of all Taxes)</div>
           </div>`;
         })
         .join('');
@@ -450,7 +450,7 @@
         // Optional safe delay to close the print window
         setTimeout(() => {
           if (!win.closed) win.close();
-        }, 5000000000000000000000000);
+        },);
 
       } catch (e) {
         console.error('Error loading one or more barcode images:', e);
