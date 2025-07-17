@@ -23,6 +23,8 @@
           <th (click)="sortByType()" style="cursor: pointer;">Type ⬍</th>
           <th>Priority</th>
           <th>Units</th>
+          <th>MRP</th>
+          <th>Expiry Days</th>
           <th>Edit</th>
         </tr>
       </thead>
@@ -33,7 +35,11 @@
           <td>{{ product.type }}</td>
           <td>{{ product.priority }}</td>
           <td>{{ product.units }}</td>
-          <td><button class="action-button edit" (click)="onEdit(product.id)">Edit</button></td>
+          <td>{{ product.mrp || '-' }}</td>
+          <td>{{ product.expiryDays || '-' }}</td>
+          <td>
+            <button class="action-button edit" (click)="onEdit(product.id)">Edit</button>
+          </td>
         </tr>
       </tbody>
     </table>

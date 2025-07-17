@@ -139,9 +139,9 @@ select.form-control:focus {
 /* 📦 Combined Options Row (Packed On Date + Print Style) */
 .barcode-top-options {
   display: flex;
-  flex-wrap: wrap;
+  justify-content: space-between; /* pushes children to opposite ends */
   align-items: center;
-  gap: 500px;
+  flex-wrap: wrap;
   margin-bottom: 24px;
   padding: 14px 18px;
   background-color: #ffffff;
@@ -154,6 +154,7 @@ select.form-control:focus {
   display: flex;
   align-items: center;
   gap: 12px;
+  white-space: nowrap;
 }
 
 .packed-date-label {
@@ -163,6 +164,7 @@ select.form-control:focus {
   display: flex;
   align-items: center;
   gap: 8px;
+  margin: 0; 
 }
 
 .packed-date-input {

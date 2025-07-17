@@ -73,18 +73,20 @@ const db = new sqlite3.Database(dbPath, (err) => {
     )
     `);
 
-  db.run(`
-    CREATE TABLE IF NOT EXISTS names (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      barcode TEXT,
-      name TEXT NOT NULL,
-      type TEXT,
-      priority TEXT,
-      units TEXT,
-      createdAt TEXT DEFAULT (datetime('now')),
-      UNIQUE(barcode)
-    )
-  `);
+db.run(`
+  CREATE TABLE IF NOT EXISTS names (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    barcode TEXT,
+    name TEXT NOT NULL,
+    type TEXT,
+    priority TEXT,
+    units TEXT,
+    mrp REAL,
+    expiryDays INTEGER,
+    createdAt TEXT DEFAULT (datetime('now')),
+    UNIQUE(barcode)
+  )
+`);
 
   db.serialize(() => {
     db.run(`DROP TABLE IF EXISTS products`);
@@ -174,14 +176,14 @@ app.get('/api/names', (req, res) => {
 
 // Get all names
 app.post('/api/names', (req, res) => {
-  const { name, type, priority, units, barcode } = req.body;
+  const { name, type, priority, units, barcode, mrp, expiryDays } = req.body;
   if (!name) return res.status(400).json({ message: 'Name is required' });
 
-    const query = `
-      INSERT INTO names (barcode, name, type, priority, units) 
-      VALUES (?, ?, ?, ?, ?)
-    `;
-    db.run(query, [barcode || '', name.trim(), type || null, priority || '', units || ''], function (err) {
+  const query = `
+    INSERT INTO names (barcode, name, type, priority, units, mrp, expiryDays) 
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `;
+  db.run(query, [barcode || '', name.trim(), type || null, priority || '', units || '', mrp || null, expiryDays || null], function (err) {
     if (err) return res.status(500).json({ message: 'Failed to add name', error: err.message });
     res.status(201).json({ message: 'Name added', id: this.lastID });
   });
@@ -198,11 +200,11 @@ app.get('/api/names/:id', (req, res) => {
 
 // Update a name
 app.put('/api/names/:id', (req, res) => {
-  const { name, type, priority, units } = req.body;
+  const { name, type, priority, units, mrp, expiryDays } = req.body;
   db.run(`
-    UPDATE names SET name = ?, type = ?, priority = ?, units = ?
+    UPDATE names SET name = ?, type = ?, priority = ?, units = ?, mrp = ?, expiryDays = ?
     WHERE id = ?
-  `, [name, type, priority, units, req.params.id], function (err) {
+  `, [name, type, priority, units, mrp || null, expiryDays || null, req.params.id], function (err) {
     if (err) return res.status(500).json({ message: 'Failed to update name', error: err.message });
     if (this.changes === 0) return res.status(404).json({ message: 'Name not found' });
     res.json({ message: 'Name updated successfully' });

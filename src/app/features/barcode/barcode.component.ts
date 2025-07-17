@@ -23,7 +23,7 @@
     ) {}
 
     ngOnInit(): void {
-      for (let i = 0; i < 5; i++) this.addRow();
+      for (let i = 0; i < 1; i++) this.addRow();
 
       this.productService.getNames().subscribe({
         next: (names) => {
@@ -35,6 +35,22 @@
       });
     }
 
+    onQtyKeyDown(event: KeyboardEvent, index: number) {
+      if (event.key === 'Tab' && index === this.products.length - 1) {
+        event.preventDefault(); // Stop default tabbing
+        this.addRow();
+        // Wait for view update before focusing on the new row's product select
+        setTimeout(() => {
+          const inputs = document.querySelectorAll(
+            `tr:nth-child(${this.products.length + 1}) select[name^='productName']`
+          );
+          if (inputs.length > 0) {
+            (inputs[0] as HTMLElement).focus();
+          }
+        });
+      }
+    }
+
     addRow() {
       this.products.push({
         productName: '',
@@ -44,7 +60,20 @@
         expiryDays: 1,
         expiryDate: this.currentDate,
         barcode: '',
+        dbBarcode: '',
+        mrpEdited: false,
+        expiryEdited: false,
       });
+    }
+
+    onMrpChange(index: number) {
+      this.products[index].mrpEdited = true;
+      this.generateBarcode(this.products[index]);
+    }
+
+    onExpiryChange(index: number) {
+      this.products[index].expiryEdited = true;
+      this.updateExpiry(index);
     }
 
     removeRow(index: number) {
@@ -91,11 +120,17 @@
         product.units = selected.units;
         product.dbBarcode = selected.barcode;
 
-        // Auto-fill MRP and Expiry Days from DB
-        product.mrp = selected.mrp || 0;
-        product.expiryDays = selected.expiryDays || 1;
+        // ✅ Update MRP only if not manually edited
+        if (!product.mrpEdited) {
+          product.mrp = selected.mrp || 0;
+        }
 
-        // Auto-calculate expiry date
+        // ✅ Update Expiry Days only if not manually edited
+        if (!product.expiryEdited) {
+          product.expiryDays = selected.expiryDays || 1;
+        }
+
+        // Update expiry date
         const today = new Date();
         today.setDate(today.getDate() + product.expiryDays);
         product.expiryDate = today.toISOString().split('T')[0];
@@ -122,7 +157,7 @@
 
     resetForm() {
       this.products = [];
-      for (let i = 0; i < 5; i++) this.addRow();
+      for (let i = 0; i < 1; i++) this.addRow();
     }
 
     printSelected() {

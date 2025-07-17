@@ -12,11 +12,11 @@
         <option value="fruit">Fruit</option>
         <option value="others">Others</option>
       </select>
-
       <input type="text" name="priority" placeholder="Priority (e.g., High, Low)" [(ngModel)]="product.priority" required/>
       <input type="text" name="units" placeholder="Units (e.g., kg, dozen)" [(ngModel)]="product.units" required/>
+      <input type="number" name="mrp" placeholder="MRP (e.g., 45.5)" [(ngModel)]="product.mrp" min="0" step="0.01" required/>
+      <input type="number" name="expiryDays" placeholder="Expiry Days (e.g., 5)" [(ngModel)]="product.expiryDays" min="0" required/>
     </div>
-
     <input type="text" name="createdAt" [(ngModel)]="product.createdAt" readonly />
     <div class="form-buttons">
       <button type="submit">Save</button>

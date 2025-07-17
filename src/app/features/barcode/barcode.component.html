@@ -26,9 +26,9 @@
         <tr>
           <th>Product</th>
           <th>M.R.P. (₹)</th>
-          <th>Category</th>
           <th>Qty</th>
           <th>Expiry Days</th>
+          <th>Category</th>
           <th>Expiry Date</th>
           <th>Delete</th>
         </tr>
@@ -44,26 +44,27 @@
             </select>
           </td>
           <td>
-            <input type="number" class="form-control" [(ngModel)]="item.mrp" name="mrp{{i}}" (change)="generateBarcode(item)" />
+            <input type="number" class="form-control" [(ngModel)]="item.mrp" name="mrp{{i}}" (change)="onMrpChange(i)" (change)="generateBarcode(item)" />
           </td>
           <td>
-            <select class="form-control" [(ngModel)]="item.category" name="category{{i}}" (change)="generateBarcode(item)">
+            <input  type="number" class="form-control" [(ngModel)]="item.quantity" name="quantity{{i}}" (change)="onExpiryChange(i)" (change)="generateBarcode(item)" />
+          </td>
+          <td>
+            <input type="number" class="form-control" [(ngModel)]="item.expiryDays" name="expiryDays{{i}}" (change)="updateExpiry(i)"
+            (keydown)="onQtyKeyDown($event, i)"/>
+          </td>
+          <td>
+            <select class="form-control" [(ngModel)]="item.category" name="category{{i}}" (change)="generateBarcode(item)" [tabindex]="-1" >
               <option value="">Select</option>
               <option value="Fruit">Fruit</option>
               <option value="Vegetable">Vegetable</option>
             </select>
           </td>
           <td>
-            <input type="number" class="form-control" [(ngModel)]="item.quantity" name="quantity{{i}}" />
-          </td>
-          <td>
-            <input type="number" class="form-control" [(ngModel)]="item.expiryDays" name="expiryDays{{i}}" (change)="updateExpiry(i)" />
-          </td>
-          <td>
-            <input type="date" class="form-control" [(ngModel)]="item.expiryDate" name="expiryDate{{i}}" />
+            <input type="date" class="form-control" [(ngModel)]="item.expiryDate" name="expiryDate{{i}}" [tabindex]="-1" />
           </td>
           <td class="no-print">
-            <button type="button" class="btn btn-outline-danger delete-btn" (click)="removeRow(i)">Delete</button>
+            <button type="button" class="btn btn-outline-danger delete-btn" (click)="removeRow(i)" [tabindex]="-1" >Delete</button>
           </td>
         </tr>
       </tbody>
