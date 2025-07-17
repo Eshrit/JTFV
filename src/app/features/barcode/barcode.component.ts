@@ -13,8 +13,8 @@
     products: any[] = [];
     printItems: any[] = [];
     nameOptions: Name[] = [];
-    packedOnDate: string = new Date().toISOString().substring(0, 10);
-    currentDate: string = new Date().toISOString().substring(0, 10);
+    packedOnDate: string = this.getTodayLocalDate();
+    currentDate: string = this.getTodayLocalDate();
     selectedPrintStyle: LabelStyle = 'dmart';
 
     constructor(
@@ -74,6 +74,20 @@
     onExpiryChange(index: number) {
       this.products[index].expiryEdited = true;
       this.updateExpiry(index);
+    }
+
+    private getTodayLocalDate(): string {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const day = String(today.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    resetForm() {
+      this.packedOnDate = this.getTodayLocalDate(); // reset packed date to today
+      this.products = [];
+      for (let i = 0; i < 1; i++) this.addRow();
     }
 
     removeRow(index: number) {
@@ -153,11 +167,6 @@
         // Reliance: just use the DB barcode directly
         product.barcode = product.dbBarcode || '';
       }
-    }
-
-    resetForm() {
-      this.products = [];
-      for (let i = 0; i < 1; i++) this.addRow();
     }
 
     printSelected() {
