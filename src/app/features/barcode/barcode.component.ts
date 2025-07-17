@@ -68,6 +68,7 @@
       const target = event.target as HTMLSelectElement;
       const nameId = Number(target.value);
       const selected = this.nameOptions.find((n) => n.id === nameId);
+
       if (selected) {
         const product = this.products[i];
         product.productName = `${selected.name} ${selected.units}`;
@@ -75,7 +76,16 @@
           ? selected.type.charAt(0).toUpperCase() + selected.type.slice(1)
           : '';
         product.units = selected.units;
-        product.dbBarcode = selected.barcode; // ← store original DB barcode
+        product.dbBarcode = selected.barcode;
+
+        // Auto-fill MRP and Expiry Days from DB
+        product.mrp = selected.mrp || 0;
+        product.expiryDays = selected.expiryDays || 1;
+
+        // Auto-calculate expiry date
+        const today = new Date();
+        today.setDate(today.getDate() + product.expiryDays);
+        product.expiryDate = today.toISOString().split('T')[0];
 
         this.generateBarcode(product);
       }

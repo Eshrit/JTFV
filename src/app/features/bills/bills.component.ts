@@ -1,4 +1,3 @@
-// bills.component.ts
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Title } from '@angular/platform-browser';
@@ -24,7 +23,7 @@ export class BillsComponent implements OnInit {
   namesMap: { [id: number]: string } = {};
   billItems: BillItem[] = [];
 
-  clients: any[] = []; // Full client objects
+  clients: any[] = [];
   selectedClient: any = null;
   clientName: string = '';
   address: string = '';
@@ -33,6 +32,7 @@ export class BillsComponent implements OnInit {
   discount: number = 0;
   totalAmount: number = 0;
   finalAmount: number = 0;
+  manualEmail: string = ''; // ✅ ADDED HERE
 
   constructor(
     private titleService: Title,
@@ -41,30 +41,6 @@ export class BillsComponent implements OnInit {
     private route: ActivatedRoute,
     private http: HttpClient
   ) {}
-
-  loadBillForEdit(billNumber: string) {
-  this.http.get<any>(`http://localhost:3001/api/bills/${billNumber}`).subscribe({
-    next: bill => {
-      this.clientName = bill.clientName;
-      this.address = bill.address;
-      this.billNumber = bill.billNumber;
-      this.billDate = bill.billDate;
-      this.discount = bill.discount;
-      this.totalAmount = bill.totalAmount;
-      this.finalAmount = bill.finalAmount;
-      this.billItems = bill.billItems || [];
-
-      this.billItems.forEach(item => {
-        item.productName = item.productId ? this.namesMap[item.productId] || '(Unknown)' : '';
-      });
-
-      // Match the selected client from full client list
-      const match = this.clients.find(c => c.firstName === bill.clientName);
-      if (match) this.selectedClient = match;
-    },
-    error: err => console.error('Failed to load bill for edit:', err)
-  });
-}
 
   ngOnInit(): void {
     this.titleService.setTitle('Invoice - J.T. Fruits & Vegetables');
@@ -90,6 +66,29 @@ export class BillsComponent implements OnInit {
     this.billsService.getLatestBillNumber().subscribe({
       next: (res: { billNumber: string }) => this.billNumber = res.billNumber,
       error: () => this.billNumber = '001'
+    });
+  }
+
+  loadBillForEdit(billNumber: string) {
+    this.http.get<any>(`http://localhost:3001/api/bills/${billNumber}`).subscribe({
+      next: bill => {
+        this.clientName = bill.clientName;
+        this.address = bill.address;
+        this.billNumber = bill.billNumber;
+        this.billDate = bill.billDate;
+        this.discount = bill.discount;
+        this.totalAmount = bill.totalAmount;
+        this.finalAmount = bill.finalAmount;
+        this.billItems = bill.billItems || [];
+
+        this.billItems.forEach(item => {
+          item.productName = item.productId ? this.namesMap[item.productId] || '(Unknown)' : '';
+        });
+
+        const match = this.clients.find(c => c.firstName === bill.clientName);
+        if (match) this.selectedClient = match;
+      },
+      error: err => console.error('Failed to load bill for edit:', err)
     });
   }
 
@@ -127,9 +126,15 @@ export class BillsComponent implements OnInit {
 
   printBill(): void {
     const allItems = [...this.billItems];
-    const printableItems = allItems.filter(item => item.productId !== null && item.productName && item.quantity > 0 && item.price > 0)
-                                   .map(item => ({ ...item, productName: this.namesMap[item.productId!] || '(Unknown)' }));
+    const printableItems = allItems.filter(item =>
+      item.productId !== null && item.productName && item.quantity > 0 && item.price > 0
+    ).map(item => ({
+      ...item,
+      productName: this.namesMap[item.productId!] || '(Unknown)'
+    }));
+
     this.billItems = printableItems;
+
     setTimeout(() => {
       window.print();
       this.billItems = allItems;
@@ -137,7 +142,15 @@ export class BillsComponent implements OnInit {
   }
 
   emailBill(): void {
-    const validItems = this.billItems.filter(item => item.productId !== null && item.productName && item.quantity > 0 && item.price > 0);
+    const validItems = this.billItems.filter(
+      item => item.productId !== null && item.productName && item.quantity > 0 && item.price > 0
+    );
+
+    if (!this.manualEmail || !this.manualEmail.includes('@')) {
+      alert('Please enter a valid email address');
+      return;
+    }
+
     const billData = {
       clientName: this.clientName,
       address: this.address,
@@ -146,12 +159,16 @@ export class BillsComponent implements OnInit {
       discount: this.discount,
       totalAmount: this.totalAmount,
       finalAmount: this.finalAmount,
-      billItems: validItems
+      billItems: validItems,
+      email: this.manualEmail // ✅ email passed to backend
     };
 
     this.billsService.sendBillByEmail(billData).subscribe({
       next: () => alert('Email Sent!'),
-      error: (err) => { console.error('Email failed:', err); alert('Failed to send email. Please try again.'); }
+      error: (err) => {
+        console.error('Email failed:', err);
+        alert('Failed to send email. Please try again.');
+      }
     });
   }
 
@@ -168,8 +185,14 @@ export class BillsComponent implements OnInit {
     };
 
     this.billsService.saveBill(billData).subscribe({
-      next: (response) => { alert('Bill saved successfully!'); console.log('Saved bill response:', response); },
-      error: (error: HttpErrorResponse) => { alert('Failed to save bill. Please try again.'); console.error('Error saving bill:', error); }
+      next: (response) => {
+        alert('Bill saved successfully!');
+        console.log('Saved bill response:', response);
+      },
+      error: (error: HttpErrorResponse) => {
+        alert('Failed to save bill. Please try again.');
+        console.error('Error saving bill:', error);
+      }
     });
   }
 

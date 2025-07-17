@@ -11,6 +11,8 @@ export interface Name {
   priority: string;
   units: string;
   createdAt: string;
+  mrp?: number;
+  expiryDays?: number;
 }
 
 @Injectable({

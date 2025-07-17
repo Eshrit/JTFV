@@ -386,14 +386,14 @@ app.post('/api/send-bill', (req, res) => {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: 'riteshshahu2603@gmail.com',
-      pass: 'mgag eird shhi xgvo'
+      user: 'jkumarshahu5@gmail.com',
+      pass: 'oiaq tisz kkim bcci'
     }
   });
 
   const mailOptions = {
-    from: 'riteshshahu2600@gmail.com',
-    to: 'riteshshahu2603@gmail.com',
+    from: 'jkumarshahu5@gmail.com',
+    to: bill.email || '', // 👈 use custom email if provided
     subject: `Invoice - ${bill.billNumber}`,
     html: `
       <h2>Invoice - ${bill.billNumber}</h2>

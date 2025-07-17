@@ -110,7 +110,9 @@
 
   <div class="actions no-print">
     <button class="btn btn-success" (click)="saveBill()">Save</button>
-    <button class="btn btn-secondary" (click)="emailBill()">Email</button>
     <button class="btn btn-primary" (click)="printBill()">Print</button>
+    <input type="email" class="form-control" placeholder="Enter email address" style="display: inline-block; width: 250px; margin-right: 10px;" 
+    [(ngModel)]="manualEmail" />
+    <button class="btn btn-secondary" (click)="emailBill()">Email</button>
   </div>
 </div>
