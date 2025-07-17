@@ -13,6 +13,7 @@
     products: any[] = [];
     printItems: any[] = [];
     nameOptions: Name[] = [];
+    packedOnDate: string = new Date().toISOString().substring(0, 10);
     currentDate: string = new Date().toISOString().substring(0, 10);
     selectedPrintStyle: LabelStyle = 'dmart';
 
@@ -51,7 +52,7 @@
     }
 
     updateExpiry(index: number) {
-      const today = new Date();
+      const today = new Date(this.packedOnDate);
       const expiry = new Date(today);
       expiry.setDate(today.getDate() + Number(this.products[index].expiryDays));
       this.products[index].expiryDate = expiry.toISOString().substring(0, 10);
@@ -62,6 +63,18 @@
         return this.nameOptions.filter((n) => n.type?.toLowerCase() === 'vegetable');
       }
       return this.nameOptions;
+    }
+
+    onPackedOnChange() {
+      this.products.forEach((p, i) => {
+        const packed = new Date(this.packedOnDate);
+        packed.setDate(packed.getDate() + Number(p.expiryDays));
+        p.expiryDate = packed.toISOString().substring(0, 10);
+
+        this.generateBarcode(p);
+      });
+
+      this.cdRef.detectChanges();
     }
 
     onProductSelect(i: number, event: Event) {
@@ -355,7 +368,7 @@
 
       return this.printItems
         .map((p, i) => {
-          const pkd = formatDate(this.currentDate);
+          const pkd = formatDate(this.packedOnDate);
           const exp = formatDate(p.expiryDate);
 
           return `
@@ -386,12 +399,12 @@
         .map(
           (p, i) => `
         <div class="reliance-label">
-          <div style="text-align:left;font-size:11px;"><b>J T FRUITS &amp; VEG</b></div>
+          <div style="text-align:center;font-size:11px;"><b>J T FRUITS &amp; VEG</b></div>
           <div style="text-align:center;font-size:12px;">${p.productName}</div>
           <img id="rel-barcode-img-${i}" style="width:180px;height:40px;" />
           <div class="barcode-value">${p.barcode}</div>
           <div style="display:flex;justify-content:space-between;"><div><b>M.R.P :</b></div><div>₹${p.mrp}/-</div></div>
-          <div style="display:flex;justify-content:space-between;"><div><b>PACKED ON :</b></div><div>${this.currentDate}</div></div>
+          <div style="display:flex;justify-content:space-between;"><div>PACKED ON :</b></div><div>${this.packedOnDate}</div></div>
           <div style="display:flex;justify-content:space-between;"><div><b>BEST BEFORE :</b></div><div><b>${p.expiryDays} DAYS</b></div></div>
           <div style="text-align:center;font-size:9px;">
             <div style="text-align:center;font-size:11px;"><b>FSSAI No. 11517011000128</b></div>

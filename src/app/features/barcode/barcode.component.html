@@ -5,6 +5,21 @@
     <h1>Barcode Generator</h1>
   </div>
 
+  <div class="barcode-top-options no-print">
+    <div class="packed-date-wrapper">
+      <label for="packedOn" class="packed-date-label">📦 <strong>Packed On Date</strong></label>
+      <input type="date" id="packedOn" name="packedOn" class="form-control packed-date-input" [(ngModel)]="packedOnDate" (change)="onPackedOnChange()" />
+    </div>
+
+    <div class="print-style-wrapper">
+      <label class="print-style-label">🖨️ Select Print Style:</label>
+      <select class="form-select print-style-select" [(ngModel)]="selectedPrintStyle" name="printStyle" (change)="onPrintStyleChange(selectedPrintStyle)">
+        <option value="dmart">D-Mart</option>
+        <option value="reliance">Reliance</option>
+      </select>
+    </div>
+  </div>
+
   <form>
     <table class="table">
       <thead>
@@ -53,14 +68,6 @@
         </tr>
       </tbody>
     </table>
-
-    <div class="print-style-wrapper no-print">
-      <label class="print-style-label">🖨️ Select Print Style:</label>
-      <select class="form-select print-style-select" [(ngModel)]="selectedPrintStyle" name="printStyle" (change)="onPrintStyleChange(selectedPrintStyle)">
-        <option value="dmart">D-Mart</option>
-        <option value="reliance">Reliance</option>
-      </select>
-    </div>
 
     <div class="actions no-print">
       <button type="button" class="btn btn-outline-primary add-btn" (click)="addRow()">Add Row</button>
