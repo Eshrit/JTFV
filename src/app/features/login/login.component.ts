@@ -26,9 +26,15 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     this.logoUrl = 'assets/logo.jpg';
 
-    // ✅ Redirect if already logged in
-    if (localStorage.getItem('isLoggedIn') === 'true') {
-      this.router.navigate(['/dashboard']);
+    const savedEmail = localStorage.getItem('savedEmail');
+    const savedPassword = localStorage.getItem('savedPassword');
+
+    if (savedEmail) {
+      this.loginForm.controls['email'].setValue(savedEmail);
+    }
+
+    if (savedPassword) {
+      this.loginForm.controls['password'].setValue(savedPassword);
     }
   }
 
@@ -36,8 +42,10 @@ export class LoginComponent implements OnInit {
     if (this.loginForm.valid) {
       this.http.post('http://localhost:3001/api/login', this.loginForm.value).subscribe({
         next: () => {
-          // ✅ Save login state
-          localStorage.setItem('isLoggedIn', 'true');
+          // ✅ Store credentials in localStorage
+          localStorage.setItem('savedEmail', this.loginForm.value.email);
+          localStorage.setItem('savedPassword', this.loginForm.value.password);
+
           this.router.navigate(['/dashboard']);
         },
         error: () => alert('Invalid email or password. Please try again.')
