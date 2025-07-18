@@ -15,7 +15,7 @@
     nameOptions: Name[] = [];
     packedOnDate: string = this.getTodayLocalDate();
     currentDate: string = this.getTodayLocalDate();
-    selectedPrintStyle: LabelStyle = 'dmart';
+    selectedPrintStyle: LabelStyle = 'reliance';
 
     constructor(
       private cdRef: ChangeDetectorRef,
@@ -24,7 +24,8 @@
 
     ngOnInit(): void {
       for (let i = 0; i < 1; i++) this.addRow();
-
+      this.onPrintStyleChange(this.selectedPrintStyle);
+      this.packedOnDate = this.getTodayLocalDate(); // Initialize packed date to today
       this.productService.getNames().subscribe({
         next: (names) => {
           this.nameOptions = names.sort((a, b) =>
@@ -211,11 +212,11 @@
         @media print {
           @page {
             size: 38mm 25mm;
-            margin: 0;
+            margin: 0mm;
           }
           body, html {
-            margin: 0;
-            padding: 0;
+            margin: 0 !important;
+            padding: 0 !important;
           }
           .print-section {
             display: flex;
@@ -228,8 +229,8 @@
 
         .dmart-label {
           position: relative;
-          width: 144px;
-          height: 96px;
+          width: 136px; /* Adjusted */
+          height: 90px; /* Adjusted */
           box-sizing: border-box;
           padding: 3px 4px 1px;
           font-family: Arial, sans-serif;
@@ -264,7 +265,7 @@
         }
 
         .barcode-value {
-          font-size: 12px;
+          font-size: 11px;
           text-align: left;
           width: 100%;
           letter-spacing: 1px;
@@ -292,7 +293,7 @@
         }
 
         .label-footer {
-          font-size: 8px;
+          font-size: 7.5px;
           text-align: left;
           width: 100%;
           margin-top: 2px;

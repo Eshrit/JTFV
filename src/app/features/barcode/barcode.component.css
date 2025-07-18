@@ -136,6 +136,18 @@ select.form-control:focus {
   background-color: #44bc56;
 }
 
+/* Wider Product column */
+.col-product {
+  width: 24%;
+  min-width: 140px;
+}
+
+/* Narrower MRP, Qty, Expiry Days */
+.col-small {
+  width: 10%;
+  min-width: 70px;
+}
+
 /* 📦 Combined Options Row (Packed On Date + Print Style) */
 .barcode-top-options {
   display: flex;
