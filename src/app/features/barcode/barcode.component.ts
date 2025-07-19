@@ -173,7 +173,7 @@
     printSelected() {
       this.preparePrintItems();
 
-      const win = window.open('', '', 'width=0,height=0');
+      const win = window.open('', '', 'width=800,height=800');
       if (!win) {
         alert('Popup blocked. Please allow pop-ups for this site.');
         return;

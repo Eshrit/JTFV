@@ -172,7 +172,7 @@
 
   .table th,
   .table td {
-    border: 1px solid #e0e0e0;
+    border: 1px solid #ccc;
     padding: 10px 12px;
     text-align: center;
   }
@@ -253,10 +253,37 @@
 
   /* Product select dropdown */
   select.product-control {
-    width: 200px;
+    width: 250px;
     padding: 8px;
     font-size: 14px;
     border: 1px solid #ccd6dd;
     border-radius: 6px;
     background-color: #f7f9fc;
+  }
+
+  /* Show the summary fixed at bottom during print */
+  @media print {
+    .print-summary-footer {
+      position: fixed;
+      bottom: 40px;
+      left: 0;
+      right: 0;
+      width: 100%;
+      padding: 0 40px;
+      box-sizing: border-box;
+      background: white;
+    }
+
+    .print-summary-footer .summary {
+      display: flex;
+      justify-content: flex-end;
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 6px;
+      gap: 10px;
+    }
+
+    .print-summary-footer .summary label {
+      white-space: nowrap;
+    }
   }

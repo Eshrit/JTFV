@@ -29,6 +29,7 @@ export class EditBillsComponent implements OnInit {
   discount = 0;
   totalAmount = 0;
   finalAmount = 0;
+  manualEmail: string = '';
 
   clients: any[] = []; // ✅ Full client objects
   selectedClient: any = null;
@@ -101,7 +102,15 @@ export class EditBillsComponent implements OnInit {
 
   onProductChange(index: number): void {
     const selectedId = this.billItems[index].productId;
-    this.billItems[index].productName = this.namesMap[selectedId!] || '(Unknown)';
+    const selectedProduct = this.products.find(p => p.id === selectedId);
+
+    if (selectedProduct) {
+      const nameWithUnits = selectedProduct.name + (selectedProduct.units ? ' ' + selectedProduct.units : '');
+      this.billItems[index].productName = nameWithUnits;
+    } else {
+      this.billItems[index].productName = '(Unknown)';
+    }
+
     this.calculateRowTotal(index);
   }
 
@@ -122,15 +131,23 @@ export class EditBillsComponent implements OnInit {
   }
 
   printBill(): void {
-    const allItems = [...this.billItems];
-    const printableItems = allItems
-      .filter(item => item.productId !== null && item.quantity > 0 && item.price > 0)
-      .map(item => ({
-        ...item,
-        productName: this.namesMap[item.productId!] || '(Unknown)'
-      }));
+    const validItems = this.billItems.filter(
+      item => item.productId !== null && item.quantity > 0 && item.price > 0
+    );
 
-    this.billItems = printableItems;
+    if (validItems.length === 0) {
+      alert('No valid items to print. Please check quantity and price fields.');
+      return;
+    }
+
+    const allItems = [...this.billItems];
+    this.billItems = validItems.map(item => ({
+      ...item,
+      productName: (() => {
+        const prod = this.products.find(p => p.id === item.productId);
+        return prod ? prod.name + (prod.units ? ' ' + prod.units : '') : '(Unknown)';
+      })()
+    }));
 
     setTimeout(() => {
       window.print();
@@ -138,13 +155,23 @@ export class EditBillsComponent implements OnInit {
     }, 300);
   }
 
+  highlightInvalidRows(): void {
+    this.billItems.forEach((item, index) => {
+      if (!item.productId || item.quantity <= 0 || item.price <= 0) {
+        console.warn(`Row ${index + 1} is incomplete.`);
+      }
+    });
+  }
+
   emailBill(): void {
-    const validItems = this.billItems.filter(item =>
-      item.productId !== null &&
-      item.productName &&
-      item.quantity > 0 &&
-      item.price > 0
+    const validItems = this.billItems.filter(
+      item => item.productId !== null && item.productName && item.quantity > 0 && item.price > 0
     );
+
+    if (!this.manualEmail || !this.manualEmail.includes('@')) {
+      alert('Please enter a valid email address');
+      return;
+    }
 
     const billData = {
       clientName: this.clientName,
@@ -154,7 +181,8 @@ export class EditBillsComponent implements OnInit {
       discount: this.discount,
       totalAmount: this.totalAmount,
       finalAmount: this.finalAmount,
-      billItems: validItems
+      billItems: validItems,
+      email: this.manualEmail // ✅ email passed to backend
     };
 
     this.billsService.sendBillByEmail(billData).subscribe({

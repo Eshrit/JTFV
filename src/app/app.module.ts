@@ -25,6 +25,7 @@ import { EditProductsComponent } from './features/products/edit-products/edit-pr
 import { BarcodeComponent } from './features/barcode/barcode.component';
 import { EditBillsComponent } from './features/bills/edit-bills/edit-bills.component';
 import { BillsComponent } from './features/bills/bills.component';
+import { AddLumpsumBillsComponent } from './features/bills/add-lumpsum-bills/add-lumpsum-bills.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +42,7 @@ import { BillsComponent } from './features/bills/bills.component';
     ProductsComponent,
     EditProductsComponent,
     EditBillsComponent,
+    AddLumpsumBillsComponent,
   ],
   imports: [
     BrowserModule,

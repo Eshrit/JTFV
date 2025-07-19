@@ -91,26 +91,31 @@
     </tbody>
   </table>
 
-  <div class="summary">
-    <label>Total Amount:</label>
-    <div>{{ totalAmount | currency:'INR' }}</div>
-  </div>
+  <!-- Fixed summary footer (for print) -->
+  <div class="print-summary-footer">
+    <div class="summary">
+      <label>Total Amount:</label>
+      <div>{{ totalAmount | currency:'INR' }}</div>
+    </div>
 
-  <div class="summary print-toggle">
-    <label>Discount (%):</label>
-    <input class="form-control" style="width: 100px; display: inline-block;" 
-    type="number" [(ngModel)]="discount" (input)="calculateFinalAmount()" />
-    <span class="print-view">{{ discount }}</span>
-  </div>
+    <div class="summary print-toggle">
+      <label>Discount (%):</label>
+      <input class="form-control no-print" style="width: 100px; display: inline-block;"
+            type="number" [(ngModel)]="discount" (input)="calculateFinalAmount()" />
+      <span class="print-view">{{ discount }}</span>
+    </div>
 
-  <div class="summary">
-    <label>Final Amount:</label>
-    <div>{{ finalAmount | currency:'INR' }}</div>
+    <div class="summary">
+      <label>Final Amount:</label>
+      <div>{{ finalAmount | currency:'INR' }}</div>
+    </div>
   </div>
 
   <div class="actions no-print">
     <button class="btn btn-success" (click)="saveBill()">Save</button>
-    <button class="btn btn-secondary" (click)="emailBill()">Email</button>
     <button class="btn btn-primary" (click)="printBill()">Print</button>
+    <input type="email" class="form-control" placeholder="Enter email address" style="display: inline-block; width: 250px; margin-right: 10px;" 
+    [(ngModel)]="manualEmail" />
+    <button class="btn btn-secondary" (click)="emailBill()">Email</button>
   </div>
 </div>

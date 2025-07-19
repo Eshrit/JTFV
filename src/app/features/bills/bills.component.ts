@@ -32,7 +32,7 @@ export class BillsComponent implements OnInit {
   discount: number = 0;
   totalAmount: number = 0;
   finalAmount: number = 0;
-  manualEmail: string = ''; // ✅ ADDED HERE
+  manualEmail: string = '';
 
   constructor(
     private titleService: Title,
@@ -103,8 +103,15 @@ export class BillsComponent implements OnInit {
 
   onProductChange(index: number): void {
     const selectedId = this.billItems[index].productId;
-    const selectedName = this.namesMap[selectedId!] || '(Unknown)';
-    this.billItems[index].productName = selectedName;
+    const selectedProduct = this.products.find(p => p.id === selectedId);
+
+    if (selectedProduct) {
+      const nameWithUnits = selectedProduct.name + (selectedProduct.units ? ' ' + selectedProduct.units : '');
+      this.billItems[index].productName = nameWithUnits;
+    } else {
+      this.billItems[index].productName = '(Unknown)';
+    }
+
     this.calculateRowTotal(index);
   }
 
@@ -125,20 +132,36 @@ export class BillsComponent implements OnInit {
   }
 
   printBill(): void {
-    const allItems = [...this.billItems];
-    const printableItems = allItems.filter(item =>
-      item.productId !== null && item.productName && item.quantity > 0 && item.price > 0
-    ).map(item => ({
-      ...item,
-      productName: this.namesMap[item.productId!] || '(Unknown)'
-    }));
+    const validItems = this.billItems.filter(
+      item => item.productId !== null && item.quantity > 0 && item.price > 0
+    );
 
-    this.billItems = printableItems;
+    if (validItems.length === 0) {
+      alert('No valid items to print. Please check quantity and price fields.');
+      return;
+    }
+
+    const allItems = [...this.billItems];
+    this.billItems = validItems.map(item => ({
+      ...item,
+      productName: (() => {
+        const prod = this.products.find(p => p.id === item.productId);
+        return prod ? prod.name + (prod.units ? ' ' + prod.units : '') : '(Unknown)';
+      })()
+    }));
 
     setTimeout(() => {
       window.print();
       this.billItems = allItems;
     }, 300);
+  }
+
+  highlightInvalidRows(): void {
+    this.billItems.forEach((item, index) => {
+      if (!item.productId || item.quantity <= 0 || item.price <= 0) {
+        console.warn(`Row ${index + 1} is incomplete.`);
+      }
+    });
   }
 
   emailBill(): void {
