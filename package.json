@@ -12,7 +12,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "electron": "electron --trace-warnings .",
-    "pack": "electron-builder --dir",
+    "pack": "electron-builder --dir && exit 0",
     "dist": "npm run build && electron-builder && exit 0"
   },
   "private": true,
