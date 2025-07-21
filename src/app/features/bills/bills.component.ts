@@ -101,6 +101,20 @@ export class BillsComponent implements OnInit {
     }
   }
 
+  onPriceKeydown(event: KeyboardEvent, index: number): void {
+    if (event.key === 'Tab' && !event.shiftKey && index === this.billItems.length - 1) {
+      setTimeout(() => {
+        this.billItems.push({
+          productId: null,
+          productName: '',
+          quantity: 0,
+          price: 0,
+          total: 0
+        });
+      }, 0);
+    }
+  }
+
   onProductChange(index: number): void {
     const selectedId = this.billItems[index].productId;
     const selectedProduct = this.products.find(p => p.id === selectedId);

@@ -82,7 +82,7 @@
         </td>
         <td>
           <div class="print-toggle">
-            <input class="form-control" type="number" [(ngModel)]="item.price" (input)="calculateRowTotal(i)" />
+            <input class="form-control" type="number" [(ngModel)]="item.price" (input)="calculateRowTotal(i)" (keydown)="onPriceKeydown($event, i)" />
             <span class="print-view">{{ item.price }}</span>
           </div>
         </td>
