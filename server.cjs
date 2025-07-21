@@ -107,15 +107,16 @@ db.run(`
 
   db.run(`
     CREATE TABLE IF NOT EXISTS bills (
-    id INTEGER PRIMARY KEY AUTOINCREMENT, 
-    clientName TEXT, 
-    address TEXT,
-    billNumber TEXT, 
-    billDate TEXT, 
-    discount REAL, 
-    totalAmount REAL, 
-    finalAmount REAL, 
-    billItems TEXT
+      id INTEGER PRIMARY KEY AUTOINCREMENT, 
+      clientName TEXT, 
+      address TEXT,
+      billNumber TEXT, 
+      billDate TEXT, 
+      discount REAL, 
+      totalAmount REAL, 
+      finalAmount REAL, 
+      description TEXT,
+      billItems TEXT
     )
     `);
 
@@ -278,9 +279,19 @@ app.delete('/api/products/:id', (req, res) => {
 // ==================== BILL ROUTES ====================
 app.post('/api/bills', (req, res) => {
   const b = req.body;
-  const query = `INSERT INTO bills (clientName, address, billNumber, billDate, discount, totalAmount, finalAmount, billItems)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
-  const values = [b.clientName, b.address, b.billNumber, b.billDate, b.discount, b.totalAmount, b.finalAmount, JSON.stringify(b.billItems)];
+  const query = `INSERT INTO bills (clientName, address, billNumber, billDate, discount, totalAmount, finalAmount, description, billItems)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+  const values = [
+    b.clientName,
+    b.address,
+    b.billNumber,
+    b.billDate,
+    b.discount,
+    b.totalAmount,
+    b.finalAmount,
+    b.description || '',
+    JSON.stringify(b.billItems)
+  ];
 
   db.run(query, values, function (err) {
     if (err) return res.status(500).json({ message: 'Failed to save bill' });

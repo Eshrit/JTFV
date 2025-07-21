@@ -18,15 +18,19 @@ export class ReportsComponent implements OnInit {
   ngOnInit(): void {
     this.billsService.getAllBills().subscribe({
       next: (data) => {
-        this.bills = data.filter(bill => {
+        this.bills = data.map(bill => {
+          let billItems;
           try {
-            const items = JSON.parse(bill.billItems);
-            return Array.isArray(items) && items.length > 0;
+            const parsed = JSON.parse(bill.billItems);
+            // If parsed is array, it's a normal bill; otherwise it's lumpsum
+            billItems = Array.isArray(parsed) ? parsed : [];
           } catch {
-            return false;
+            billItems = [];
           }
+          return { ...bill, billItems };
         });
-        this.filteredBills = [...this.bills]; // initial copy
+
+        this.filteredBills = [...this.bills];
       },
       error: (err) => console.error('Failed to load bills:', err)
     });
@@ -35,7 +39,7 @@ export class ReportsComponent implements OnInit {
   selectBill(bill: any): void {
     this.selectedBill = {
       ...bill,
-      billItems: JSON.parse(bill.billItems)
+      billItems: bill.billItems
     };
   }
 
@@ -57,8 +61,7 @@ export class ReportsComponent implements OnInit {
       });
     }
   }
-  
-  
+
   printSelectedBill(): void {
     const printContents = document.getElementById('print-section')?.innerHTML;
     if (printContents) {
@@ -66,10 +69,16 @@ export class ReportsComponent implements OnInit {
       document.body.innerHTML = printContents;
       window.print();
       document.body.innerHTML = originalContents;
-      window.location.reload(); // optional: refresh to restore bindings
+      window.location.reload();
     }
   }
-  
+
+  getEditLink(bill: any): string[] {
+    return bill.description
+      ? ['/edit-lumpsum-bills', bill.billNumber]
+      : ['/edit-bills', bill.billNumber];
+  }
+
   onSearch(): void {
     const query = this.searchText.toLowerCase();
     if (!query) {

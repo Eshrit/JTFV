@@ -1,0 +1,92 @@
+<app-navbar class="no-print"></app-navbar>
+
+<div class="container">
+  <!-- Top Header -->
+  <div class="top-section text-center">
+    <h2 class="title">J.T. Fruits & Vegetables</h2>
+    <div class="address-line"> Shop No. 31-32, Bldg No. 27, EMP Op Jogers Park, Thakur Village, Kandivali(E), Mumbai 400101 </div>
+    <div class="license-line"> PAN: AAJFJ0258J | FSS LICENSE ACT 2006 LICENSE NO: 11517011000128 </div>
+    <div class="email-line"> Email: jkumarshahu6&#64;gmail.com </div>
+
+    <div class="invoice-top">
+      <div class="field-inline">
+        <label class="bold-label">Date:</label>
+        <div class="print-toggle print-value">
+          <input type="date" class="form-control no-print" [(ngModel)]="billDate" />
+          <span class="print-view">{{ billDate | date:'dd/MM/yyyy' }}</span>
+        </div>
+      </div>
+
+      <h3 class="invoice-title">TAX FREE INVOICE</h3>
+
+      <div class="field-inline">
+        <label class="bold-label">Bill No:</label>
+        <div class="print-toggle print-value">
+          <input type="text" class="form-control bill-control no-print" [(ngModel)]="billNumber" readonly />
+          <span class="print-view">{{ billNumber }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Client Info -->
+  <div class="horizontal-info">
+    <div class="field-row">
+      <label>Name:</label>
+      <div class="print-toggle print-value">
+        <select class="form-control client-select no-print" [(ngModel)]="selectedClient" (change)="onClientChange()">
+          <option [ngValue]="null">Select Client</option>
+          <option *ngFor="let client of clients" [ngValue]="client">{{ client.firstName }}</option>
+        </select>
+        <span class="print-view">{{ clientName }}</span>
+      </div>
+    </div>
+
+    <div class="field-row align-top">
+      <label>Address:</label>
+      <div class="print-toggle print-value">
+        <textarea class="form-control no-print" [(ngModel)]="address" rows="3"></textarea>
+        <span class="print-view" style="white-space: pre-line;">{{ address }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Description -->
+  <div class="print-toggle print-value description-container">
+    <textarea [(ngModel)]="description" class="form-control no-print" rows="6" style="width: 100%; margin-bottom: 20px;"></textarea>
+    <div class="description-print print-view">{{ description }}</div>
+  </div>
+
+  <div class="amount-row-print print-toggle print-value">
+    <label>Amount:</label>
+    <input type="number" [(ngModel)]="amount" class="form-control no-print" />
+    <span class="print-view">{{ amount }}</span>
+  </div>
+
+  <!-- Summary -->
+  <div class="print-summary-footer">
+    <div class="summary">
+      <label>Total Amount:</label>
+      <div>{{ amount | currency:'INR' }}</div>
+    </div>
+
+    <div class="summary print-toggle">
+      <label>Discount (%):</label>
+      <input class="form-control no-print" type="number" style="width: 100px" [(ngModel)]="discount" (input)="calculateFinalAmount()" />
+      <span class="print-view">{{ discount }}</span>
+    </div>
+
+    <div class="summary">
+      <label>Final Amount:</label>
+      <div>{{ finalAmount | currency:'INR' }}</div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="actions no-print">
+    <button class="btn btn-success" (click)="updateBill()">Update</button>
+    <button class="btn btn-primary" (click)="printBill()">Print</button>
+    <input type="email" [(ngModel)]="manualEmail" class="form-control" placeholder="Enter email" style="width: 250px; display: inline-block; margin-right: 10px;" />
+    <button class="btn btn-secondary" (click)="emailBill()">Email</button>
+  </div>
+</div>

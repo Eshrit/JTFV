@@ -211,102 +211,102 @@
       const dmartStyles = `
         @media print {
           @page {
-            size: 38mm 25mm;
-            margin: 0mm;
+            size: 50mm 50mm;
+            margin: 0;
           }
-          body, html {
-            margin: 0 !important;
-            padding: 0 !important;
-          }
-          .print-section {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0;
+          body {
             margin: 0;
             padding: 0;
+          }
+          .print-section {
+            margin: 0;
+            padding: 6px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: flex-start;
           }
         }
 
         .dmart-label {
-          position: relative;
-          width: 136px; /* Adjusted */
-          height: 90px; /* Adjusted */
+          width: 240px;
+          height: 189px;
+          padding: 6px 10px;
           box-sizing: border-box;
-          padding: 3px 4px 1px;
-          font-family: Arial, sans-serif;
-          font-size: 9px;
           display: flex;
           flex-direction: column;
-          justify-content: flex-start;
-          text-align: left;
-          line-height: 1.1;
-        }
-
-        .label-header {
-          font-size: 9px;
-          text-align: center;
-          width: 100%;
-          margin-bottom: 0;
-        }
-
-      .label-product {
-        font-size: 10px;
-        text-align: left;
-        width: 100%;
-        margin-top: 2px;
-        margin-bottom: 1px;
-        padding-left: 2px;
-      }
-
-        .dmart-label img {
-          width: 130px;
-          height: 36px;
-          margin: 0 0 1px;
-        }
-
-        .barcode-value {
-          font-size: 11px;
-          text-align: left;
-          width: 100%;
-          letter-spacing: 1px;
-          padding-left: 2px;
-        }
-
-        .info-row {
-          display: flex;
           justify-content: space-between;
-          width: 100%;
+          font-family: Arial, sans-serif;
           font-size: 10px;
-          margin: 0;
-        }
-
-        .info-left {
-          font-weight: normal;
-          font-size: 12px;
-          text-align: center;
-        }
-
-        .price-value {
-          font-size: 10.5px;
-          font-weight: bold;
-          text-align: center;
-        }
-
-        .label-footer {
-          font-size: 7.5px;
+          line-height: 1.2;
           text-align: left;
-          width: 100%;
+          page-break-inside: avoid;
+          border: 1px solid transparent;
+          position: relative;
+          overflow: visible;
+        }
+
+        .barcode-row {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: flex-start;
           margin-top: 2px;
+          gap: 4px;
+        }
+
+        .barcode-left {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .barcode-left .label-product {
+          font-size: 11px;
+          font-weight: bold;
+          margin-bottom: 2px;
+          text-align: left;
+        }
+
+        .barcode-left img {
+          width: 160px;
+          height: 32px;
+        }
+
+        .barcode-left .barcode-value {
+          font-size: 13px;
+          letter-spacing: 1px;
+          text-align: center;
+          margin-top: 2px;
+          width: 160px;
         }
 
         .side-brand {
-          position: absolute;
-          right: -4px;
-          top: 27%;
-          transform: rotate(-90deg);
-          transform-origin: right top;
+          writing-mode: vertical-rl;
+          text-orientation: mixed;
+          transform: rotate(180deg);
           font-size: 15px;
           font-weight: bold;
+          color: black;
+          padding-left: 2px;
+          line-height: 1;
+        }
+
+        .label-bold {
+          font-weight: bold;
+        }
+
+        .label-info-row {
+          display: flex;
+          justify-content: space-between;
+          margin: 2px 0;
+        }
+
+        .dmart-footer {
+          text-align: center;
+          font-size: 9px;
+          line-height: 1.1;
+          margin-top: 4px;
         }
       `;
 
@@ -403,39 +403,31 @@
     }
 
     private generateDmartBody(): string {
-      const formatDate = (dateStr: string) => {
-        const d = new Date(dateStr);
-        const dd = String(d.getDate()).padStart(2, '0');
-        const mm = String(d.getMonth() + 1).padStart(2, '0');
-        const yy = String(d.getFullYear()).slice(-2);
-        return `${dd}.${mm}.${yy}`;
-      };
-
       return this.printItems
-        .map((p, i) => {
-          const pkd = formatDate(this.packedOnDate);
-          const exp = formatDate(p.expiryDate);
-
-          return `
+        .map(
+          (p, i) => `
           <div class="dmart-label">
-            <span class="side-brand">Dmart</span>
-            <div class="label-header">J T FRUITS &amp; VEG</div>
-            <div class="label-product">${p.productName}</div>
-            <img id="dmart-bar-${i}" />
-            <div class="barcode-value">${p.barcode}</div>
-
-            <div class="info-row">
-              <div class="info-left">M.R.P.</div>
-              <div>Pkd. On ${pkd}</div>
+            <div style="text-align:center;font-size:11px;"><b>J T FRUITS &amp; VEG</b></div>
+            <div class="barcode-row">
+              <div class="barcode-left">
+                <div class="label-product">${p.productName}</div>
+                <img id="dmart-bar-${i}" />
+                <div class="barcode-value">${p.barcode}</div>
+              </div>
+              <div class="side-brand">Dmart</div>
             </div>
-            <div class="info-row">
-              <div class="price-value">₹${p.mrp.toFixed(2)}</div>
-              <div>Exp. Dt. ${exp}</div>
+            <div style="display:flex;justify-content:space-between;"><div><b>M.R.P :</b></div><div>₹${p.mrp}/-</div></div>
+            <div style="display:flex;justify-content:space-between;"><div>PACKED ON :</div><div>${this.packedOnDate}</div></div>
+            <div style="display:flex;justify-content:space-between;"><div><b>BEST BEFORE :</b></div><div><b>${p.expiryDays} DAYS</b></div></div>
+            <div class="dmart-footer">
+              <div style="text-align:center;font-size:11px;"><b>FSSAI No. 11517011000128</b></div>
+              <div style="text-align:center;font-size:10px;">Shop No. 31-32, Bldg No. 27,</div>
+              <div style="text-align:center;font-size:10px;">EMP Op Jogers Park, Thakur Village,</div>
+              <div style="text-align:center;font-size:10px;">Kandivali(E)</div>
+              <div style="text-align:center;font-size:10px;">Customer Care No. 9594117456</div>
             </div>
-
-            <div class="label-footer">Incl. of all Taxes)</div>
-          </div>`;
-        })
+          </div>`
+        )
         .join('');
     }
 

@@ -87,7 +87,7 @@ app.whenReady().then(() => {
 
   serverProcess = spawn('node', [serverPath], {
     env: {
-      ...process.env,
+      ...process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true',
       NODE_ENV: isDev ? 'development' : 'production',
       RUNNING_IN_ELECTRON: 'true',
       USER_DATA_PATH: userDataPath,

@@ -26,6 +26,7 @@ import { BarcodeComponent } from './features/barcode/barcode.component';
 import { EditBillsComponent } from './features/bills/edit-bills/edit-bills.component';
 import { BillsComponent } from './features/bills/bills.component';
 import { AddLumpsumBillsComponent } from './features/bills/add-lumpsum-bills/add-lumpsum-bills.component';
+import { EditLumpsumBillsComponent } from './features/bills/edit-lumpsum-bills/edit-lumpsum-bills.component';
 
 @NgModule({
   declarations: [
@@ -43,6 +44,7 @@ import { AddLumpsumBillsComponent } from './features/bills/add-lumpsum-bills/add
     EditProductsComponent,
     EditBillsComponent,
     AddLumpsumBillsComponent,
+    EditLumpsumBillsComponent,
   ],
   imports: [
     BrowserModule,

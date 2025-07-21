@@ -33,19 +33,15 @@
         <td>{{ bill.totalAmount | currency:'INR' }}</td>
         <td>{{ bill.finalAmount | currency:'INR' }}</td>
         <td>
-          <button class="btn btn-outline-primary btn-edit" [routerLink]="['/edit-bills', bill.billNumber]">
-            Edit
-          </button>
+          <button  class="btn btn-outline-primary btn-edit" [routerLink]="getEditLink(bill)"> Edit </button>
         </td>
         <td>
-          <button class="btn btn-outline-danger btn-delete" (click)="deleteBill(bill.billNumber)">
-            Delete
-          </button>
+          <button class="btn btn-outline-danger btn-delete" (click)="deleteBill(bill.billNumber)"> Delete </button>
         </td>        
       </tr>
     </tbody>
   </table>
-  
+
 
   <p *ngIf="!filteredBills.length">No bills found.</p>
 

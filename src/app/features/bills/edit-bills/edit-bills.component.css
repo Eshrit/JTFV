@@ -19,6 +19,91 @@
     }
   }
 
+  /* Print styles */
+  @media print {
+    .date-control,
+    .bill-number-block {
+      font-size: 12px !important;
+      line-height: 1.2 !important;
+      margin-bottom: 4px !important;
+    }
+
+    .bold-label {
+      font-size: 12px !important;
+    }
+
+    body, .container {
+      font-size: 10px !important;
+      line-height: 1.4 !important;
+    }
+
+    .table {
+      font-size: 10px !important;
+      margin: 10px 0 !important;
+      border-collapse: collapse;
+    }
+
+    .table th,
+    .table td {
+      padding: 6px 8px !important;
+      line-height: 1.4 !important;
+    }
+
+    .header {
+      margin-bottom: 14px !important;
+    }
+
+    .header h1 {
+      font-size: 16px !important;
+    }
+
+    .header p {
+      font-size: 10px !important;
+    }
+
+    .horizontal-info {
+      margin-bottom: 12px !important;
+      gap: 12px !important;
+    }
+
+    .invoice-title {
+      font-size: 14px !important;
+      margin-top: 8px !important;
+      margin-bottom: 4px !important;
+    }
+
+    .field-row {
+      gap: 6px !important;
+      margin-bottom: 6px !important;
+    }
+
+    .print-summary-footer {
+      bottom: 20px !important;
+      padding: 0 20px !important;
+    }
+
+    .print-summary-footer .summary {
+      font-size: 10px !important;
+      margin: 0 !important;
+      gap: 8px !important;
+    }
+
+    /* Restore normal margin/padding where needed */
+    * {
+      margin-top: unset !important;
+      margin-bottom: unset !important;
+      padding-top: unset !important;
+      padding-bottom: unset !important;
+    }
+
+    /* Still hide buttons etc */
+    .actions,
+    .btn,
+    .no-print {
+      display: none !important;
+    }
+  }
+
   /* Main container */
   .container {
     max-width: 900px;
