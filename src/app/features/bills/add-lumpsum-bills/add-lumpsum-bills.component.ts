@@ -38,6 +38,8 @@ export class AddLumpsumBillsComponent implements OnInit {
       next: (res: { billNumber: string }) => this.billNumber = res.billNumber,
       error: () => this.billNumber = '001'
     });
+
+    this.calculateFinalAmount();
   }
 
   onClientChange(): void {
@@ -63,11 +65,20 @@ export class AddLumpsumBillsComponent implements OnInit {
       totalAmount: this.amount,
       finalAmount: this.finalAmount,
       description: this.description,
-      billItems: []
+      billItems: [] // No item list for lumpsum
     };
 
     this.billsService.saveBill(billData).subscribe({
-      next: () => alert('Bill saved successfully!'),
+      next: () => {
+        alert('Bill saved successfully!');
+        if (this.manualEmail && this.manualEmail.includes('@')) {
+          const emailData = { ...billData, email: this.manualEmail };
+          this.billsService.sendBillByEmail(emailData).subscribe({
+            next: () => alert('Email Sent!'),
+            error: () => alert('Failed to send email. Please try again.')
+          });
+        }
+      },
       error: () => alert('Failed to save bill. Please try again.')
     });
   }
@@ -91,6 +102,7 @@ export class AddLumpsumBillsComponent implements OnInit {
       totalAmount: this.amount,
       finalAmount: this.finalAmount,
       billItems: [],
+      description: this.description,
       email: this.manualEmail
     };
 

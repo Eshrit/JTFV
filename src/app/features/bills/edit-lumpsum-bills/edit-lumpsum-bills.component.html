@@ -59,7 +59,7 @@
 
   <div class="amount-row-print print-toggle print-value">
     <label>Amount:</label>
-    <input type="number" [(ngModel)]="amount" class="form-control no-print" />
+    <input type="number" [(ngModel)]="amount" class="form-control no-print" (input)="calculateFinalAmount()" />
     <span class="print-view">{{ amount }}</span>
   </div>
 

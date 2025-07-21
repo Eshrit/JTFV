@@ -396,6 +396,8 @@ app.post('/api/login', (req, res) => {
 app.post('/api/send-bill', (req, res) => {
   const bill = req.body;
 
+  console.log('📩 Incoming email bill:', JSON.stringify(bill, null, 2));
+
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -409,18 +411,23 @@ app.post('/api/send-bill', (req, res) => {
     to: bill.email || '', // 👈 use custom email if provided
     subject: `Invoice - ${bill.billNumber}`,
     html: `
-      <h2>Invoice - ${bill.billNumber}</h2>
-      <p><strong>Client:</strong> ${bill.clientName}</p>
-      <p><strong>Address:</strong> ${bill.address}</p>
-      <p><strong>Date:</strong> ${bill.billDate}</p>
-      <p><strong>Total Amount:</strong> ₹${bill.totalAmount.toFixed(2)}</p>
-      <p><strong>Discount:</strong> ${bill.discount.toFixed(2)}%</p>
-      <p><strong>Total:</strong> ₹${bill.finalAmount.toFixed(2)}</p>
+      <h2 style="color: #4B0082;">Invoice - ${bill.billNumber}</h2>
+      <p><strong style="color: #4B0082;">Client:</strong> ${bill.clientName}</p>
+      <p><strong style="color: #4B0082;">Address:</strong> ${bill.address}</p>
+      <p><strong style="color: #4B0082;">Date:</strong> ${bill.billDate}</p>
+      <p><strong style="color: #4B0082;">Total Amount:</strong> ₹${bill.totalAmount.toFixed(2)}</p>
+      <p><strong style="color: #4B0082;">Discount:</strong> ${bill.discount.toFixed(2)}%</p>
+      <p><strong style="color: #4B0082;">Total:</strong> ₹${bill.finalAmount.toFixed(2)}</p>
       <br/>
-      <h3>Items:</h3>
-      ${bill.billItems.map((item, index) => `
-        <p>${index + 1}. ${item.productName} - Qty: ${item.quantity}, Price: ₹${item.price}, Total: ₹${item.total}</p>
-      `).join('')}
+      ${Array.isArray(bill.billItems) && bill.billItems.length > 0
+        ? `<h3 style="color: #4B0082;">Items:</h3>` +
+          bill.billItems.map((item, index) => `
+            <p>${index + 1}. ${item.productName} - Qty: ${item.quantity}, Price: ₹${item.price}, Total: ₹${item.total}</p>
+          `).join('')
+        : (bill.description && bill.description.trim() !== '')
+          ? `<h3 style="color: #4B0082;">Description:</h3><p>${bill.description.replace(/\n/g, '<br/>')}</p>`
+          : `<p style="color: gray;">No items or description provided.</p>`
+      }
     `
   };
 

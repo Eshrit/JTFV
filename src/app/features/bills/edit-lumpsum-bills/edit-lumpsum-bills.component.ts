@@ -54,6 +54,7 @@ export class EditLumpsumBillsComponent implements OnInit {
         this.selectedClient = matchingClient;
       }
     });
+    this.calculateFinalAmount();
   }
 
   onClientChange(): void {
