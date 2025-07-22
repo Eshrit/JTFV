@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
@@ -19,10 +19,12 @@ interface BillItem {
   styleUrls: ['./bills.component.css']
 })
 export class BillsComponent implements OnInit {
+  @ViewChildren('productSelect') productSelectInputs!: QueryList<ElementRef>;
+  @ViewChildren('priceInput') priceInputs!: QueryList<ElementRef>;
+  
   products: Name[] = [];
   namesMap: { [id: number]: string } = {};
   billItems: BillItem[] = [];
-
   clients: any[] = [];
   selectedClient: any = null;
   clientName: string = '';
@@ -102,8 +104,11 @@ export class BillsComponent implements OnInit {
   }
 
   onPriceKeydown(event: KeyboardEvent, index: number): void {
-    if (event.key === 'Tab' && !event.shiftKey && index === this.billItems.length - 1) {
-      setTimeout(() => {
+    if (event.key === 'Tab' && !event.shiftKey) {
+      event.preventDefault(); // Stop default tabbing behavior
+
+      if (index === this.billItems.length - 1) {
+        // Add a new row
         this.billItems.push({
           productId: null,
           productName: '',
@@ -111,7 +116,23 @@ export class BillsComponent implements OnInit {
           price: 0,
           total: 0
         });
-      }, 0);
+
+        // Wait for view to update, then focus next product select
+        setTimeout(() => {
+          const productSelectArray = this.productSelectInputs.toArray();
+          const nextProductSelect = productSelectArray[index + 1];
+          if (nextProductSelect) {
+            nextProductSelect.nativeElement.focus();
+          }
+        }, 0);
+      } else {
+        // Focus next product select directly if row already exists
+        const productSelectArray = this.productSelectInputs.toArray();
+        const nextProductSelect = productSelectArray[index + 1];
+        if (nextProductSelect) {
+          nextProductSelect.nativeElement.focus();
+        }
+      }
     }
   }
 

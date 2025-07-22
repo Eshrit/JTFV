@@ -65,7 +65,7 @@
         <td>{{ i + 1 }}</td>
         <td>
           <div class="print-toggle">
-            <select class="product-control" [(ngModel)]="item.productId" (change)="onProductChange(i)">
+            <select #productSelect class="product-control" [(ngModel)]="item.productId" (change)="onProductChange(i)">
               <option [ngValue]="null" disabled>Select</option>
               <option *ngFor="let product of products" [ngValue]="product.id">
                 {{ product.name }}{{ product.units ? ' ' + product.units : '' }}

@@ -1,5 +1,4 @@
-// edit-bills.component.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { ProductService, Name } from 'src/app/core/services/products.service';
@@ -19,6 +18,8 @@ interface BillItem {
   styleUrls: ['./edit-bills.component.css']
 })
 export class EditBillsComponent implements OnInit {
+  @ViewChildren('productSelect') productSelectInputs!: QueryList<ElementRef>;
+
   products: Name[] = [];
   namesMap: { [id: number]: string } = {};
   billItems: BillItem[] = [];
@@ -31,7 +32,7 @@ export class EditBillsComponent implements OnInit {
   finalAmount = 0;
   manualEmail: string = '';
 
-  clients: any[] = []; // ✅ Full client objects
+  clients: any[] = [];
   selectedClient: any = null;
 
   constructor(
@@ -54,7 +55,6 @@ export class EditBillsComponent implements OnInit {
       });
     });
 
-    // ✅ Fetch full clients
     this.billsService.getClients().subscribe((data: any[]) => {
       this.clients = data;
     });
@@ -80,7 +80,6 @@ export class EditBillsComponent implements OnInit {
           item.productName = item.productId ? this.namesMap[item.productId] || '(Unknown)' : '';
         });
 
-        // ✅ Match client object
         const match = this.clients.find(c => c.firstName === bill.clientName);
         if (match) this.selectedClient = match;
       },
@@ -130,6 +129,36 @@ export class EditBillsComponent implements OnInit {
     this.finalAmount = this.totalAmount - discountAmount;
   }
 
+  onPriceKeydown(event: KeyboardEvent, index: number): void {
+    if (event.key === 'Tab' && !event.shiftKey) {
+      event.preventDefault();
+
+      if (index === this.billItems.length - 1) {
+        this.billItems.push({
+          productId: null,
+          productName: '',
+          quantity: 0,
+          price: 0,
+          total: 0
+        });
+
+        setTimeout(() => {
+          const productSelectArray = this.productSelectInputs.toArray();
+          const nextProductSelect = productSelectArray[index + 1];
+          if (nextProductSelect) {
+            nextProductSelect.nativeElement.focus();
+          }
+        }, 0);
+      } else {
+        const productSelectArray = this.productSelectInputs.toArray();
+        const nextProductSelect = productSelectArray[index + 1];
+        if (nextProductSelect) {
+          nextProductSelect.nativeElement.focus();
+        }
+      }
+    }
+  }
+
   printBill(): void {
     const validItems = this.billItems.filter(
       item => item.productId !== null && item.quantity > 0 && item.price > 0
@@ -155,14 +184,6 @@ export class EditBillsComponent implements OnInit {
     }, 300);
   }
 
-  highlightInvalidRows(): void {
-    this.billItems.forEach((item, index) => {
-      if (!item.productId || item.quantity <= 0 || item.price <= 0) {
-        console.warn(`Row ${index + 1} is incomplete.`);
-      }
-    });
-  }
-
   emailBill(): void {
     const validItems = this.billItems.filter(
       item => item.productId !== null && item.productName && item.quantity > 0 && item.price > 0
@@ -182,7 +203,7 @@ export class EditBillsComponent implements OnInit {
       totalAmount: this.totalAmount,
       finalAmount: this.finalAmount,
       billItems: validItems,
-      email: this.manualEmail // ✅ email passed to backend
+      email: this.manualEmail
     };
 
     this.billsService.sendBillByEmail(billData).subscribe({
@@ -194,20 +215,6 @@ export class EditBillsComponent implements OnInit {
     });
   }
 
-  onPriceKeydown(event: KeyboardEvent, index: number): void {
-    if (event.key === 'Tab' && !event.shiftKey && index === this.billItems.length - 1) {
-      setTimeout(() => {
-        this.billItems.push({
-          productId: null,
-          productName: '',
-          quantity: 0,
-          price: 0,
-          total: 0
-        });
-      }, 0);
-    }
-  }
-  
   saveBill(): void {
     const updatedBill = {
       clientName: this.clientName,
