@@ -159,7 +159,6 @@
     flex: 1;
   }
   
-
   .field-row label {
     font-weight: 600;
     white-space: nowrap;
@@ -217,9 +216,21 @@
 
   /* Form Inputs */
   input.form-control,
-  select.form-control,
+  select.form-control {
+    width: 100%;
+    padding: 6px 10px;
+    font-size: 14px;
+    margin-top: 5px;
+    border: 1px solid #ccd6dd;
+    border-radius: 6px;
+    background-color: #f7f9fc;
+    transition: border-color 0.3s ease;
+    resize: none;
+    overflow: hidden;
+  }
+
   textarea.form-control {
-    width: 90%;
+    width: 190%;
     padding: 6px 10px;
     font-size: 14px;
     margin-top: 5px;

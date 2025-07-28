@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChildren, QueryList, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChildren, QueryList, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { ProductService, Name } from 'src/app/core/services/products.service';
@@ -19,6 +19,7 @@ interface BillItem {
 })
 export class EditBillsComponent implements OnInit {
   @ViewChildren('productSelect') productSelectInputs!: QueryList<ElementRef>;
+  @ViewChild('addressTextarea') addressTextarea!: ElementRef<HTMLTextAreaElement>;
 
   products: Name[] = [];
   namesMap: { [id: number]: string } = {};
@@ -42,6 +43,28 @@ export class EditBillsComponent implements OnInit {
     private titleService: Title
   ) {}
 
+  autoResize(event: Event): void {
+    const textarea = event.target as HTMLTextAreaElement;
+    textarea.style.height = 'auto';
+    textarea.style.height = textarea.scrollHeight + 'px';
+  }
+
+  triggerResize(): void {
+    if (this.addressTextarea) {
+      const el = this.addressTextarea.nativeElement;
+      el.style.height = 'auto';
+      el.style.height = el.scrollHeight + 'px';
+    }
+  }
+
+  autoResizeTextarea(): void {
+    if (this.addressTextarea?.nativeElement) {
+      const el = this.addressTextarea.nativeElement;
+      el.style.height = 'auto';
+      el.style.height = el.scrollHeight + 'px';
+    }
+  }
+  
   ngOnInit(): void {
     this.titleService.setTitle('Edit Bill - J.T. Fruits & Vegetables');
 
@@ -69,6 +92,9 @@ export class EditBillsComponent implements OnInit {
       next: bill => {
         this.clientName = bill.clientName;
         this.address = bill.address;
+
+        setTimeout(() => this.autoResizeTextarea(), 0);
+
         this.billNumber = bill.billNumber;
         this.billDate = bill.billDate;
         this.discount = bill.discount;
@@ -96,6 +122,7 @@ export class EditBillsComponent implements OnInit {
       const parts = [c.address1, c.address2, c.area, c.city].filter(Boolean);
       this.clientName = c.firstName;
       this.address = parts.join(', ');
+      setTimeout(() => this.autoResizeTextarea(), 0);  // 👈 ensure view updates first
     }
   }
 
@@ -233,11 +260,5 @@ export class EditBillsComponent implements OnInit {
         console.error('Error updating bill:', err);
       }
     });
-  }
-
-  autoResize(event: Event): void {
-    const textarea = event.target as HTMLTextAreaElement;
-    textarea.style.height = 'auto';
-    textarea.style.height = textarea.scrollHeight + 'px';
   }
 }

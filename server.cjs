@@ -301,12 +301,31 @@ app.post('/api/bills', (req, res) => {
 
 app.put('/api/bills/:billNumber', (req, res) => {
   const b = req.body;
+
   const query = `
     UPDATE bills SET
-      clientName=?, address=?, billDate=?, discount=?,
-      totalAmount=?, finalAmount=?, billItems=?
-    WHERE billNumber=?`;
-  const values = [b.clientName, b.address, b.billDate, b.discount, b.totalAmount, b.finalAmount, JSON.stringify(b.billItems), req.params.billNumber];
+      clientName = ?, 
+      address = ?, 
+      billDate = ?, 
+      discount = ?, 
+      totalAmount = ?, 
+      finalAmount = ?, 
+      billItems = ?, 
+      description = ?
+    WHERE billNumber = ?
+  `;
+
+  const values = [
+    b.clientName,
+    b.address,
+    b.billDate,
+    b.discount,
+    b.totalAmount,
+    b.finalAmount,
+    JSON.stringify(b.billItems || []),
+    b.description || '',
+    req.params.billNumber
+  ];
 
   db.run(query, values, function (err) {
     if (err) return res.status(500).json({ message: 'Failed to update bill' });
@@ -314,6 +333,7 @@ app.put('/api/bills/:billNumber', (req, res) => {
     res.json({ message: 'Bill updated successfully' });
   });
 });
+
 
 app.get('/api/bills/latest', (req, res) => {
   db.get('SELECT billNumber FROM bills ORDER BY id DESC LIMIT 1', [], (err, row) => {
@@ -402,7 +422,7 @@ app.post('/api/send-bill', (req, res) => {
     service: 'gmail',
     auth: {
       user: 'jkumarshahu5@gmail.com',
-      pass: 'oiaq tisz kkim bcci'
+      pass: 'vobd eiax vdrd yvbh'
     }
   });
 

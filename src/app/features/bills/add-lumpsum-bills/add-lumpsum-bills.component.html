@@ -6,7 +6,7 @@
     <h2 class="title">J.T. Fruits & Vegetables</h2>
     <div class="address-line"> Shop No. 31-32, Bldg No. 27, EMP Op Jogers Park, Thakur Village, Kandivali(E), Mumbai 400101 </div>
     <div class="license-line"> PAN: AAJFJ0258J | FSS LICENSE ACT 2006 LICENSE NO: 11517011000128 </div>
-    <div class="email-line"> Email: jkumarshahu6&#64;gmail.com </div>
+    <div class="email-line"> Email: jkumarshahu5&#64;gmail.com </div>
 
     <div class="invoice-top">
       <div class="field-inline">
@@ -45,7 +45,7 @@
     <div class="field-row align-top">
       <label>Address:</label>
       <div class="print-toggle print-value">
-        <textarea class="form-control no-print" [(ngModel)]="address" rows="3"></textarea>
+        <textarea class="form-control no-print address-area" [(ngModel)]="address" (input)="autoResize($event)" #addressBox ></textarea>
         <span class="print-view" style="white-space: pre-line;">{{ address }}</span>
       </div>
     </div>

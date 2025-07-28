@@ -2,7 +2,7 @@
   import { ProductService, Name } from 'src/app/core/services/products.service';
   import bwipjs from 'bwip-js';
 
-  export type LabelStyle = 'dmart' | 'reliance';
+  export type LabelStyle = 'dmart' | 'reliance' | 'old-dmart';
 
   @Component({
     selector: 'app-barcode',
@@ -128,6 +128,7 @@
 
       if (selected) {
         const product = this.products[i];
+
         product.productName = `${selected.name} ${selected.units}`;
         product.category = selected.type
           ? selected.type.charAt(0).toUpperCase() + selected.type.slice(1)
@@ -135,18 +136,16 @@
         product.units = selected.units;
         product.dbBarcode = selected.barcode;
 
-        // ✅ Update MRP only if not manually edited
-        if (!product.mrpEdited) {
-          product.mrp = selected.mrp || 0;
-        }
+        // ✅ Always update MRP from DB
+        product.mrp = selected.mrp ?? 0;
+        product.mrpEdited = false;
 
-        // ✅ Update Expiry Days only if not manually edited
-        if (!product.expiryEdited) {
-          product.expiryDays = selected.expiryDays || 1;
-        }
+        // ✅ Always update expiryDays from DB
+        product.expiryDays = selected.expiryDays ?? 1;
+        product.expiryEdited = false;
 
-        // Update expiry date
-        const today = new Date();
+        // ✅ Recalculate expiry date
+        const today = new Date(this.packedOnDate);
         today.setDate(today.getDate() + product.expiryDays);
         product.expiryDate = today.toISOString().split('T')[0];
 
@@ -157,15 +156,23 @@
     generateBarcode(product: any) {
       if (!product.category || product.mrp == null) return;
 
-      const mrpPaise = Math.round(product.mrp * 100);
-      const mrpPart = mrpPaise.toString().padStart(4, '0'); // e.g., 45.00 → '4500'
+      const isVegetable = product.category.toLowerCase() === 'vegetable';
+      const prefix = isVegetable ? '953779' : '95378';
 
-      if (this.selectedPrintStyle === 'dmart') {
-        const isVegetable = product.category.toLowerCase() === 'vegetable';
-        const prefix = isVegetable ? '953779' : '95378';
+      let mrpPart: string;
+
+      // If MRP has paise (not a whole number)
+      if (product.mrp % 1 !== 0) {
+        const paise = Math.round(product.mrp * 100); // ₹240.25 → 24025
+        mrpPart = paise.toString();                  // "24025"
+      } else {
+        // Whole rupee value — no decimal
+        mrpPart = Math.round(product.mrp).toString(); // ₹30 → "30"
+      }
+
+      if (this.selectedPrintStyle === 'dmart' || this.selectedPrintStyle === 'old-dmart') {
         product.barcode = `${prefix}0000${mrpPart}`;
       } else {
-        // Reliance: just use the DB barcode directly
         product.barcode = product.dbBarcode || '';
       }
     }
@@ -270,7 +277,7 @@
 
         .barcode-left img {
           width: 160px;
-          height: 32px;
+          height: 35px;
         }
 
         .barcode-left .barcode-value {
@@ -307,6 +314,111 @@
           font-size: 9px;
           line-height: 1.1;
           margin-top: 4px;
+        }
+      `;
+
+      const oldDmartStyles = `
+        @media print {
+          @page {
+            size: 38mm 25mm;
+            margin: 0mm;
+          }
+          body, html {
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+          .print-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0;
+            margin: 0;
+            padding: 0;
+          }
+        }
+
+        .dmart-label {
+          position: relative;
+          width: 136px;
+          height: 94px; /* increased from 92px to give room for footer */
+          box-sizing: border-box;
+          padding: 2px 3px 1px;
+          font-family: Arial, sans-serif;
+          font-size: 9px;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-start;
+          text-align: left;
+          line-height: 1.05;
+          overflow: hidden;
+        }
+
+        .label-header {
+          font-size: 9px;
+          text-align: center;
+          width: 100%;
+          margin: 0;
+        }
+
+        .label-product {
+          font-size: 9px;
+          text-align: left;
+          width: 100%;
+          margin: 1px 0;
+          padding-left: 2px;
+        }
+
+        .dmart-label img {
+          width: 120px;
+          height: 30px;
+          margin: 0 0 1px;
+        }
+
+        .barcode-value {
+          font-size: 10px;
+          text-align: left;
+          width: 100%;
+          letter-spacing: 1px;
+          padding-left: 2px;
+          margin: 0 0 1px;
+        }
+
+        .info-row {
+          display: flex;
+          justify-content: space-between;
+          width: 100%;
+          font-size: 9px;
+          margin: 0;
+        }
+
+        .info-left {
+          font-weight: normal;
+          font-size: 9.5px;
+          text-align: center;
+        }
+
+        .price-value {
+          font-size: 9.5px;
+          font-weight: bold;
+          text-align: center;
+        }
+
+        .label-footer {
+          font-size: 7px;
+          text-align: left;
+          width: 100%;
+          margin-top: 1px;
+          line-height: 1;         /* ensure compact */
+          padding-bottom: 1px;    /* give slight breathing room */
+        }
+
+        .side-brand {
+          position: absolute;
+          right: -4px;
+          top: 28%;
+          transform: rotate(-90deg);
+          transform-origin: right top;
+          font-size: 14px;
+          font-weight: bold;
         }
       `;
 
@@ -392,6 +504,10 @@
           css = dmartStyles;
           body = this.generateDmartBody();
           break;
+        case 'old-dmart':
+          css = oldDmartStyles;
+          body = this.generateOldDmartBody();
+          break;
         case 'reliance':
         default:
           css = relianceStyles;
@@ -416,9 +532,9 @@
               </div>
               <div class="side-brand">Dmart</div>
             </div>
-            <div style="display:flex;justify-content:space-between;"><div><b>M.R.P :</b></div><div>₹${p.mrp}/-</div></div>
-            <div style="display:flex;justify-content:space-between;"><div>PACKED ON :</div><div>${this.packedOnDate}</div></div>
-            <div style="display:flex;justify-content:space-between;"><div><b>BEST BEFORE :</b></div><div><b>${p.expiryDays} DAYS</b></div></div>
+            <div style="display:flex;justify-content:space-between;"><div>M.R.P :</div><b><div>₹${p.mrp}/-</div></b></div>
+            <div style="display:flex;justify-content:space-between;"><div>PACKED ON :</div><b><div>${this.packedOnDate}</div></b></div>
+            <div style="display:flex;justify-content:space-between;"><div>BEST BEFORE :</div><b><div>${p.expiryDate}</div></b></div>
             <div class="dmart-footer">
               <div style="text-align:center;font-size:11px;"><b>FSSAI No. 11517011000128</b></div>
               <div style="text-align:center;font-size:10px;">Shop No. 31-32, Bldg No. 27,</div>
@@ -438,11 +554,11 @@
         <div class="reliance-label">
           <div style="text-align:center;font-size:11px;"><b>J T FRUITS &amp; VEG</b></div>
           <div style="text-align:center;font-size:12px;">${p.productName}</div>
-          <img id="rel-barcode-img-${i}" style="width:180px;height:40px;" />
+          <img id="rel-barcode-img-${i}" style="width:180px;height:37px;" />
           <div class="barcode-value">${p.barcode}</div>
-          <div style="display:flex;justify-content:space-between;"><div><b>M.R.P :</b></div><div>₹${p.mrp}/-</div></div>
-          <div style="display:flex;justify-content:space-between;"><div>PACKED ON :</b></div><div>${this.packedOnDate}</div></div>
-          <div style="display:flex;justify-content:space-between;"><div><b>BEST BEFORE :</b></div><div><b>${p.expiryDays} DAYS</b></div></div>
+          <div style="display:flex;justify-content:space-between;"><div>M.R.P :</div><b><div>₹${p.mrp}/-</div></b></div>
+          <div style="display:flex;justify-content:space-between;"><div>PACKED ON :</div><b><div>${this.packedOnDate}</div></b></div>
+          <div style="display:flex;justify-content:space-between;"><div>BEST BEFORE :</div><div><b>${p.expiryDays} DAYS</b></div></div>
           <div style="text-align:center;font-size:9px;">
             <div style="text-align:center;font-size:11px;"><b>FSSAI No. 11517011000128</b></div>
             <div style="text-align:center;font-size:10px;">Shop No. 31-32, Bldg No. 27,</div>
@@ -455,14 +571,53 @@
         .join('');
     }
 
+    private generateOldDmartBody(): string {
+      const formatDate = (dateStr: string) => {
+        const d = new Date(dateStr);
+        const dd = String(d.getDate()).padStart(2, '0');
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const yy = String(d.getFullYear()).slice(-2);
+        return `${dd}.${mm}.${yy}`;
+      };
+
+      return this.printItems
+        .map((p, i) => {
+          const pkd = formatDate(this.packedOnDate);
+          const exp = formatDate(p.expiryDate);
+
+          return `
+            <div class="dmart-label">
+              <span class="side-brand">Dmart</span>
+              <div class="label-header">J T FRUITS &amp; VEG</div>
+              <div class="label-product">${p.productName}</div>
+              <img id="dmart-bar-${i}" />
+              <div class="barcode-value">${p.barcode}</div>
+
+              <div class="info-row">
+                <div class="info-left">M.R.P.</div>
+                <div>Pkd. On ${pkd}</div>
+              </div>
+              <div class="info-row">
+                <div class="price-value">₹${p.mrp.toFixed(2)}</div>
+                <div>Exp. Dt. ${exp}</div>
+              </div>
+
+              <div class="label-footer">Incl. of all Taxes)</div>
+            </div>`;
+        })
+        .join('');
+    }
+
     private async renderBarcodesInWindow(win: Window) {
       const promises: Promise<void>[] = [];
 
       this.printItems.forEach((p, i) => {
-        const imgId =
-          this.selectedPrintStyle === 'dmart'
-            ? `dmart-bar-${i}`
-            : `rel-barcode-img-${i}`;
+        let imgId = '';
+        if (this.selectedPrintStyle === 'dmart' || this.selectedPrintStyle === 'old-dmart') {
+          imgId = `dmart-bar-${i}`;
+        } else {
+          imgId = `rel-barcode-img-${i}`;
+        }
 
         const imgEl = win.document.getElementById(imgId) as HTMLImageElement;
           if (!imgEl) {

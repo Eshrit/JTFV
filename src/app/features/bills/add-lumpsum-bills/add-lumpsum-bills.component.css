@@ -106,6 +106,17 @@ textarea.form-control {
   width: 100%;
 }
 
+/* === ADDRESS AREA === */
+.address-area {
+  overflow: hidden;
+  resize: none;
+  min-height: 1.2em;
+  max-height: 300px;
+  line-height: 1.4;
+  font-size: 14px;
+  padding: 6px 10px;
+}
+
 /* === AMOUNT FIELD === */
 .field-row input[type="number"] {
   max-width: 150px;

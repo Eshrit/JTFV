@@ -5,7 +5,7 @@
     <h1>J.T. Fruits &amp; Vegetables</h1>
     <p>Shop No. 31-32, Bldg No. 27, EMP Op Jogers Park, Thakur Village, Kandivali(E), Mumbai 400101</p>
     <p>PAN: AAJFJ0258J | FSS LICENSE ACT 2006 LICENSE NO: 11517011000128</p>
-    <p>Email: jkumarshahu6&#64;gmail.com</p>
+    <p>Email: jkumarshahu5&#64;gmail.com</p>
 
     <div class="invoice-header">
       <div class="header-flex">
@@ -43,11 +43,12 @@
     <div class="field-row">
       <label>Address:</label>
       <div class="print-toggle print-value">
-        <textarea class="form-control auto-expand no-print" [(ngModel)]="address" rows="3" (input)="autoResize($event)"></textarea>
+        <textarea  #addressTextarea class="form-control address-area auto-expand no-print" [(ngModel)]="address" rows="1" style="overflow:hidden; resize: none;"
+          (input)="autoResize($event)">
+        </textarea>
         <span class="print-view" style="white-space: pre-line;">{{ address }}</span>
       </div>
     </div>
-  </div>   
 
   <table class="table">
     <thead>
@@ -112,7 +113,7 @@
   </div>
 
   <div class="actions no-print">
-    <button class="btn btn-success" (click)="saveBill()">Save</button>
+    <button class="btn btn-success" (click)="saveBill()">Update</button>
     <button class="btn btn-primary" (click)="printBill()">Print</button>
     <input type="email" class="form-control" placeholder="Enter email address" style="display: inline-block; width: 250px; margin-right: 10px;" 
     [(ngModel)]="manualEmail" />

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Title } from '@angular/platform-browser';
 import { BillsService } from 'src/app/core/services/bills.service';
+import { AfterViewInit, ElementRef, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-add-lumpsum-bills',
@@ -9,7 +10,9 @@ import { BillsService } from 'src/app/core/services/bills.service';
   styleUrls: ['./add-lumpsum-bills.component.css']
 })
 
-export class AddLumpsumBillsComponent implements OnInit {
+export class AddLumpsumBillsComponent implements OnInit, AfterViewInit {
+  @ViewChild('addressBox') addressBox!: ElementRef<HTMLTextAreaElement>;
+
   clients: any[] = [];
   selectedClient: any = null;
   clientName: string = '';
@@ -42,11 +45,30 @@ export class AddLumpsumBillsComponent implements OnInit {
     this.calculateFinalAmount();
   }
 
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      if (this.addressBox && this.addressBox.nativeElement) {
+        const textArea = this.addressBox.nativeElement;
+        textArea.style.height = 'auto';
+        textArea.style.height = textArea.scrollHeight + 'px';
+      }
+    });
+  }
+  
   onClientChange(): void {
     if (this.selectedClient) {
       const c = this.selectedClient;
       this.clientName = c.firstName;
       this.address = [c.address1, c.address2, c.area, c.city].filter(Boolean).join(', ');
+
+      // Trigger auto-resize even for short addresses like "MUMBAI"
+      setTimeout(() => {
+        const textArea = document.querySelector('.address-area') as HTMLTextAreaElement;
+        if (textArea) {
+          textArea.style.height = 'auto';
+          textArea.style.height = textArea.scrollHeight + 'px';
+        }
+      });
     }
   }
 
@@ -56,6 +78,9 @@ export class AddLumpsumBillsComponent implements OnInit {
   }
 
   saveBill(): void {
+    const active = document.activeElement as HTMLElement;
+    if (active && active.tagName === 'TEXTAREA') active.blur();
+
     const billData = {
       clientName: this.clientName,
       address: this.address,
@@ -65,19 +90,12 @@ export class AddLumpsumBillsComponent implements OnInit {
       totalAmount: this.amount,
       finalAmount: this.finalAmount,
       description: this.description,
-      billItems: [] // No item list for lumpsum
+      billItems: []
     };
 
     this.billsService.saveBill(billData).subscribe({
       next: () => {
         alert('Bill saved successfully!');
-        if (this.manualEmail && this.manualEmail.includes('@')) {
-          const emailData = { ...billData, email: this.manualEmail };
-          this.billsService.sendBillByEmail(emailData).subscribe({
-            next: () => alert('Email Sent!'),
-            error: () => alert('Failed to send email. Please try again.')
-          });
-        }
       },
       error: () => alert('Failed to save bill. Please try again.')
     });
@@ -87,7 +105,15 @@ export class AddLumpsumBillsComponent implements OnInit {
     window.print();
   }
 
-  emailBill(): void {
+emailBill(): void {
+  // ✅ Force Angular to flush textarea binding
+  const active = document.activeElement as HTMLElement;
+  if (active && (active.tagName === 'TEXTAREA' || active.tagName === 'INPUT')) {
+    active.blur();
+  }
+
+  // ✅ Allow model to update
+  setTimeout(() => {
     if (!this.manualEmail || !this.manualEmail.includes('@')) {
       alert('Please enter a valid email address');
       return;
@@ -101,20 +127,23 @@ export class AddLumpsumBillsComponent implements OnInit {
       discount: this.discount,
       totalAmount: this.amount,
       finalAmount: this.finalAmount,
+      description: this.description,  // ✅ guaranteed defined now
       billItems: [],
-      description: this.description,
       email: this.manualEmail
     };
+
+    console.log('✅ SENDING:', billData); // debug
 
     this.billsService.sendBillByEmail(billData).subscribe({
       next: () => alert('Email Sent!'),
       error: () => alert('Failed to send email. Please try again.')
     });
-  }
+  }, 10); // delay ensures ngModel flushes into component
+}
 
   autoResize(event: Event): void {
     const target = event.target as HTMLTextAreaElement;
-    target.style.height = 'auto'; // Reset height
-    target.style.height = `${target.scrollHeight}px`; // Set to scroll height
+    target.style.height = 'auto'; // Reset
+    target.style.height = target.scrollHeight + 'px'; // Resize
   }
 }

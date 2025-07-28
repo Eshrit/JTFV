@@ -21,6 +21,7 @@ interface BillItem {
 export class BillsComponent implements OnInit {
   @ViewChildren('productSelect') productSelectInputs!: QueryList<ElementRef>;
   @ViewChildren('priceInput') priceInputs!: QueryList<ElementRef>;
+  @ViewChildren('addressTextarea') addressTextareas!: QueryList<ElementRef>;
   
   products: Name[] = [];
   namesMap: { [id: number]: string } = {};
@@ -83,6 +84,12 @@ export class BillsComponent implements OnInit {
         this.finalAmount = bill.finalAmount;
         this.billItems = bill.billItems || [];
 
+        setTimeout(() => {
+        this.addressTextareas.forEach(textarea => {
+          this.resizeTextarea(textarea.nativeElement);
+        });
+      });
+
         this.billItems.forEach(item => {
           item.productName = item.productId ? this.namesMap[item.productId] || '(Unknown)' : '';
         });
@@ -100,6 +107,15 @@ export class BillsComponent implements OnInit {
       const parts = [c.address1, c.address2, c.area, c.city].filter(Boolean);
       this.clientName = c.firstName;
       this.address = parts.join(', ');
+
+      // Resize after DOM update
+      setTimeout(() => {
+        this.addressTextareas.forEach(textarea => {
+          const el = textarea.nativeElement;
+          el.style.height = 'auto';
+          el.style.height = el.scrollHeight + 'px';
+        });
+      });
     }
   }
 
@@ -166,30 +182,30 @@ export class BillsComponent implements OnInit {
     this.finalAmount = this.totalAmount - discountAmount;
   }
 
-  printBill(): void {
-    const validItems = this.billItems.filter(
-      item => item.productId !== null && item.quantity > 0 && item.price > 0
-    );
+printBill(): void {
+  const validItems = this.billItems.filter(
+    item => item.productId !== null && item.quantity > 0 && item.price > 0
+  );
 
-    if (validItems.length === 0) {
-      alert('No valid items to print. Please check quantity and price fields.');
-      return;
-    }
-
-    const allItems = [...this.billItems];
-    this.billItems = validItems.map(item => ({
-      ...item,
-      productName: (() => {
-        const prod = this.products.find(p => p.id === item.productId);
-        return prod ? prod.name + (prod.units ? ' ' + prod.units : '') : '(Unknown)';
-      })()
-    }));
-
-    setTimeout(() => {
-      window.print();
-      this.billItems = allItems;
-    }, 300);
+  if (validItems.length === 0) {
+    alert('No valid items to print. Please check quantity and price fields.');
+    return;
   }
+
+  const allItems = [...this.billItems]; // Backup
+  this.billItems = validItems.map(item => ({
+    ...item,
+    productName: (() => {
+      const prod = this.products.find(p => p.id === item.productId);
+      return prod ? prod.name + (prod.units ? ' ' + prod.units : '') : '(Unknown)';
+    })()
+  }));
+
+  setTimeout(() => {
+    window.print();
+    this.billItems = allItems; // Restore
+  }, 300);
+}
 
   highlightInvalidRows(): void {
     this.billItems.forEach((item, index) => {
@@ -199,36 +215,41 @@ export class BillsComponent implements OnInit {
     });
   }
 
-  emailBill(): void {
-    const validItems = this.billItems.filter(
-      item => item.productId !== null && item.productName && item.quantity > 0 && item.price > 0
-    );
+emailBill(): void {
+  const validItems = this.billItems.filter(
+    item => item.productId !== null && item.productName && item.quantity > 0 && item.price > 0
+  );
 
-    if (!this.manualEmail || !this.manualEmail.includes('@')) {
-      alert('Please enter a valid email address');
-      return;
-    }
-
-    const billData = {
-      clientName: this.clientName,
-      address: this.address,
-      billNumber: this.billNumber,
-      billDate: this.billDate,
-      discount: this.discount,
-      totalAmount: this.totalAmount,
-      finalAmount: this.finalAmount,
-      billItems: validItems,
-      email: this.manualEmail // ✅ email passed to backend
-    };
-
-    this.billsService.sendBillByEmail(billData).subscribe({
-      next: () => alert('Email Sent!'),
-      error: (err) => {
-        console.error('Email failed:', err);
-        alert('Failed to send email. Please try again.');
-      }
-    });
+  if (validItems.length === 0) {
+    alert('No valid items to email. Please add at least one valid item.');
+    return;
   }
+
+  if (!this.manualEmail || !this.manualEmail.includes('@')) {
+    alert('Please enter a valid email address');
+    return;
+  }
+
+  const billData = {
+    clientName: this.clientName,
+    address: this.address,
+    billNumber: this.billNumber,
+    billDate: this.billDate,
+    discount: this.discount,
+    totalAmount: this.totalAmount,
+    finalAmount: this.finalAmount,
+    billItems: validItems,
+    email: this.manualEmail
+  };
+
+  this.billsService.sendBillByEmail(billData).subscribe({
+    next: () => alert('Email Sent!'),
+    error: (err) => {
+      console.error('Email failed:', err);
+      alert('Failed to send email. Please try again.');
+    }
+  });
+}
 
   saveBill(): void {
     const billData = {
@@ -256,7 +277,25 @@ export class BillsComponent implements OnInit {
 
   autoResize(event: Event): void {
     const textarea = event.target as HTMLTextAreaElement;
-    textarea.style.height = 'auto';
-    textarea.style.height = textarea.scrollHeight + 'px';
+    textarea.style.height = 'auto'; // reset height
+    textarea.style.height = textarea.scrollHeight + 'px'; // expand to fit
   }
+
+private resizeTextarea(el: HTMLTextAreaElement): void {
+  el.style.height = 'auto';
+  el.style.width = 'auto';
+
+  const containerWidth = el.parentElement?.clientWidth || 800; // fallback if no parent
+  const scrollWidth = el.scrollWidth + 2;
+
+  // Limit width to container width
+  if (scrollWidth < containerWidth) {
+    el.style.width = scrollWidth + 'px';
+    el.style.height = '60px'; // fixed height
+  } else {
+    el.style.width = '100%'; // full container
+    el.style.height = el.scrollHeight + 'px'; // allow vertical growth
+  }
+}
+
 }

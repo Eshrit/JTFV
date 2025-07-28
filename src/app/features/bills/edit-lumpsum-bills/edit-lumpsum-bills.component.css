@@ -101,9 +101,28 @@ select.form-control.client-select {
   white-space: nowrap;
 }
 
-textarea.form-control {
-  resize: vertical;
+textarea.address-area {
   width: 100%;
+  min-height: 1.2em;
+  max-height: 300px;
+  line-height: 1.4;
+  font-size: 14px;
+  padding: 6px 10px;
+  overflow: hidden;
+  resize: none;
+  box-sizing: border-box;
+}
+
+
+/* === ADDRESS AREA === */
+.address-area {
+  overflow: hidden;
+  resize: none;
+  min-height: 1.2em;
+  max-height: 300px;
+  line-height: 1.4;
+  font-size: 14px;
+  padding: 6px 10px;
 }
 
 /* === AMOUNT FIELD === */

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BillsService } from 'src/app/core/services/bills.service';
 import { HttpClient } from '@angular/common/http';
@@ -9,7 +9,9 @@ import { Title } from '@angular/platform-browser';
   templateUrl: './edit-lumpsum-bills.component.html',
   styleUrls: ['./edit-lumpsum-bills.component.css']
 })
-export class EditLumpsumBillsComponent implements OnInit {
+export class EditLumpsumBillsComponent implements OnInit, AfterViewInit {
+  @ViewChild('addressBox') addressBox!: ElementRef<HTMLTextAreaElement>;
+
   clients: any[] = [];
   selectedClient: any = null;
   clientName = '';
@@ -33,7 +35,7 @@ export class EditLumpsumBillsComponent implements OnInit {
     this.titleService.setTitle('Edit Lumpsum Bill');
     this.billNumber = this.route.snapshot.paramMap.get('billNumber') || '';
 
-    // Fetch all clients
+    // Fetch clients
     this.http.get<any[]>('http://localhost:3001/api/clients').subscribe(data => {
       this.clients = data;
     });
@@ -48,13 +50,21 @@ export class EditLumpsumBillsComponent implements OnInit {
       this.finalAmount = bill.finalAmount;
       this.billDate = bill.billDate;
 
-      // Try to preselect the client
       const matchingClient = this.clients.find(c => c.firstName === bill.clientName);
       if (matchingClient) {
         this.selectedClient = matchingClient;
       }
+
+      // Trigger resize after address is loaded
+      setTimeout(() => this.autoResize(), 0);
     });
+
     this.calculateFinalAmount();
+  }
+
+  ngAfterViewInit(): void {
+    // Trigger resize after view has been initialized
+    setTimeout(() => this.autoResize(), 0);
   }
 
   onClientChange(): void {
@@ -62,6 +72,8 @@ export class EditLumpsumBillsComponent implements OnInit {
       const c = this.selectedClient;
       this.clientName = c.firstName;
       this.address = [c.address1, c.address2, c.area, c.city].filter(Boolean).join(', ');
+
+      setTimeout(() => this.autoResize(), 0);
     }
   }
 
@@ -80,7 +92,7 @@ export class EditLumpsumBillsComponent implements OnInit {
       totalAmount: this.amount,
       finalAmount: this.finalAmount,
       description: this.description,
-      billItems: [] // Always empty for lumpsum bills
+      billItems: []
     };
 
     this.billsService.updateBill(this.billNumber, updatedBill).subscribe({
@@ -94,26 +106,45 @@ export class EditLumpsumBillsComponent implements OnInit {
   }
 
   emailBill(): void {
-    if (!this.manualEmail || !this.manualEmail.includes('@')) {
-      alert('Please enter a valid email address');
-      return;
+    const active = document.activeElement as HTMLElement;
+    if (active && (active.tagName === 'TEXTAREA' || active.tagName === 'INPUT')) {
+      active.blur();
     }
 
-    const billData = {
-      clientName: this.clientName,
-      address: this.address,
-      billNumber: this.billNumber,
-      billDate: this.billDate,
-      discount: this.discount,
-      totalAmount: this.amount,
-      finalAmount: this.finalAmount,
-      billItems: [],
-      email: this.manualEmail
-    };
+    setTimeout(() => {
+      if (!this.manualEmail || !this.manualEmail.includes('@')) {
+        alert('Please enter a valid email address');
+        return;
+      }
 
-    this.billsService.sendBillByEmail(billData).subscribe({
-      next: () => alert('Email Sent!'),
-      error: () => alert('Failed to send email. Please try again.')
-    });
+      const billData = {
+        clientName: this.clientName,
+        address: this.address,
+        billNumber: this.billNumber,
+        billDate: this.billDate,
+        discount: this.discount,
+        totalAmount: this.amount,
+        finalAmount: this.finalAmount,
+        description: this.description,
+        billItems: [],
+        email: this.manualEmail
+      };
+
+      this.billsService.sendBillByEmail(billData).subscribe({
+        next: () => alert('Email Sent!'),
+        error: () => alert('Failed to send email. Please try again.')
+      });
+    }, 10);
+  }
+
+  autoResize(event?: Event): void {
+    const textarea = event
+      ? (event.target as HTMLTextAreaElement)
+      : this.addressBox?.nativeElement;
+
+    if (textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
   }
 }
