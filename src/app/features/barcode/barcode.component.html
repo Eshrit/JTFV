@@ -26,8 +26,8 @@
       <thead>
         <tr>
           <th class="col-product">Product</th>
-          <th class="col-small">M.R.P. (₹)</th>
           <th class="col-small">Qty</th>
+          <th class="col-small">M.R.P. (₹)</th>
           <th class="col-small">Expiry Days</th>
           <th>Category</th>
           <!-- <th>Expiry Date</th> -->
@@ -45,10 +45,10 @@
             </select>
           </td>
           <td>
-            <input type="number" class="form-control" [(ngModel)]="item.mrp" name="mrp{{i}}" (change)="onMrpChange(i)" />
+            <input type="number" class="form-control" [(ngModel)]="item.quantity" name="quantity{{i}}" />
           </td>
           <td>
-            <input type="number" class="form-control" [(ngModel)]="item.quantity" name="quantity{{i}}" />
+            <input type="number" class="form-control" [(ngModel)]="item.mrp" name="mrp{{i}}" (change)="onMrpChange(i)" />
           </td>
           <td>
             <input type="number" class="form-control" [(ngModel)]="item.expiryDays" name="expiryDays{{i}}" (change)="updateExpiry(i)"
