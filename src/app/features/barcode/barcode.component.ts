@@ -1,221 +1,221 @@
-  import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-  import { ProductService, Name } from 'src/app/core/services/products.service';
-  import bwipjs from 'bwip-js';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { ProductService, Name } from 'src/app/core/services/products.service';
+import bwipjs from 'bwip-js';
 
-  export type LabelStyle = 'dmart' | 'reliance' | 'old-dmart';
+export type LabelStyle = 'dmart' | 'reliance' | 'old-dmart';
 
-  @Component({
-    selector: 'app-barcode',
-    templateUrl: './barcode.component.html',
-    styleUrls: ['./barcode.component.css'],
-  })
-  export class BarcodeComponent implements OnInit {
-    products: any[] = [];
-    printItems: any[] = [];
-    nameOptions: Name[] = [];
-    packedOnDate: string = this.getTodayLocalDate();
-    currentDate: string = this.getTodayLocalDate();
-    selectedPrintStyle: LabelStyle = 'reliance';
+@Component({
+  selector: 'app-barcode',
+  templateUrl: './barcode.component.html',
+  styleUrls: ['./barcode.component.css'],
+})
+export class BarcodeComponent implements OnInit {
+  products: any[] = [];
+  printItems: any[] = [];
+  nameOptions: Name[] = [];
+  packedOnDate: string = this.getTodayLocalDate();
+  currentDate: string = this.getTodayLocalDate();
+  selectedPrintStyle: LabelStyle = 'reliance';
 
-    constructor(
-      private cdRef: ChangeDetectorRef,
-      private productService: ProductService,
-    ) {}
+  constructor(
+    private cdRef: ChangeDetectorRef,
+    private productService: ProductService,
+  ) { }
 
-    ngOnInit(): void {
-      for (let i = 0; i < 1; i++) this.addRow();
-      this.onPrintStyleChange(this.selectedPrintStyle);
-      this.packedOnDate = this.getTodayLocalDate(); // Initialize packed date to today
-      this.productService.getNames().subscribe({
-        next: (names) => {
-          this.nameOptions = names.sort((a, b) =>
-            (`${a.name} ${a.units}`).localeCompare(`${b.name} ${b.units}`)
-          );
-        },
-        error: (err) => console.error('Failed to load names:', err)
+  ngOnInit(): void {
+    for (let i = 0; i < 1; i++) this.addRow();
+    this.onPrintStyleChange(this.selectedPrintStyle);
+    this.packedOnDate = this.getTodayLocalDate(); // Initialize packed date to today
+    this.productService.getNames().subscribe({
+      next: (names) => {
+        this.nameOptions = names.sort((a, b) =>
+          (`${a.name} ${a.units}`).localeCompare(`${b.name} ${b.units}`)
+        );
+      },
+      error: (err) => console.error('Failed to load names:', err)
+    });
+  }
+
+  onQtyKeyDown(event: KeyboardEvent, index: number) {
+    if (event.key === 'Tab' && index === this.products.length - 1) {
+      event.preventDefault(); // Stop default tabbing
+      this.addRow();
+      // Wait for view update before focusing on the new row's product select
+      setTimeout(() => {
+        const inputs = document.querySelectorAll(
+          `tr:nth-child(${this.products.length + 1}) select[name^='productName']`
+        );
+        if (inputs.length > 0) {
+          (inputs[0] as HTMLElement).focus();
+        }
       });
     }
+  }
 
-    onQtyKeyDown(event: KeyboardEvent, index: number) {
-      if (event.key === 'Tab' && index === this.products.length - 1) {
-        event.preventDefault(); // Stop default tabbing
-        this.addRow();
-        // Wait for view update before focusing on the new row's product select
-        setTimeout(() => {
-          const inputs = document.querySelectorAll(
-            `tr:nth-child(${this.products.length + 1}) select[name^='productName']`
-          );
-          if (inputs.length > 0) {
-            (inputs[0] as HTMLElement).focus();
-          }
-        });
-      }
+  addRow() {
+    this.products.push({
+      productName: '',
+      mrp: 0,
+      category: '',
+      quantity: 1,
+      expiryDays: 1,
+      expiryDate: this.currentDate,
+      barcode: '',
+      dbBarcode: '',
+      mrpEdited: false,
+      expiryEdited: false,
+    });
+  }
+
+  onMrpChange(index: number) {
+    this.products[index].mrpEdited = true;
+    this.generateBarcode(this.products[index]);
+  }
+
+  onExpiryChange(index: number) {
+    this.products[index].expiryEdited = true;
+    this.updateExpiry(index);
+  }
+
+  private getTodayLocalDate(): string {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  resetForm() {
+    this.packedOnDate = this.getTodayLocalDate(); // reset packed date to today
+    this.products = [];
+    for (let i = 0; i < 1; i++) this.addRow();
+  }
+
+  removeRow(index: number) {
+    this.products.splice(index, 1);
+  }
+
+  updateExpiry(index: number) {
+    const today = new Date(this.packedOnDate);
+    const expiry = new Date(today);
+    expiry.setDate(today.getDate() + Number(this.products[index].expiryDays));
+    this.products[index].expiryDate = expiry.toISOString().substring(0, 10);
+  }
+
+  get filteredNameOptions(): Name[] {
+    if (this.selectedPrintStyle === 'reliance') {
+      return this.nameOptions.filter((n) => n.type?.toLowerCase() === 'vegetable');
     }
+    return this.nameOptions;
+  }
 
-    addRow() {
-      this.products.push({
-        productName: '',
-        mrp: 0,
-        category: '',
-        quantity: 1,
-        expiryDays: 1,
-        expiryDate: this.currentDate,
-        barcode: '',
-        dbBarcode: '',
-        mrpEdited: false,
-        expiryEdited: false,
-      });
-    }
+  onPackedOnChange() {
+    this.products.forEach((p, i) => {
+      const packed = new Date(this.packedOnDate);
+      packed.setDate(packed.getDate() + Number(p.expiryDays));
+      p.expiryDate = packed.toISOString().substring(0, 10);
 
-    onMrpChange(index: number) {
-      this.products[index].mrpEdited = true;
-      this.generateBarcode(this.products[index]);
-    }
+      this.generateBarcode(p);
+    });
 
-    onExpiryChange(index: number) {
-      this.products[index].expiryEdited = true;
-      this.updateExpiry(index);
-    }
+    this.cdRef.detectChanges();
+  }
 
-    private getTodayLocalDate(): string {
-      const today = new Date();
-      const year = today.getFullYear();
-      const month = String(today.getMonth() + 1).padStart(2, '0');
-      const day = String(today.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    }
+  onProductSelect(i: number, event: Event) {
+    const target = event.target as HTMLSelectElement;
+    const nameId = Number(target.value);
+    const selected = this.nameOptions.find((n) => n.id === nameId);
 
-    resetForm() {
-      this.packedOnDate = this.getTodayLocalDate(); // reset packed date to today
-      this.products = [];
-      for (let i = 0; i < 1; i++) this.addRow();
-    }
+    if (selected) {
+      const product = this.products[i];
 
-    removeRow(index: number) {
-      this.products.splice(index, 1);
-    }
+      product.productName = `${selected.name} ${selected.units}`;
+      product.category = selected.type
+        ? selected.type.charAt(0).toUpperCase() + selected.type.slice(1)
+        : '';
+      product.units = selected.units;
+      product.dbBarcode = selected.barcode;
 
-    updateExpiry(index: number) {
+      // ✅ Always update MRP from DB
+      product.mrp = selected.mrp ?? 0;
+      product.mrpEdited = false;
+
+      // ✅ Always update expiryDays from DB
+      product.expiryDays = selected.expiryDays ?? 1;
+      product.expiryEdited = false;
+
+      // ✅ Recalculate expiry date
       const today = new Date(this.packedOnDate);
-      const expiry = new Date(today);
-      expiry.setDate(today.getDate() + Number(this.products[index].expiryDays));
-      this.products[index].expiryDate = expiry.toISOString().substring(0, 10);
+      today.setDate(today.getDate() + product.expiryDays);
+      product.expiryDate = today.toISOString().split('T')[0];
+
+      this.generateBarcode(product);
+    }
+  }
+
+  generateBarcode(product: any) {
+    if (!product.category || product.mrp == null) return;
+
+    const isVegetable = product.category.toLowerCase() === 'vegetable';
+    const prefix = isVegetable ? '953779' : '95378';
+
+    let mrpPart: string;
+
+    // If MRP has paise (not a whole number)
+    if (product.mrp % 1 !== 0) {
+      const paise = Math.round(product.mrp * 100); // ₹240.25 → 24025
+      mrpPart = paise.toString();                  // "24025"
+    } else {
+      // Whole rupee value — no decimal
+      mrpPart = Math.round(product.mrp).toString(); // ₹30 → "30"
     }
 
-    get filteredNameOptions(): Name[] {
-      if (this.selectedPrintStyle === 'reliance') {
-        return this.nameOptions.filter((n) => n.type?.toLowerCase() === 'vegetable');
-      }
-      return this.nameOptions;
+    if (this.selectedPrintStyle === 'dmart' || this.selectedPrintStyle === 'old-dmart') {
+      product.barcode = `${prefix}0000${mrpPart}`;
+    } else {
+      product.barcode = product.dbBarcode || '';
+    }
+  }
+
+  printSelected() {
+    this.preparePrintItems();
+
+    const win = window.open('', '_blank', 'width=0,height=0,top=-1000,left=-1000');
+    if (!win) {
+      alert('Popup blocked. Please allow pop-ups for this site.');
+      return;
     }
 
-    onPackedOnChange() {
-      this.products.forEach((p, i) => {
-        const packed = new Date(this.packedOnDate);
-        packed.setDate(packed.getDate() + Number(p.expiryDays));
-        p.expiryDate = packed.toISOString().substring(0, 10);
+    win.document.open();
+    win.document.write(this.generatePrintHTML());
+    win.document.close();
 
-        this.generateBarcode(p);
-      });
-
-      this.cdRef.detectChanges();
-    }
-
-    onProductSelect(i: number, event: Event) {
-      const target = event.target as HTMLSelectElement;
-      const nameId = Number(target.value);
-      const selected = this.nameOptions.find((n) => n.id === nameId);
-
-      if (selected) {
-        const product = this.products[i];
-
-        product.productName = `${selected.name} ${selected.units}`;
-        product.category = selected.type
-          ? selected.type.charAt(0).toUpperCase() + selected.type.slice(1)
-          : '';
-        product.units = selected.units;
-        product.dbBarcode = selected.barcode;
-
-        // ✅ Always update MRP from DB
-        product.mrp = selected.mrp ?? 0;
-        product.mrpEdited = false;
-
-        // ✅ Always update expiryDays from DB
-        product.expiryDays = selected.expiryDays ?? 1;
-        product.expiryEdited = false;
-
-        // ✅ Recalculate expiry date
-        const today = new Date(this.packedOnDate);
-        today.setDate(today.getDate() + product.expiryDays);
-        product.expiryDate = today.toISOString().split('T')[0];
-
-        this.generateBarcode(product);
-      }
-    }
-
-    generateBarcode(product: any) {
-      if (!product.category || product.mrp == null) return;
-
-      const isVegetable = product.category.toLowerCase() === 'vegetable';
-      const prefix = isVegetable ? '953779' : '95378';
-
-      let mrpPart: string;
-
-      // If MRP has paise (not a whole number)
-      if (product.mrp % 1 !== 0) {
-        const paise = Math.round(product.mrp * 100); // ₹240.25 → 24025
-        mrpPart = paise.toString();                  // "24025"
+    const checkReady = () => {
+      if (win.document.readyState === 'complete') {
+        this.renderBarcodesInWindow(win);
       } else {
-        // Whole rupee value — no decimal
-        mrpPart = Math.round(product.mrp).toString(); // ₹30 → "30"
+        setTimeout(checkReady, 50);
       }
+    };
+    checkReady();
+  }
 
-      if (this.selectedPrintStyle === 'dmart' || this.selectedPrintStyle === 'old-dmart') {
-        product.barcode = `${prefix}0000${mrpPart}`;
-      } else {
-        product.barcode = product.dbBarcode || '';
-      }
-    }
-
-    printSelected() {
-      this.preparePrintItems();
-
-      const win = window.open('', '', 'width=800,height=800');
-      if (!win) {
-        alert('Popup blocked. Please allow pop-ups for this site.');
-        return;
-      }
-
-      win.document.open();
-      win.document.write(this.generatePrintHTML());
-      win.document.close();
-
-      const checkReady = () => {
-        if (win.document.readyState === 'complete') {
-          this.renderBarcodesInWindow(win);
-        } else {
-          setTimeout(checkReady, 50);
+  private preparePrintItems() {
+    this.printItems = [];
+    this.products.forEach((p) => {
+      if (p.quantity > 0 && p.productName && p.mrp > 0) {
+        for (let i = 0; i < p.quantity; i++) {
+          this.printItems.push({ ...p });
         }
-      };
-      checkReady();
-    }
+      }
+    });
+    this.cdRef.detectChanges();
+  }
 
-    private preparePrintItems() {
-      this.printItems = [];
-      this.products.forEach((p) => {
-        if (p.quantity > 0 && p.productName && p.mrp > 0) {
-          for (let i = 0; i < p.quantity; i++) {
-            this.printItems.push({ ...p });
-          }
-        }
-      });
-      this.cdRef.detectChanges();
-    }
+  private generatePrintHTML(): string {
+    const head = `\n<meta charset="UTF-8">\n<meta name="viewport" content="width=240px">\n<title></title>`;
 
-    private generatePrintHTML(): string {
-      const head = `\n<meta charset="UTF-8">\n<meta name="viewport" content="width=240px">\n<title>Print Barcodes</title>`;
-
-      const dmartStyles = `
+    const dmartStyles = `
         @media print {
           @page {
             size: 50mm 50mm;
@@ -317,7 +317,7 @@
         }
       `;
 
-      const oldDmartStyles = `
+    const oldDmartStyles = `
         @media print {
           @page {
             size: 38mm 25mm;
@@ -422,7 +422,7 @@
         }
       `;
 
-      const relianceStyles = `
+    const relianceStyles = `
         @media print {
           @page {
             size: 50mm 50mm;
@@ -497,31 +497,31 @@
         }
       `;
 
-      let css = '';
-      let body = '';
-      switch (this.selectedPrintStyle) {
-        case 'dmart':
-          css = dmartStyles;
-          body = this.generateDmartBody();
-          break;
-        case 'old-dmart':
-          css = oldDmartStyles;
-          body = this.generateOldDmartBody();
-          break;
-        case 'reliance':
-        default:
-          css = relianceStyles;
-          body = this.generateRelianceBody();
-          break;
-      }
-
-      return `<!DOCTYPE html><html><head>${head}<style>${css}</style></head><body><div class="print-section">${body}</div></body></html>`;
+    let css = '';
+    let body = '';
+    switch (this.selectedPrintStyle) {
+      case 'dmart':
+        css = dmartStyles;
+        body = this.generateDmartBody();
+        break;
+      case 'old-dmart':
+        css = oldDmartStyles;
+        body = this.generateOldDmartBody();
+        break;
+      case 'reliance':
+      default:
+        css = relianceStyles;
+        body = this.generateRelianceBody();
+        break;
     }
 
-    private generateDmartBody(): string {
-      return this.printItems
-        .map(
-          (p, i) => `
+    return `<!DOCTYPE html><html><head>${head}<style>${css}</style></head><body><div class="print-section">${body}</div></body></html>`;
+  }
+
+  private generateDmartBody(): string {
+    return this.printItems
+      .map(
+        (p, i) => `
           <div class="dmart-label">
             <div style="text-align:center;font-size:11px;"><b>J T FRUITS &amp; VEG</b></div>
             <div class="barcode-row">
@@ -543,14 +543,14 @@
               <div style="text-align:center;font-size:10px;">Customer Care No. 9594117456</div>
             </div>
           </div>`
-        )
-        .join('');
-    }
+      )
+      .join('');
+  }
 
-    private generateRelianceBody(): string {
-      return this.printItems
-        .map(
-          (p, i) => `
+  private generateRelianceBody(): string {
+    return this.printItems
+      .map(
+        (p, i) => `
         <div class="reliance-label">
           <div style="text-align:center;font-size:11px;"><b>J T FRUITS &amp; VEG</b></div>
           <div style="text-align:center;font-size:12px;">${p.productName}</div>
@@ -567,25 +567,25 @@
             <div style="text-align:center;font-size:10px;">Customer Care No. 9594117456</div>
           </div>
         </div>`
-        )
-        .join('');
-    }
+      )
+      .join('');
+  }
 
-    private generateOldDmartBody(): string {
-      const formatDate = (dateStr: string) => {
-        const d = new Date(dateStr);
-        const dd = String(d.getDate()).padStart(2, '0');
-        const mm = String(d.getMonth() + 1).padStart(2, '0');
-        const yy = String(d.getFullYear()).slice(-2);
-        return `${dd}.${mm}.${yy}`;
-      };
+  private generateOldDmartBody(): string {
+    const formatDate = (dateStr: string) => {
+      const d = new Date(dateStr);
+      const dd = String(d.getDate()).padStart(2, '0');
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const yy = String(d.getFullYear()).slice(-2);
+      return `${dd}.${mm}.${yy}`;
+    };
 
-      return this.printItems
-        .map((p, i) => {
-          const pkd = formatDate(this.packedOnDate);
-          const exp = formatDate(p.expiryDate);
+    return this.printItems
+      .map((p, i) => {
+        const pkd = formatDate(this.packedOnDate);
+        const exp = formatDate(p.expiryDate);
 
-          return `
+        return `
             <div class="dmart-label">
               <span class="side-brand">Dmart</span>
               <div class="label-header">J T FRUITS &amp; VEG</div>
@@ -604,92 +604,92 @@
 
               <div class="label-footer">Incl. of all Taxes)</div>
             </div>`;
-        })
-        .join('');
-    }
+      })
+      .join('');
+  }
 
-    private async renderBarcodesInWindow(win: Window) {
-      const promises: Promise<void>[] = [];
+  private async renderBarcodesInWindow(win: Window) {
+    const promises: Promise<void>[] = [];
 
-      this.printItems.forEach((p, i) => {
-        let imgId = '';
-        if (this.selectedPrintStyle === 'dmart' || this.selectedPrintStyle === 'old-dmart') {
-          imgId = `dmart-bar-${i}`;
-        } else {
-          imgId = `rel-barcode-img-${i}`;
-        }
+    this.printItems.forEach((p, i) => {
+      let imgId = '';
+      if (this.selectedPrintStyle === 'dmart' || this.selectedPrintStyle === 'old-dmart') {
+        imgId = `dmart-bar-${i}`;
+      } else {
+        imgId = `rel-barcode-img-${i}`;
+      }
 
-        const imgEl = win.document.getElementById(imgId) as HTMLImageElement;
-          if (!imgEl) {
-            console.warn(`Barcode image element not found: ${imgId}`);
-            return;
-          }
-          if (!p.barcode || p.barcode.trim().length === 0) {
-            console.warn(`Empty or missing barcode: ${p.productName}`);
-            return;
-          }
+      const imgEl = win.document.getElementById(imgId) as HTMLImageElement;
+      if (!imgEl) {
+        console.warn(`Barcode image element not found: ${imgId}`);
+        return;
+      }
+      if (!p.barcode || p.barcode.trim().length === 0) {
+        console.warn(`Empty or missing barcode: ${p.productName}`);
+        return;
+      }
 
-        const canvas = document.createElement('canvas');
-        try {
-          bwipjs.toCanvas(canvas, {
-            bcid: 'code128',
-            text: p.barcode,
-            scale: 1.6,
-            height: 8,
-            includetext: false,
-            textxalign: 'center',
-            backgroundcolor: 'FFFFFF',
-          });
-
-          const dataUrl = canvas.toDataURL('image/png');
-
-          const loadPromise = new Promise<void>((resolve, reject) => {
-            imgEl.onload = () => resolve();
-            imgEl.onerror = () => reject();
-            imgEl.src = dataUrl;
-          });
-
-          promises.push(loadPromise);
-        } catch (e) {
-          console.error('bwip-js render error:', e);
-        }
-      });
-
+      const canvas = document.createElement('canvas');
       try {
-        await Promise.all(promises);
-
-        // ✅ Only call print ONCE here — no onafterprint, no media query listener
-        win.focus();
-        win.print();
-
-        // Optional safe delay to close the print window
-        setTimeout(() => {
-          if (!win.closed) win.close();
-        },);
-
-      } catch (e) {
-        console.error('Error loading one or more barcode images:', e);
-      }
-    }
-
-    // Handle print style change from UI
-    onPrintStyleChange(style: LabelStyle) {
-      this.selectedPrintStyle = style;
-
-      // Clear invalid product selections if print style is 'reliance'
-      if (style === 'reliance') {
-        this.products.forEach(p => {
-          const match = this.nameOptions.find(n => `${n.name} ${n.units}` === p.productName);
-          if (!match || match.type?.toLowerCase() !== 'vegetable') {
-            p.productName = '';
-            p.category = '';
-            p.barcode = '';
-            p.dbBarcode = '';
-          }
+        bwipjs.toCanvas(canvas, {
+          bcid: 'code128',
+          text: p.barcode,
+          scale: 1.6,
+          height: 8,
+          includetext: false,
+          textxalign: 'center',
+          backgroundcolor: 'FFFFFF',
         });
-      }
 
-      this.products.forEach(p => this.generateBarcode(p));
-      this.cdRef.detectChanges();
+        const dataUrl = canvas.toDataURL('image/png');
+
+        const loadPromise = new Promise<void>((resolve, reject) => {
+          imgEl.onload = () => resolve();
+          imgEl.onerror = () => reject();
+          imgEl.src = dataUrl;
+        });
+
+        promises.push(loadPromise);
+      } catch (e) {
+        console.error('bwip-js render error:', e);
+      }
+    });
+
+    try {
+      await Promise.all(promises);
+
+      // ✅ Only call print ONCE here — no onafterprint, no media query listener
+      win.focus();
+      win.print();
+
+      // Optional safe delay to close the print window
+      setTimeout(() => {
+        if (!win.closed) win.close();
+      },);
+
+    } catch (e) {
+      console.error('Error loading one or more barcode images:', e);
     }
   }
+
+  // Handle print style change from UI
+  onPrintStyleChange(style: LabelStyle) {
+    this.selectedPrintStyle = style;
+
+    // Clear invalid product selections if print style is 'reliance'
+    if (style === 'reliance') {
+      this.products.forEach(p => {
+        const match = this.nameOptions.find(n => `${n.name} ${n.units}` === p.productName);
+        if (!match || match.type?.toLowerCase() !== 'vegetable') {
+          p.productName = '';
+          p.category = '';
+          p.barcode = '';
+          p.dbBarcode = '';
+        }
+      });
+    }
+
+    this.products.forEach(p => this.generateBarcode(p));
+    this.cdRef.detectChanges();
+  }
+}
