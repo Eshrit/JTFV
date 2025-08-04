@@ -6,9 +6,7 @@
     
     <!-- Name fields -->
     <div class="form-row">
-      <input type="text" name="firstName" placeholder="First Name" ngModel required>
-      <input type="text" name="middleName" placeholder="Middle Name" ngModel>
-      <input type="text" name="lastName" placeholder="Last Name" ngModel>
+      <input type="text" name="firstName" placeholder="Client Name" ngModel required>
     </div>
 
     <!-- Contact info -->
@@ -34,23 +32,27 @@
       <input type="text" name="address2" placeholder="Address 2" ngModel>
     </div>
 
-    <!-- Area, City, Landmark -->
+    <!-- Area, Sub-Area, City, Landmark -->
     <div class="form-row">
-      <select name="area" ngModel>
+      <!-- Area Dropdown -->
+      <select name="area" [(ngModel)]="selectedArea" (change)="onAreaChange()" required>
         <option value="" disabled selected hidden>Select Area</option>
-        <option value="Borivali (East)">Borivali (East)</option>
+        <option *ngFor="let area of areaKeys" [value]="area">{{ area }}</option>
       </select>
 
-      <select name="subArea" ngModel>
+      <!-- Sub-Area Dropdown -->
+      <select name="subArea" [(ngModel)]="selectedSubArea" [disabled]="!subAreaOptions.length" required>
         <option value="" disabled selected hidden>Select Sub-Area</option>
-        <option value="Borivali (East)">Borivali (East)</option>
+        <option *ngFor="let sub of subAreaOptions" [value]="sub">{{ sub }}</option>
       </select>
 
-      <select name="city" ngModel>
+      <!-- City Dropdown -->
+      <select name="city" ngModel required>
         <option value="" disabled selected hidden>Select City</option>
         <option value="MUMBAI">MUMBAI</option>
       </select>
 
+      <!-- Landmark -->
       <input type="text" name="landmark" placeholder="Landmark" ngModel>
     </div>
 
@@ -70,7 +72,7 @@
 
     <!-- Action buttons -->
     <div class="form-buttons">
-      <button type="submit">Save</button>
+      <button type="submit" [disabled]="!merchantForm.valid">Save</button>
       <button type="button" (click)="backToHome()">Back To Home</button>
       <button type="reset">Clear</button>
     </div>

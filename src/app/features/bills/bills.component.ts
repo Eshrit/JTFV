@@ -104,7 +104,7 @@ export class BillsComponent implements OnInit {
   onClientChange(): void {
     if (this.selectedClient) {
       const c = this.selectedClient;
-      const parts = [c.address1, c.address2, c.area, c.city].filter(Boolean);
+      const parts = [c.address1, c.address2, c.subArea, c.area, c.city].filter(Boolean);
       this.clientName = c.firstName;
       this.address = parts.join(', ');
 
@@ -281,21 +281,20 @@ emailBill(): void {
     textarea.style.height = textarea.scrollHeight + 'px'; // expand to fit
   }
 
-private resizeTextarea(el: HTMLTextAreaElement): void {
-  el.style.height = 'auto';
-  el.style.width = 'auto';
+  private resizeTextarea(el: HTMLTextAreaElement): void {
+    el.style.height = 'auto';
+    el.style.width = 'auto';
 
-  const containerWidth = el.parentElement?.clientWidth || 800; // fallback if no parent
-  const scrollWidth = el.scrollWidth + 2;
+    const containerWidth = el.parentElement?.clientWidth || 800; // fallback if no parent
+    const scrollWidth = el.scrollWidth + 2;
 
-  // Limit width to container width
-  if (scrollWidth < containerWidth) {
-    el.style.width = scrollWidth + 'px';
-    el.style.height = '60px'; // fixed height
-  } else {
-    el.style.width = '100%'; // full container
-    el.style.height = el.scrollHeight + 'px'; // allow vertical growth
+    // Limit width to container width
+    if (scrollWidth < containerWidth) {
+      el.style.width = scrollWidth + 'px';
+      el.style.height = '60px'; // fixed height
+    } else {
+      el.style.width = '100%'; // full container
+      el.style.height = el.scrollHeight + 'px'; // allow vertical growth
+    }
   }
-}
-
 }

@@ -43,12 +43,11 @@
     <div class="field-row">
       <label>Address:</label>
       <div class="print-toggle print-value">
-        <textarea  #addressTextarea class="form-control address-area auto-expand no-print" [(ngModel)]="address" rows="1" style="overflow:hidden; resize: none;"
-          (input)="autoResize($event)">
-        </textarea>
+        <textarea #addressTextarea class="form-control no-print" [(ngModel)]="address" (input)="autoResize($event)" rows="1" style="overflow:hidden;"></textarea>
         <span class="print-view" style="white-space: pre-line;">{{ address }}</span>
       </div>
     </div>
+  </div>   
 
   <table class="table">
     <thead>
@@ -61,34 +60,34 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let item of billItems; let i = index"
-          [class.no-print]="!item.productId || !item.quantity || !item.price">
-        <td>{{ i + 1 }}</td>
-        <td>
-          <div class="print-toggle">
-            <select #productSelect class="product-control" [(ngModel)]="item.productId" (change)="onProductChange(i)">
-              <option [ngValue]="null" disabled>Select</option>
-              <option *ngFor="let product of products" [ngValue]="product.id">
-                {{ product.name }}{{ product.units ? ' ' + product.units : '' }}
-              </option>
-            </select>
-            <span class="print-view">{{ item.productName }}</span>
-          </div>
-        </td>
-        <td>
-          <div class="print-toggle">
-            <input class="form-control" type="number" [(ngModel)]="item.quantity" (input)="calculateRowTotal(i)" />
-            <span class="print-view">{{ item.quantity }}</span>
-          </div>
-        </td>
-        <td>
-          <div class="print-toggle">
-             <input class="form-control" type="number" [(ngModel)]="item.price" (input)="calculateRowTotal(i)" (keydown)="onPriceKeydown($event, i)" />
-            <span class="print-view">{{ item.price }}</span>
-          </div>
-        </td>
-        <td>{{ item.total | number:'1.2-2' }}</td>
-      </tr>
+    <tr *ngFor="let item of billItems; let i = index"
+        [class.no-print]="!item.productId || !item.quantity || !item.price">
+      <td>{{ i + 1 }}</td>
+      <td>
+        <div class="print-toggle">
+          <select #productSelect class="product-control" [(ngModel)]="item.productId" (change)="onProductChange(i)">
+            <option [ngValue]="null" disabled>Select</option>
+            <option *ngFor="let product of products" [ngValue]="product.id">
+              {{ product.name }}{{ product.units ? ' ' + product.units : '' }}
+            </option>
+          </select>
+          <span class="print-view">{{ item.productName }}</span>
+        </div>
+      </td>
+      <td>
+        <div class="print-toggle">
+          <input #qtyInput class="form-control" type="number" [(ngModel)]="item.quantity" (input)="calculateRowTotal(i)" />
+          <span class="print-view">{{ item.quantity }}</span>
+        </div>
+      </td>
+      <td>
+        <div class="print-toggle">
+          <input #priceInput class="form-control" type="number" [(ngModel)]="item.price" (input)="calculateRowTotal(i)" (keydown)="onPriceKeydown($event, i)" />
+          <span class="print-view">{{ item.price }}</span>
+        </div>
+      </td>
+      <td>{{ item.total | number:'1.2-2' }}</td>
+    </tr>
     </tbody>
   </table>
 
@@ -102,7 +101,7 @@
     <div class="summary print-toggle">
       <label>Discount (%):</label>
       <input class="form-control no-print" style="width: 100px; display: inline-block;"
-            type="number" [(ngModel)]="discount" (input)="calculateFinalAmount()" />
+            type="number" [(ngModel)]="discount" (input)="calculateFinalAmount()" [tabindex]="-1" />
       <span class="print-view">{{ discount }}</span>
     </div>
 
@@ -113,10 +112,10 @@
   </div>
 
   <div class="actions no-print">
-    <button class="btn btn-success" (click)="saveBill()">Update</button>
-    <button class="btn btn-primary" (click)="printBill()">Print</button>
+    <button class="btn btn-success" (click)="saveBill()" [tabindex]="-1">Save</button>
+    <button class="btn btn-primary" (click)="printBill()" [tabindex]="-1">Print</button>
     <input type="email" class="form-control" placeholder="Enter email address" style="display: inline-block; width: 250px; margin-right: 10px;" 
-    [(ngModel)]="manualEmail" />
-    <button class="btn btn-secondary" (click)="emailBill()">Email</button>
+    [(ngModel)]="manualEmail" [tabindex]="-1" />
+    <button class="btn btn-secondary" (click)="emailBill()" [tabindex]="-1">Email</button>
   </div>
 </div>

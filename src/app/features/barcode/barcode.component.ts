@@ -55,7 +55,7 @@ export class BarcodeComponent implements OnInit {
   addRow() {
     this.products.push({
       productName: '',
-      mrp: 0,
+      mrp: 10000000,
       category: '',
       quantity: 1,
       expiryDays: 1,
@@ -159,22 +159,18 @@ export class BarcodeComponent implements OnInit {
     const isVegetable = product.category.toLowerCase() === 'vegetable';
     const prefix = isVegetable ? '953779' : '95378';
 
-    let mrpPart: string;
+    const paise = Math.round(product.mrp * 100);               // ₹45.25 → 4525, ₹45 → 4500
 
-    // If MRP has paise (not a whole number)
-    if (product.mrp % 1 !== 0) {
-      const paise = Math.round(product.mrp * 100); // ₹240.25 → 24025
-      mrpPart = paise.toString();                  // "24025"
-    } else {
-      // Whole rupee value — no decimal
-      mrpPart = Math.round(product.mrp).toString(); // ₹30 → "30"
-    }
-
+    // ✅ Final format: prefix + 0000 + paise (no padding)
     if (this.selectedPrintStyle === 'dmart' || this.selectedPrintStyle === 'old-dmart') {
-      product.barcode = `${prefix}0000${mrpPart}`;
+      product.barcode = `${prefix}0000${paise}`;
     } else {
       product.barcode = product.dbBarcode || '';
     }
+  }
+
+  trackByIndex(index: number): number {
+    return index;
   }
 
   printSelected() {

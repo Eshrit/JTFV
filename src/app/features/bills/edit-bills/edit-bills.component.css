@@ -218,6 +218,7 @@
   input.form-control,
   select.form-control {
     width: 100%;
+    box-sizing: border-box;
     padding: 6px 10px;
     font-size: 14px;
     margin-top: 5px;
