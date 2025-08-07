@@ -3,32 +3,46 @@
   <h2>Product Search</h2>
 
   <div class="search-section">
-    <label>Search By</label>
-      <select [(ngModel)]="searchBy">
+    <div class="form-group">
+      <label for="searchBy">Search By</label>
+      <select id="searchBy" [(ngModel)]="searchBy">
         <option value="name">Product Name</option>
         <option value="type">Type</option>
         <option value="priority">Priority</option>
         <option value="units">Units</option>
+        <option value="mrp">MRP</option>
+        <option value="expiryDays">Expiry Days</option>
       </select>
-    <input type="text" (keydown.enter)="onSearch()" [(ngModel)]="searchText" placeholder="Enter search text" />
-    <button class="button" (click)="onSearch()">Search</button>
-    <button class="button" (click)="backToHome()">Back To Home</button>
+    </div>
+
+    <div class="form-group">
+      <label for="searchText">Search</label>
+      <input id="searchText" type="text" placeholder="Enter search text" [(ngModel)]="searchText" (keydown.enter)="onSearch()" />
+    </div>
+
+    <div class="button-group">
+      <button class="button" (click)="onSearch()">Search</button>
+      <button class="button" (click)="backToHome()">Back To Home</button>
+    </div>
+  </div>
+
+  <div class="product-count">
+    Showing {{ filteredProducts.length }} of {{ products.length }} products
   </div>
 
   <div class="excel-table-container">
     <table class="excel-table">
       <thead>
         <tr>
-          <th>Product Name</th>
-          <th (click)="sortByType()" style="cursor: pointer;">Type ⬍</th>
-          <th>Priority</th>
-          <th>Units</th>
-          <th>MRP</th>
-          <th>Expiry Days</th>
+          <th (click)="sortBy('name')">Product Name</th>
+          <th (click)="sortBy('type')">Type</th>
+          <th (click)="sortBy('priority')">Priority</th>
+          <th (click)="sortBy('units')">Units</th>
+          <th (click)="sortBy('mrp')">MRP</th>
+          <th (click)="sortBy('expiryDays')">Expiry Days</th>
           <th>Edit</th>
         </tr>
       </thead>
-
       <tbody>
         <tr *ngFor="let product of filteredProducts">
           <td>{{ product.name }}</td>

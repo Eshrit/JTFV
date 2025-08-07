@@ -63,7 +63,7 @@ export class ProductService {
     return this.http.put(`${this.baseUrl}/names/${id}`, updatedData);
   }
   // Add a new name to names table
-  addName(data: { name: string; type: string; priority: string; units: string }): Observable<any> {
+  addName(data: Partial<Name>): Observable<any> {
     return this.http.post(`${this.baseUrl}/names`, data);
   }
 }

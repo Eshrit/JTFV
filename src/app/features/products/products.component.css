@@ -26,13 +26,21 @@
   margin-bottom: 30px;
 }
 
-.search-section label {
-  font-weight: 600;
-  margin-right: 8px;
-  font-size: 15px;
-  color: #34495e;
+/* Grouping for label + input/select */
+.search-section .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
+.search-section .form-group label {
+  font-weight: 600;
+  font-size: 13px;
+  color: #2c3e50;
+  margin-bottom: 2px;
+}
+
+/* Inputs & Dropdowns */
 .search-section select,
 .search-section input[type="text"] {
   padding: 10px 14px;
@@ -49,6 +57,13 @@
   outline: none;
   border-color: #3f51b5;
   background-color: #ffffff;
+}
+
+/* Button group to align Search & Back buttons */
+.search-section .button-group {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
 }
 
 /* Search Buttons */
@@ -73,6 +88,34 @@
 /* Excel Table Container */
 .excel-table-container {
   margin-top: 20px;
+}
+
+/* Add pointer and transition on all header cells */
+.excel-table th {
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* On hover: slight background highlight and scale */
+.excel-table th:hover {
+  background-color: #ccd6dd; /* subtle blue tint */
+  transform: scale(1.02);
+}
+
+.excel-table thead tr:first-child th:first-child {
+  border-top-left-radius: 8px;
+}
+
+.excel-table thead tr:first-child th:last-child {
+  border-top-right-radius: 8px;
+}
+
+.product-count {
+  font-size: 15px;
+  font-weight: 500;
+  color: #34495e;
+  margin-bottom: 16px;
+  padding-left: 4px;
 }
 
 /* Excel Table Styling */

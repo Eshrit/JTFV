@@ -29,15 +29,28 @@ export class EditProductsComponent implements OnInit {
       error: (err) => console.error('Failed to load name:', err)
     });
   }
-
-  onSubmit(form: NgForm): void {
-    if (form.valid) {
-      this.productService.updateName(this.productId, form.value).subscribe({
-        next: () => this.router.navigate(['/products']),
-        error: (err) => console.error('Failed to update name:', err)
-      });
-    }
+  
+onSubmit(form: NgForm): void {
+  if (!form.valid) {
+    console.warn('⛔ Form is invalid:', form.value);
+    alert('Please fill all required fields.');
+    return;
   }
+
+  console.log('📤 Submitting:', form.value);
+
+  this.productService.updateName(this.productId, form.value).subscribe({
+    next: () => {
+      console.log('✅ Product updated successfully');
+      alert('Product updated!');
+      this.router.navigate(['/products']);
+    },
+    error: (err) => {
+      console.error('❌ Update error:', err);
+      alert(err.error?.message || 'Update failed');
+    }
+  });
+}
 
   backToProducts(): void {
     this.router.navigate(['/products']);

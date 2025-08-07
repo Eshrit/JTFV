@@ -201,15 +201,44 @@ app.get('/api/names/:id', (req, res) => {
 
 // Update a name
 app.put('/api/names/:id', (req, res) => {
-  const { name, type, priority, units, mrp, expiryDays } = req.body;
-  db.run(`
-    UPDATE names SET name = ?, type = ?, priority = ?, units = ?, mrp = ?, expiryDays = ?
-    WHERE id = ?
-  `, [name, type, priority, units, mrp || null, expiryDays || null, req.params.id], function (err) {
-    if (err) return res.status(500).json({ message: 'Failed to update name', error: err.message });
-    if (this.changes === 0) return res.status(404).json({ message: 'Name not found' });
-    res.json({ message: 'Name updated successfully' });
-  });
+  const { name, type, priority, units, mrp, expiryDays, barcode } = req.body;
+  const id = req.params.id;
+
+  if (barcode && barcode.trim() !== '') {
+    db.get('SELECT id FROM names WHERE barcode = ? AND id != ?', [barcode.trim(), id], (err, row) => {
+      if (err) {
+        console.error('❌ Barcode check failed:', err.message);
+        return res.status(500).json({ message: 'Database error' });
+      }
+
+      if (row) {
+        return res.status(400).json({ message: '❌ Barcode already exists for another product' });
+      }
+
+      return doUpdate();
+    });
+  } else {
+    return doUpdate();
+  }
+
+  function doUpdate() {
+    db.run(`
+      UPDATE names 
+      SET name = ?, type = ?, priority = ?, units = ?, mrp = ?, expiryDays = ?, barcode = ?
+      WHERE id = ?
+    `, [name, type, priority, units, mrp || null, expiryDays || null, barcode || '', id], function (err) {
+      if (err) {
+        console.error('❌ Update failed:', err.message);
+        return res.status(500).json({ message: 'Failed to update name', error: err.message });
+      }
+
+      if (this.changes === 0) {
+        return res.status(404).json({ message: 'Product not found' });
+      }
+
+      res.json({ message: '✅ Product updated successfully' });
+    });
+  }
 });
 
 // // DELETE /api/names/vegetables — deletes only vegetable rows

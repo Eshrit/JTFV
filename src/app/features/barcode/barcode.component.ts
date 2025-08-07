@@ -55,7 +55,7 @@ export class BarcodeComponent implements OnInit {
   addRow() {
     this.products.push({
       productName: '',
-      mrp: 10000000,
+      mrp: 0,
       category: '',
       quantity: 1,
       expiryDays: 1,
