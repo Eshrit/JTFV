@@ -2,7 +2,7 @@
 .content {
   padding: 40px;
   font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f0f2f5; /* softer background */
+  background-color: #f0f2f5;
 }
 
 /* Heading */
@@ -19,30 +19,29 @@
   flex-wrap: wrap;
   gap: 16px;
   align-items: flex-end;
-  background-color: #ffffff;
+  background-color: #fff;
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
   margin-bottom: 30px;
 }
 
-/* Grouping for label + input/select */
-.search-section .form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
+/* Label */
 .search-section .form-group label {
   font-weight: 600;
   font-size: 13px;
   color: #2c3e50;
-  margin-bottom: 2px;
+  margin-bottom: 6px;
 }
 
-/* Inputs & Dropdowns */
-.search-section select,
-.search-section input[type="text"] {
+/* Form Group */
+.search-section .form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Select Dropdowns */
+.search-section select {
   padding: 10px 14px;
   font-size: 15px;
   border: 1px solid #ccd6dd;
@@ -52,24 +51,74 @@
   transition: border-color 0.3s ease, background-color 0.3s ease;
 }
 
-.search-section select:focus,
-.search-section input[type="text"]:focus {
-  outline: none;
-  border-color: #3f51b5;
-  background-color: #ffffff;
-}
-
-/* Button group to align Search & Back buttons */
+/* Button Group */
 .search-section .button-group {
   display: flex;
   gap: 12px;
   align-items: flex-end;
 }
 
-/* Search Buttons */
-.search-section button {
+/* Input + Clear Icon Wrapper */
+.input-with-clear {
+  position: relative;
+  width: 100%;
+  min-width: 180px;
+}
+
+/* Make form input group flexible */
+.form-group.flex-grow {
+  flex: 0 0 auto;        /* Prevent it from stretching */
+  width: 220px;          /* Set desired input width */
+  max-width: 250px;
+}
+
+/* Prevent input from growing endlessly */
+.input-with-clear input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Search Input */
+.input-with-clear input {
+  width: 100%;
+  padding: 10px 36px 10px 14px;
+  font-size: 15px;
+  border: 1px solid #ccd6dd;
+  border-radius: 6px;
+  background-color: #f7f9fc;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+/* Focus State */
+.input-with-clear input:focus,
+.search-section select:focus {
+  outline: none;
+  border-color: #3f51b5;
+  background-color: #fff;
+}
+
+/* Clear (×) icon */
+.clear-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: #666;
+  cursor: pointer;
+  user-select: none;
+  pointer-events: auto;
+}
+
+.clear-icon:hover {
+  color: #000;
+}
+
+/* Buttons */
+.search-section button,
+button.button {
   background-color: #3f51b5;
-  color: #ffffff;
+  color: #fff;
   font-weight: bold;
   border: none;
   padding: 10px 22px;
@@ -80,36 +129,13 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-.search-section button:hover {
+.search-section button:hover,
+button.button:hover {
   background-color: #35449c;
   transform: translateY(-2px);
 }
 
-/* Excel Table Container */
-.excel-table-container {
-  margin-top: 20px;
-}
-
-/* Add pointer and transition on all header cells */
-.excel-table th {
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-/* On hover: slight background highlight and scale */
-.excel-table th:hover {
-  background-color: #ccd6dd; /* subtle blue tint */
-  transform: scale(1.02);
-}
-
-.excel-table thead tr:first-child th:first-child {
-  border-top-left-radius: 8px;
-}
-
-.excel-table thead tr:first-child th:last-child {
-  border-top-right-radius: 8px;
-}
-
+/* Product Count Text */
 .product-count {
   font-size: 15px;
   font-weight: 500;
@@ -118,11 +144,16 @@
   padding-left: 4px;
 }
 
-/* Excel Table Styling */
+/* Table Container */
+.excel-table-container {
+  margin-top: 20px;
+}
+
+/* Table Styles */
 .excel-table {
   width: 100%;
   border-collapse: collapse;
-  background-color: #ffffff;
+  background-color: #fff;
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
   border-radius: 12px;
   overflow: hidden;
@@ -142,29 +173,30 @@
   font-size: 14px;
 }
 
+.excel-table th {
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.excel-table th:hover {
+  background-color: #ccd6dd;
+  transform: scale(1.02);
+}
+
+.excel-table thead tr:first-child th:first-child {
+  border-top-left-radius: 8px;
+}
+
+.excel-table thead tr:first-child th:last-child {
+  border-top-right-radius: 8px;
+}
+
 .excel-table tbody tr:hover {
   background-color: #f4f6f8;
   cursor: pointer;
 }
 
-/* Main Action Buttons */
-button.button {
-  background-color: #3498db;
-  color: #ffffff;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-button.button:hover {
-  background-color: #2c80b4;
-  transform: scale(1.05);
-}
-
-/* Action Buttons in Table */
+/* Action Buttons */
 .action-button {
   padding: 8px 16px;
   font-size: 14px;
@@ -175,10 +207,9 @@ button.button:hover {
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-/* Edit Button Style */
 .action-button.edit {
   background-color: #607d8b;
-  color: #ffffff;
+  color: #fff;
 }
 
 .action-button.edit:hover {
@@ -186,10 +217,9 @@ button.button:hover {
   transform: scale(1.05);
 }
 
-/* Delete Button Style */
 .action-button.delete {
   background-color: #e53935;
-  color: #ffffff;
+  color: #fff;
 }
 
 .action-button.delete:hover {
@@ -197,7 +227,7 @@ button.button:hover {
   transform: scale(1.05);
 }
 
-/* Responsive Adjustments */
+/* Responsive Layout */
 @media screen and (max-width: 768px) {
   .search-section {
     flex-direction: column;

@@ -3,6 +3,7 @@
   <h2>Product Search</h2>
 
   <div class="search-section">
+    <!-- Search By Dropdown -->
     <div class="form-group">
       <label for="searchBy">Search By</label>
       <select id="searchBy" [(ngModel)]="searchBy">
@@ -15,11 +16,21 @@
       </select>
     </div>
 
-    <div class="form-group">
+    <!-- Search Input with Clear Icon -->
+    <div class="form-group flex-grow input-group">
       <label for="searchText">Search</label>
-      <input id="searchText" type="text" placeholder="Enter search text" [(ngModel)]="searchText" (keydown.enter)="onSearch()" />
+      <div class="input-with-clear">
+        <input
+          id="searchText"
+          type="text"
+          placeholder="Enter search text"
+          [(ngModel)]="searchText"
+          (input)="onSearch()" />
+        <span class="clear-icon" *ngIf="searchText" (click)="clearSearch()">×</span>
+      </div>
     </div>
 
+    <!-- Buttons -->
     <div class="button-group">
       <button class="button" (click)="onSearch()">Search</button>
       <button class="button" (click)="backToHome()">Back To Home</button>

@@ -52,6 +52,11 @@ export class ProductsComponent implements OnInit {
     this.filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
   }
 
+  clearSearch(): void {
+    this.searchText = '';
+    this.onSearch();
+  }
+
   sortField: NameField | null = null;
   sortDirection: 'asc' | 'desc' = 'asc';
 

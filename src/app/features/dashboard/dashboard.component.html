@@ -19,7 +19,7 @@
 
     <div class="search-field-group">
       <label for="searchText">Search</label>
-      <input  (keydown.enter)="onSearch()" id="searchText" type="text" [(ngModel)]="searchText" placeholder="Enter search text" />
+      <input  (input)="onSearch()" id="searchText" type="text" [(ngModel)]="searchText" placeholder="Enter search text" />
     </div>
 
     <div class="search-btn-wrapper">
