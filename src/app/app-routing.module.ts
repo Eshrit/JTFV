@@ -13,6 +13,8 @@ import { BarcodeComponent } from './features/barcode/barcode.component';
 import { EditBillsComponent } from './features/bills/edit-bills/edit-bills.component';
 import { AddLumpsumBillsComponent } from './features/bills/add-lumpsum-bills/add-lumpsum-bills.component';
 import { EditLumpsumBillsComponent } from './features/bills/edit-lumpsum-bills/edit-lumpsum-bills.component';
+import { RelianceBillsComponent } from './features/bills/reliance-bills/reliance-bills.component';
+import { EditRelianceBillsComponent } from './features/bills/edit-reliance-bills/edit-reliance-bills.component';
 
 
 const routes: Routes = [
@@ -29,6 +31,8 @@ const routes: Routes = [
   { path: 'edit-bills/:billNumber', component: EditBillsComponent },
   { path: 'add-lumpsum-bills', component: AddLumpsumBillsComponent },
   { path: 'edit-lumpsum-bills/:billNumber', component: EditLumpsumBillsComponent },
+  { path: 'reliance-bills', component: RelianceBillsComponent },
+  { path: 'edit-reliance-bills/:billNumber', component: EditRelianceBillsComponent },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
 ];
 

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { BillsService } from 'src/app/core/services/bills.service';
 
 @Component({
@@ -13,7 +14,10 @@ export class ReportsComponent implements OnInit {
   filteredBills: any[] = [];
   selectedBill: any = null;
 
-  constructor(private billsService: BillsService) {}
+  constructor(
+    private billsService: BillsService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.billsService.getAllBills().subscribe({
@@ -22,18 +26,40 @@ export class ReportsComponent implements OnInit {
           let billItems;
           try {
             const parsed = JSON.parse(bill.billItems);
-            // If parsed is array, it's a normal bill; otherwise it's lumpsum
             billItems = Array.isArray(parsed) ? parsed : [];
           } catch {
             billItems = [];
           }
-          return { ...bill, billItems };
+
+          // Derive a fallback billType for older rows with no billType
+          const derivedBillType =
+            typeof bill.billType === 'string' && bill.billType
+              ? String(bill.billType).toLowerCase()
+              : this.deriveBillType(bill);
+
+          return { ...bill, billItems, billType: derivedBillType };
         });
 
         this.filteredBills = [...this.bills];
       },
       error: (err) => console.error('Failed to load bills:', err)
     });
+  }
+
+  /** BEST-EFFORT classifier for old records without billType. Tweak as needed. */
+  private deriveBillType(bill: any): string | null {
+    const name = (bill.clientName || '').toString().toLowerCase();
+
+    // If your Reliance bills always used this client name, this will catch them:
+    if (name.includes('freshpik spectra powai')) return 'reliance';
+
+    // Heuristic: if billItems look like product-line items (have productId/price),
+    // and clientName is empty/unknown (as in your Reliance template), classify as reliance.
+    const items = Array.isArray(bill.billItems) ? bill.billItems : [];
+    const looksLikeProductLines = items.some((it: any) => it && (it.productId || it.price || it.quantity));
+    if (!bill.clientName && looksLikeProductLines) return 'reliance';
+
+    return null;
   }
 
   selectBill(bill: any): void {
@@ -73,10 +99,40 @@ export class ReportsComponent implements OnInit {
     }
   }
 
+  /** Old helper still used by goToEdit; returns the intended link parts. */
   getEditLink(bill: any): string[] {
-    return bill.description
-      ? ['/edit-lumpsum-bills', bill.billNumber]
-      : ['/edit-bills', bill.billNumber];
+    if (this.isRelianceBill(bill)) {
+      return ['/edit-reliance-bills', bill.billNumber];
+    }
+    if (bill.description) {
+      return ['/edit-lumpsum-bills', bill.billNumber];
+    }
+    return ['/edit-bills', bill.billNumber];
+  }
+
+  /** More robust Reliance detector. */
+  private isRelianceBill(bill: any): boolean {
+    // 1) Explicit tag
+    if (bill.billType && String(bill.billType).toLowerCase() === 'reliance') return true;
+
+    // 2) Fallback on client name
+    const name = (bill.clientName || '').toString().toLowerCase();
+    if (name.includes('freshpik spectra powai')) return true;
+
+    // 3) Heuristic fallback for legacy rows
+    const items = Array.isArray(bill.billItems) ? bill.billItems : [];
+    const looksLikeProductLines = items.some((it: any) => it && (it.productId || it.price || it.quantity));
+    if (!bill.clientName && looksLikeProductLines) return true;
+
+    return false;
+    }
+
+  /** Do navigation in TS so we can debug and ensure params are correct. */
+  goToEdit(bill: any): void {
+    const link = this.getEditLink(bill);
+    // Quick sanity log (check DevTools console if it still doesn't navigate)
+    console.log('Navigating to:', link);
+    this.router.navigate(link);
   }
 
   onSearch(): void {

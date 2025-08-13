@@ -1,0 +1,140 @@
+<app-navbar class="no-print"></app-navbar>
+
+<div class="container">
+  <div class="header">
+    <h1>J.T. Fruits &amp; Vegetables</h1>
+    <p>Shop No. 31-32, Bldg No. 27, EMP Op Jogers Park, Thakur Village, Kandivali(E), Mumbai 400101</p>
+    <p>PAN: AAJFJ0258J | FSS LICENSE ACT 2006 LICENSE NO: 11517011000128</p>
+    <p>Email: jkumarshahu5@gmail.com</p>
+
+    <div class="invoice-header">
+      <div class="header-flex">
+        <h2 class="invoice-title">Tax Invoice</h2>
+      </div>
+    </div>
+  </div>
+
+  <!-- Parties / Details block -->
+  <div class="tax-parties">
+    <!-- Bill To -->
+    <div class="party">
+      <div class="party-title">Bill To</div>
+      <div class="party-name">{{ clientName || 'Reliance Retail Limited' }}</div>
+      <div class="party-address">
+        {{ address || 'Reliance Corporate Park, Thane-Belapur Road, Ghansoli-400701, Navi Mumbai, Maharashtra' }}
+      </div>
+    </div>
+
+    <!-- Ship To -->
+    <div class="party">
+      <div class="party-title">Ship To</div>
+      <div class="party-name">{{ shipToName || 'FRESHPIK SPECTRA POWAI ( T5EP )' }}</div>
+      <div class="party-address">
+        {{ shipToAddress || 'Spectra, 1st, Central Ave, Hiranandani Gardens, Powai, Mumbai, Maharashtra 400076' }}
+      </div>
+    </div>
+
+    <div class="invoice-details">
+      <div class="party-title">Invoice Details</div>
+      <div class="inv-row">
+        <span>Invoice No.:</span>
+        <span class="value">{{ billNumber }}</span>
+      </div>
+      <div class="inv-row">
+        <span>Date:</span>
+        <span class="value">
+          <input type="date" class="form-control" [(ngModel)]="billDate" />
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Items table -->
+  <table class="table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Item name</th>
+        <th>Quantity</th>
+        <th>Item Price</th>
+        <th>Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of billItems; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>
+          <select #productSelect class="product-control"
+                  [(ngModel)]="item.productId"
+                  (change)="onProductChange(i)">
+            <option [ngValue]="null" disabled>Select</option>
+            <option *ngFor="let product of products" [ngValue]="product.id">
+              {{ product.name }}{{ product.units ? ' ' + product.units : '' }}
+            </option>
+          </select>
+        </td>
+        <td>
+          <input #qtyInput class="form-control" type="number"
+                [(ngModel)]="item.quantity"
+                (input)="calculateRowTotal(i)" />
+        </td>
+        <td>
+          <input #priceInput class="form-control" type="number"
+                [(ngModel)]="item.price"
+                (input)="calculateRowTotal(i)"
+                (keydown)="onPriceKeydown($event, i)" />
+        </td>
+        <td>
+          <input class="form-control" type="number" step="0.01"
+                [(ngModel)]="item.total" (input)="onSalesAmountInput(i)" />
+        </td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr class="total-row">
+        <td colspan="2" class="left"><strong>Total</strong></td>
+        <td><strong>{{ totalQuantity }}</strong></td>
+        <td><strong>₹ {{ totalItemPrice | number:'1.2-2' }}</strong></td>
+        <td><strong>₹ {{ totalAmount | number:'1.2-2' }}</strong></td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <!-- Amounts + Words in two-column layout -->
+  <div class="boxes compact">
+    <!-- Left column: Invoice Amount + Terms -->
+    <div class="left-column">
+      <div class="box">
+        <div class="box-title">Invoice Amount In Words</div>
+        <div class="box-body">{{ amountInWords(totalAmount) }}</div>
+      </div>
+      <div class="box">
+        <div class="box-title">Terms and conditions</div>
+        <div class="box-body">
+          Thank You for your order!<br>
+          This is a computer generated bill. No Signature Required.
+        </div>
+      </div>
+    </div>
+
+    <!-- Right column: Amounts -->
+    <div class="box amounts-box">
+      <div class="box-title">Amounts</div>
+      <div class="amount-grid">
+        <div>Sub Total</div><div class="v">₹ {{ totalAmount | number:'1.2-2' }}</div>
+        <div><strong>Total</strong></div><div class="v"><strong>₹ {{ totalAmount | number:'1.2-2' }}</strong></div>
+        <div>Received</div><div class="v">₹ 0.00</div>
+        <div>Balance</div><div class="v">₹ {{ totalAmount | number:'1.2-2' }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="actions">
+    <button class="btn btn-success" (click)="saveBill()">Update</button>
+    <button class="btn btn-primary" (click)="printBill()">Print</button>
+    <input type="email" class="form-control" placeholder="Enter email address"
+           [(ngModel)]="manualEmail" />
+    <button class="btn btn-secondary" (click)="emailBill()">Email</button>
+  </div>
+</div>

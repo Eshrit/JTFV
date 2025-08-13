@@ -3,16 +3,26 @@
 <div class="centered-layout">
 <div class="report-container">
   <h2>Saved Bills</h2>
+
   <div class="search-section">
-    <label>Search By</label>
-    <select [(ngModel)]="searchBy">
-      <option value="billNumber">Bill No</option>
-      <option value="clientName">Client</option>
-    </select>
-    <input type="text" (keydown.enter)="onSearch()" [(ngModel)]="searchText" placeholder="Enter search text" />
-    <button class="button" (click)="onSearch()">Search</button>
+    <div class="field">
+      <label for="searchBy" class="field-label">Search By</label>
+      <select id="searchBy" [(ngModel)]="searchBy">
+        <option value="billNumber">Bill No</option>
+        <option value="clientName">Name</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="searchText" class="field-label">Search</label>
+      <input id="searchText" type="text" (input)="onSearch()" [(ngModel)]="searchText" placeholder="Enter search text" />
+    </div>
+
+    <div class="actions">
+      <button class="button" (click)="onSearch()">Search</button>
+    </div>
   </div>
-  
+
   <table class="report-table" *ngIf="filteredBills.length">
     <thead>
       <tr>
@@ -33,15 +43,14 @@
         <td>{{ bill.totalAmount | currency:'INR' }}</td>
         <td>{{ bill.finalAmount | currency:'INR' }}</td>
         <td>
-          <button  class="btn btn-outline-primary btn-edit" [routerLink]="getEditLink(bill)"> Edit </button>
+          <button type="button" class="btn btn-outline-primary btn-edit" (click)="goToEdit(bill)"> Edit </button>
         </td>
         <td>
           <button class="btn btn-outline-danger btn-delete" (click)="deleteBill(bill.billNumber)"> Delete </button>
-        </td>        
+        </td>
       </tr>
     </tbody>
   </table>
-
 
   <p *ngIf="!filteredBills.length">No bills found.</p>
 

@@ -20,12 +20,7 @@
     <div class="form-group flex-grow input-group">
       <label for="searchText">Search</label>
       <div class="input-with-clear">
-        <input
-          id="searchText"
-          type="text"
-          placeholder="Enter search text"
-          [(ngModel)]="searchText"
-          (input)="onSearch()" />
+        <input id="searchText" type="text" placeholder="Enter search text" [(ngModel)]="searchText" (input)="onSearch()" />
         <span class="clear-icon" *ngIf="searchText" (click)="clearSearch()">×</span>
       </div>
     </div>
@@ -63,7 +58,7 @@
           <td>{{ product.mrp || '-' }}</td>
           <td>{{ product.expiryDays || '-' }}</td>
           <td>
-            <button class="action-button edit" (click)="onEdit(product.id)">Edit</button>
+            <button class="action-button edit" (click)="onEdit(product.id)" [disabled]="!product.id">Edit</button>
           </td>
         </tr>
       </tbody>

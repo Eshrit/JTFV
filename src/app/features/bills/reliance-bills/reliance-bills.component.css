@@ -1,0 +1,230 @@
+textarea { 
+  resize: none !important; 
+  overflow: hidden; 
+}
+
+/* Main container */
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px;
+  font-family: 'Poppins','Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+  background-color:#fff;
+  color:#2c3e50;
+}
+
+/* Header */
+.header { text-align: right; margin-bottom: 30px; }
+.header h1 { margin: 0; font-size: 25px; font-weight: bold; color: #333; }
+.header p { margin: 5px 0; font-size: 13px; color: #546e7a; }
+
+/* Amounts section */
+.amount-in-words {
+  margin-top: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.amounts-section table {
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 12px;
+  width: 250px;
+}
+.amounts-section td {
+  border: 1px solid #ccc;
+  padding: 4px 8px;
+}
+
+.terms {
+  margin-top: 15px;
+  font-size: 11px;
+  color: #555;
+  border-top: 1px solid #ccc;
+  padding-top: 6px;
+}
+
+/* Invoice header */
+.invoice-header { margin-top: 20px; position: relative; }
+.header-flex { display: flex; align-items: center; justify-content: space-between; position: relative; }
+.invoice-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  font-size: 22px;
+  font-weight: bold;
+  color:#2c3e50;
+  white-space: nowrap;
+}
+
+.date-control, .bill-number-block { display: flex; align-items: center; gap: 6px; font-size: 14px; white-space: nowrap; }
+.bold-label { font-weight: bold; }
+
+/* Inputs */
+input.form-control, select.form-control {
+  width: 90%;
+  padding: 6px 10px;
+  font-size: 14px;
+  margin-top: 5px;
+  border: 1px solid #ccd6dd;
+  border-radius: 6px;
+  background-color: #f7f9fc;
+  transition: border-color 0.3s ease;
+  resize: none;
+  overflow: hidden;
+}
+
+textarea.form-control {
+  width: 90%;
+  padding: 6px 10px;
+  font-size: 14px;
+  margin-top: 5px;
+  border: 1px solid #ccd6dd;
+  border-radius: 6px;
+  background-color: #f7f9fc;
+  transition: border-color 0.3s ease;
+  resize: horizontal;
+  overflow: auto;
+}
+
+input.form-control:focus, select.form-control:focus, textarea.form-control:focus {
+  border-color: #3f51b5;
+  background-color: #fff;
+}
+select.form-control, textarea.form-control { line-height: 1.4; }
+
+/* Table */
+/* Table tweaks to match screenshot */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  margin: 16px 0;
+  background: #fff;
+}
+.table th, .table td {
+  border: 1px solid #bdbdbd;
+  padding: 10px 12px;
+  text-align: center;
+}
+.table th {
+  background: #757575; /* same as Invoice Amount In Words box */
+  color: #fff;         /* white text for contrast */
+  font-weight: 700;
+}
+.table td.left,
+.table th.left {
+  text-align: left;
+}
+.table tbody tr:hover {
+  background: #f7f9fb;
+}
+.table tfoot td {
+  font-weight: 700;
+}
+.table .total-row {
+  background: #f4f6f8;
+}
+
+/* Boxes under the table */
+/* Compact boxes layout with stacked left column */
+.boxes.compact {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+.boxes.compact .left-column {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.boxes.compact .box {
+  border: 1px solid #bdbdbd;
+}
+.boxes.compact .box-title {
+  background: #757575;
+  color: #fff;
+  font-weight: 700;
+  padding: 6px 8px;
+  font-size: 12px;
+}
+.boxes.compact .box-body {
+  padding: 6px 8px;
+  font-size: 12px;
+}
+.boxes.compact .amount-grid {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  row-gap: 4px;
+  padding: 6px 8px;
+}
+.boxes.compact .amount-grid .v {
+  text-align: right;
+}
+
+/* Keep your existing container/header styles; these are additions */
+/* Summary */
+.summary {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 12px;
+  gap: 12px;
+}
+.summary label { white-space: nowrap; }
+
+/* Actions */
+.actions { margin-top: 30px; display: flex; justify-content: flex-start; gap: 15px; }
+.actions .btn {
+  padding: 12px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color .3s ease, transform .2s ease;
+}
+.btn-success { background-color: #28a745; color: #fff; }
+.btn-success:hover { background-color: #218838; transform: translateY(-2px); }
+.btn-secondary { background-color: #607d8b; color: #fff; }
+.btn-secondary:hover { background-color: #546e7a; transform: translateY(-2px); }
+.btn-primary { background-color: #3f51b5; color: #fff; }
+.btn-primary:hover { background-color: #35449c; transform: translateY(-2px); }
+
+/* Product select dropdown width */
+select.product-control {
+  width: 250px;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccd6dd;
+  border-radius: 6px;
+  background-color: #f7f9fc;
+}
+
+/* Parties / details block */
+.tax-parties {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 24px;
+  padding: 10px 0 0 0;
+  border-top: 3px solid #c9c9c9;
+  border-bottom: 1px solid #c9c9c9;
+  margin-bottom: 12px;
+}
+.tax-parties .party, .tax-parties .invoice-details {
+  font-size: 13px; color: #2c3e50;
+}
+.party-title { text-transform: uppercase; font-weight: 700; letter-spacing: .4px; margin-bottom: 6px; }
+.party-name { font-weight: 600; margin-bottom: 4px; }
+.party-address { line-height: 1.45; }
+.invoice-details .inv-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  white-space: nowrap;
+}
+.invoice-details .value { font-weight: 600; }

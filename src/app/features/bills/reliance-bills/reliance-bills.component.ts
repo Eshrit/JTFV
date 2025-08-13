@@ -1,0 +1,602 @@
+import { Component, OnInit, ViewChildren, QueryList, ElementRef, ChangeDetectorRef, NgZone } from '@angular/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Title } from '@angular/platform-browser';
+import { ActivatedRoute } from '@angular/router';
+import { ProductService, Name } from 'src/app/core/services/products.service';
+import { BillsService } from 'src/app/core/services/bills.service';
+
+interface BillItem {
+  productId: number | null;
+  productName: string;
+  quantity: number;
+  price: number;         // DB price (or derived if manual total is set)
+  total: number;         // Sales Amount (qty * price) or manual
+  billingAmount?: number; // Sales Amount - discount%
+  manualTotal?: boolean;  // <— NEW: if user typed total directly
+}
+
+type NameWithPrice = Name & { mrp?: number; price?: number; units?: string; name: string; id: number };
+
+@Component({
+  selector: 'app-reliance-bills',
+  templateUrl: './reliance-bills.component.html',
+  styleUrls: ['./reliance-bills.component.css']
+})
+export class RelianceBillsComponent implements OnInit {
+  @ViewChildren('productSelect') productSelectInputs!: QueryList<ElementRef>;
+  @ViewChildren('priceInput')   priceInputs!: QueryList<ElementRef>;
+  @ViewChildren('addressTextarea') addressTextareas!: QueryList<ElementRef>;
+
+  products: NameWithPrice[] = [];
+  namesMap:  { [id: number]: string } = {};
+  /** NEW: name + units map for consistent display everywhere */
+  namesWithUnitsMap: { [id: number]: string } = {};
+  priceMap:  { [id: number]: number } = {};  // id → MRP/price
+
+  billItems: BillItem[] = [];
+  clients: any[] = [];
+  selectedClient: any = null;
+  clientName = '';
+  address = '';
+
+  billNumber = '';
+  billDate: string = new Date().toISOString().substring(0, 10);
+  discount = 0;        // treated as DISCOUNT (%) just like Edit component
+  totalAmount = 0;     // sum of Sales Amount
+  finalAmount = 0;     // sum of Billing Amount (after discount)
+  manualEmail = '';
+  totalQuantity = 0;   // NEW (for print totals row)
+  totalItemPrice = 0;  // NEW (sum of unit prices; matches Edit behavior)
+
+  constructor(
+    private titleService: Title,
+    private productService: ProductService,
+    private billsService: BillsService,
+    private route: ActivatedRoute,
+    private http: HttpClient,
+    private cdr: ChangeDetectorRef,
+    private zone: NgZone
+  ) {}
+
+  ngOnInit(): void {
+    this.titleService.setTitle('Invoice - J.T. Fruits & Vegetables');
+
+    // 1) Load products first
+    this.productService.getNames().subscribe((names: NameWithPrice[]) => {
+      this.products = names.sort((a, b) => a.name.localeCompare(b.name));
+
+      this.namesMap = Object.fromEntries(this.products.map(n => [n.id, n.name]));
+      this.namesWithUnitsMap = Object.fromEntries(
+        this.products.map(n => [n.id, n.name + (n.units ? ' ' + n.units : '')])
+      );
+      this.priceMap = Object.fromEntries(this.products.map(n => [n.id, Number(n.mrp ?? n.price ?? 0)]));
+
+      // 2) Are we editing an existing bill?
+      const billNumber = this.route.snapshot.paramMap.get('billNumber');
+      if (billNumber) {
+        this.billNumber = billNumber;
+        this.loadBillForEdit(billNumber);
+      } else {
+        // If creating new, pre-create a few empty rows for convenience
+        for (let i = 0; i < 20; i++) {
+          this.billItems.push({ productId: null, productName: '', quantity: 0, price: 0, total: 0, manualTotal: false });
+        }
+
+        // Optionally fetch next bill number if your service supports it
+        if ((this.billsService as any).getLatestBillNumber) {
+          (this.billsService as any).getLatestBillNumber().subscribe({
+            next: (res: { billNumber: string }) => (this.billNumber = res.billNumber),
+            error: () => {}
+          });
+        }
+      }
+    });
+
+    // Load clients (for future dynamic Name/Address if needed)
+    this.http.get<any[]>('http://localhost:3001/api/clients').subscribe({
+      next: (data) => (this.clients = data),
+      error: () => {}
+    });
+  }
+
+// NEW: Ship-to fields (optional to persist)
+shipToName = 'FRESHPIK SPECTRA POWAI ( T5EP )';
+shipToAddress = 'Spectra, 1st, Central Ave, Hiranandani Gardens, Powai, Mumbai, Maharashtra 400076';
+
+// Constants
+private readonly RELIANCE_CLIENT = 'Reliance Retail Limited';
+private readonly RELIANCE_ADDR =
+  'Reliance Corporate Park, Thane-Belapur Road, Ghansoli-400701, Navi Mumbai, Maharashtra';
+
+// Ensure client fields are always present
+private ensureRelianceDefaults(): void {
+  if (!this.clientName?.trim()) this.clientName = this.RELIANCE_CLIENT;
+  if (!this.address?.trim()) this.address = this.RELIANCE_ADDR;
+}
+
+  loadBillForEdit(billNumber: string): void {
+    this.http.get<any>(`http://localhost:3001/api/bills/${billNumber}`).subscribe({
+      next: bill => {
+        this.clientName  = bill.clientName || this.clientName;
+        this.address     = bill.address    || this.address;
+        this.billNumber  = bill.billNumber || billNumber;
+        this.billDate    = bill.billDate   || this.billDate;
+        this.discount    = Number(bill.discount ?? 0);
+        this.totalAmount = Number(bill.totalAmount ?? 0);
+        this.finalAmount = Number(bill.finalAmount ?? 0);
+
+        let items: any[] = [];
+        if (Array.isArray(bill.billItems)) {
+          items = bill.billItems;
+        } else {
+          try {
+            const parsed = JSON.parse(bill.billItems);
+            items = Array.isArray(parsed) ? parsed : [];
+          } catch {
+            items = [];
+          }
+        }
+
+        this.billItems = items.map((it: any) => {
+          const pid = Number(it.productId ?? it.id ?? null);
+          const qty = Number(it.quantity ?? 0);
+          const price = Number(it.price ?? this.priceMap[pid] ?? 0);
+          const total = Number(it.total ?? qty * price);
+          const name = pid ? (this.namesWithUnitsMap[pid] || it.productName || '(Unknown)') : '';
+          return {
+            productId: pid,
+            productName: name,
+            quantity: qty,
+            price,
+            total,
+            billingAmount: Number(it.billingAmount ?? total),
+            manualTotal: !!it.manualTotal
+          } as BillItem;
+        });
+
+        // Pad rows for editing convenience
+        if (this.billItems.length < 10) {
+          const pad = 10 - this.billItems.length;
+          for (let i = 0; i < pad; i++) {
+            this.billItems.push({ productId: null, productName: '', quantity: 0, price: 0, total: 0, manualTotal: false });
+          }
+        }
+
+        this.calculateTotalAmount();
+
+        setTimeout(() => {
+          this.addressTextareas?.forEach(t => this.resizeTextarea(t.nativeElement));
+        });
+
+        // best-effort preselect client
+        const match = this.clients.find(c => c.firstName === bill.clientName);
+        if (match) this.selectedClient = match;
+      },
+      error: err => {
+        console.error('Failed to load bill for edit:', err);
+        alert('Could not load the bill.');
+      }
+    });
+  }
+
+  onClientChange(): void {
+    if (this.selectedClient) {
+      const c = this.selectedClient;
+      const parts = [c.address1, c.address2, c.subArea, c.area, c.city].filter(Boolean);
+      this.clientName = c.firstName;
+      this.address = parts.join(', ');
+      setTimeout(() => {
+        this.addressTextareas?.forEach(t => {
+          const el = t.nativeElement;
+          el.style.height = 'auto';
+          el.style.height = el.scrollHeight + 'px';
+        });
+      });
+    }
+  }
+
+  onPriceKeydown(event: KeyboardEvent, index: number): void {
+    if (event.key === 'Tab' && !event.shiftKey) {
+      event.preventDefault();
+      if (index === this.billItems.length - 1) {
+        this.billItems.push({ productId: null, productName: '', quantity: 0, price: 0, total: 0, manualTotal: false });
+        setTimeout(() => {
+          const productSelectArray = this.productSelectInputs.toArray();
+          const next = productSelectArray[index + 1];
+          next?.nativeElement?.focus();
+        }, 0);
+      } else {
+        const productSelectArray = this.productSelectInputs.toArray();
+        const next = productSelectArray[index + 1];
+        next?.nativeElement?.focus();
+      }
+    }
+  }
+
+  onProductChange(index: number): void {
+    const item = this.billItems[index];
+    const selectedId = item.productId ?? undefined;
+    const selectedProduct = this.products.find(p => p.id === selectedId);
+
+    if (selectedProduct) {
+      const nameWithUnits = selectedProduct.name + (selectedProduct.units ? ' ' + selectedProduct.units : '');
+      item.productName = nameWithUnits;
+
+      // Always take DB price for new selection (user can override later or set manual total)
+      const dbPrice =
+        this.priceMap[selectedId as number] ??
+        Number((selectedProduct as any).mrp ?? (selectedProduct as any).price ?? 0);
+      item.price = Number(dbPrice || 0);
+    } else {
+      item.productName = '(Unknown)';
+      item.price = 0;
+    }
+
+    this.calculateRowTotal(index);
+  }
+
+  calculateRowTotal(index: number): void {
+    const it = this.billItems[index];
+    const qty = Number(it.quantity || 0);
+    const price = Number(it.price || 0);
+
+    if (!it.manualTotal) {
+      it.total = +((qty * price)).toFixed(2);
+    } else {
+      // Keep total fixed, derive unit price if qty present
+      if (qty > 0 && isFinite(qty)) {
+        it.price = +((Number(it.total || 0) / qty)).toFixed(2);
+      }
+    }
+
+    const discountMultiplier = 1 - (this.discount / 100);
+    it.billingAmount = +((Number(it.total || 0)) * discountMultiplier).toFixed(2);
+
+    this.calculateTotalAmount();
+  }
+
+  onSalesAmountInput(index: number): void {
+    // When user types Sales Amount directly
+    const it = this.billItems[index];
+    it.manualTotal = true;
+    const qty = Number(it.quantity || 0);
+    const manualTotal = Number(it.total || 0);
+    if (qty > 0 && isFinite(qty)) {
+      it.price = +((manualTotal / qty)).toFixed(2);
+    }
+    const discountMultiplier = 1 - (this.discount / 100);
+    it.billingAmount = +((manualTotal) * discountMultiplier).toFixed(2);
+    this.calculateTotalAmount();
+  }
+
+  calculateTotalAmount(): void {
+    const discountMultiplier = 1 - (this.discount / 100);
+    const items = this.billItems.filter(it => it.productId !== null);
+
+    items.forEach(it => {
+      const qty = Number(it.quantity || 0);
+      const price = Number(it.price || 0);
+      if (!it.manualTotal) {
+        it.total = +((qty * price)).toFixed(2);
+      } else if (qty > 0 && isFinite(qty)) {
+        it.price = +((Number(it.total || 0) / qty)).toFixed(2);
+      }
+      it.billingAmount = +((Number(it.total || 0)) * discountMultiplier).toFixed(2);
+    });
+
+    this.totalQuantity = items.reduce((acc, it) => acc + (Number(it.quantity) || 0), 0);
+    this.totalItemPrice = +items.reduce((acc, it) => acc + (it.price || 0), 0).toFixed(2);
+    this.totalAmount   = +items.reduce((acc, it) => acc + (it.total || 0), 0).toFixed(2);
+    this.finalAmount   = +items.reduce((acc, it) => acc + (it.billingAmount || 0), 0).toFixed(2);
+  }
+
+  calculateFinalAmount(): void {
+    // Kept for the footer input change — same semantics as Edit (discount reduces)
+    const discountMultiplier = 1 - (this.discount / 100);
+    this.billItems.forEach(it => {
+      it.billingAmount = +((it.total || 0) * discountMultiplier).toFixed(2);
+    });
+    this.finalAmount = +this.billItems.reduce((acc, it) => acc + (it.billingAmount || 0), 0).toFixed(2);
+  }
+
+  amountInWords(num: number): string {
+    const a = ['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten',
+              'Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen',
+              'Eighteen','Nineteen'];
+    const b = ['', '', 'Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+
+    const numToWords = (n: number): string => {
+      if (n < 20) return a[n];
+      if (n < 100) return b[Math.floor(n / 10)] + (n % 10 ? ' ' + a[n % 10] : '');
+      if (n < 1000) return a[Math.floor(n / 100)] + ' Hundred' + (n % 100 ? ' and ' + numToWords(n % 100) : '');
+      if (n < 100000) return numToWords(Math.floor(n / 1000)) + ' Thousand' + (n % 1000 ? ' ' + numToWords(n % 1000) : '');
+      if (n < 10000000) return numToWords(Math.floor(n / 100000)) + ' Lakh' + (n % 100000 ? ' ' + numToWords(n % 100000) : '');
+      return '';
+    };
+
+    const rupees = Math.floor(num);
+    const paise = Math.round((num - rupees) * 100);
+    let words = `${numToWords(rupees)} Rupees`;
+    if (paise > 0) words += ` and ${numToWords(paise)} Paisa`;
+    return words + ' only';
+  }
+
+  /** Helper to ALWAYS show "name + units" */
+  private displayName(it: BillItem): string {
+    const prod = this.products.find(p => p.id === it.productId);
+    if (prod) return prod.name + (prod.units ? ' ' + prod.units : '');
+    return it.productName || '';
+  }
+
+  private fmt(n: number): string {
+    return (n ?? 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  /** Build print HTML (same structure as Edit component) */
+  private buildPrintHtml(validItems: BillItem[]): string {
+    const totalUnitPrice = validItems.reduce((sum, it) => sum + (it.price ?? 0), 0);
+    const rows = validItems.map((it, i) => `
+      <tr>
+        <td>${i + 1}</td>
+        <td>${this.displayName(it)}</td>
+        <td>${it.quantity ?? 0}</td>
+        <td>₹ ${this.fmt(it.price ?? 0)}</td>
+        <td>₹ ${this.fmt(it.total ?? 0)}</td>
+      </tr>
+    `).join('');
+
+    const styles = `
+      <style>
+        @media print { * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; } }
+        body { font-family: 'Poppins','Segoe UI',Tahoma,sans-serif; color:#2c3e50; padding:40px; background:#fff; }
+        h1 { margin:0; font-size:25px; font-weight:bold; color:#333; }
+        p { margin:5px 0; font-size:13px; color:#546e7a; }
+        .invoice-title { text-align:center; font-size:22px; font-weight:bold; margin:12px 0; color:#2c3e50; }
+        .tax-parties {
+          display:grid; grid-template-columns:1fr 1fr 1fr; gap:24px;
+          padding:10px 0 0; border-top:3px solid #c9c9c9; border-bottom:1px solid #c9c9c9; margin-bottom:12px; font-size:11px;
+        }
+        .party-title { text-transform:uppercase; font-weight:700; letter-spacing:.4px; margin-bottom:6px; }
+        .party-name { font-weight:600; margin-bottom:4px; }
+        .party-address { line-height:1.45; }
+        .invoice-details .inv-row { display:flex; justify-content:space-between; margin-bottom:6px; white-space:nowrap; }
+        .invoice-details .value { font-weight:600; }
+        table { width:100%; border-collapse:collapse; font-size:12px; margin:16px 0; background:#fff; }
+        th, td { border:1px solid #bdbdbd; padding:8px 10px; text-align:center; }
+        th { background:#757575 !important; color:#fff !important; font-weight:700; }
+        .total-row { background:#f4f6f8 !important; font-weight:700; }
+        .left { text-align:left; }
+        thead { display: table-header-group; }
+        .no-repeat { page-break-inside: avoid; }
+        .boxes { display:grid; grid-template-columns:2fr 1fr; gap:10px; margin-top:10px; }
+        .left-column { display:flex; flex-direction:column; gap:8px; }
+        .box { border:1px solid #bdbdbd; }
+        .box-title { background:#757575 !important; color:#fff !important; font-weight:700; padding:6px 8px; font-size:12px; }
+        .box-body { padding:6px 8px; font-size:12px; }
+        .amount-grid { display:grid; grid-template-columns:1fr auto; row-gap:4px; padding:6px 8px; font-size:12px; }
+        .amount-grid .v { text-align:right; }
+      </style>
+    `;
+
+    const totalRow = `
+      <tr class="total-row no-repeat">
+        <td colspan="2" class="left"><strong>Total</strong></td>
+        <td><strong>${this.totalQuantity}</strong></td>
+        <td><strong>₹ ${this.fmt(totalUnitPrice)}</strong></td>
+        <td><strong>₹ ${this.fmt(this.totalAmount)}</strong></td>
+      </tr>
+    `;
+
+    const boxes = `
+      <div class="boxes">
+        <div class="left-column">
+          <div class="box">
+            <div class="box-title">Invoice Amount In Words</div>
+            <div class="box-body">${this.amountInWords(this.totalAmount)}</div>
+          </div>
+          <div class="box">
+            <div class="box-title">Terms and conditions</div>
+            <div class="box-body">
+              Thank You for your order!<br>
+              This is a computer generated bill. No Signature Required.
+            </div>
+          </div>
+        </div>
+        <div class="box">
+          <div class="box-title">Amounts</div>
+          <div class="amount-grid">
+            <div>Sub Total</div><div class="v">₹ ${this.fmt(this.totalAmount)}</div>
+            <div><strong>Total</strong></div><div class="v"><strong>₹ ${this.fmt(this.totalAmount)}</strong></div>
+            <div>Received</div><div class="v">₹ 0.00</div>
+            <div>Balance</div><div class="v">₹ ${this.fmt(this.totalAmount)}</div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    return `<!doctype html><html><head><meta charset="utf-8">${styles}</head><body>
+      <div class="header" style="text-align:right;">
+        <h1>J.T. Fruits &amp; Vegetables</h1>
+        <p>Shop No. 31-32, Bldg No. 27, EMP Op Jogers Park, Thakur Village, Kandivali(E), Mumbai 400101</p>
+        <p>PAN: AAJFJ0258J | FSS LICENSE ACT 2006 LICENSE NO: 11517011000128</p>
+        <p>Email: jkumarshahu5@gmail.com</p>
+      </div>
+
+      <div class="invoice-title">TAX FREE INVOICE</div>
+
+      <div class="tax-parties">
+        // in buildPrintHtml(...)
+        <div class="party">
+          <div class="party-title">Bill To</div>
+          <div class="party-name">${this.clientName || this.RELIANCE_CLIENT}</div>
+          <div class="party-address">${this.address || this.RELIANCE_ADDR}</div>
+        </div>
+        <div class="party">
+          <div class="party-title">Ship To</div>
+          <div class="party-name">${this.shipToName || 'FRESHPIK SPECTRA POWAI ( T5EP )'}</div>
+          <div class="party-address">${this.shipToAddress || 'Spectra, 1st, Central Ave, Hiranandani Gardens, Powai, Mumbai, Maharashtra 400076'}</div>
+        </div>
+        <div class="invoice-details">
+          <div class="party-title">Invoice Details</div>
+          <div class="inv-row"><span>Invoice No.:</span><span class="value">${this.billNumber}</span></div>
+          <div class="inv-row"><span>Date:</span><span class="value">${new Date(this.billDate).toLocaleDateString('en-GB')}</span></div>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>#</th><th>Item</th><th>Qty</th><th>Unit Price</th><th>Amount</th></tr>
+        </thead>
+        <tbody>
+          ${rows}
+          ${totalRow}
+        </tbody>
+      </table>
+
+      ${boxes}
+    </body></html>`;
+  }
+
+  printBill(): void {
+    this.ensureRelianceDefaults();
+    const validItems = this.billItems
+      .filter(it => it.productId !== null)
+      .map(it => {
+        const prod = this.products.find(p => p.id === it.productId);
+        if (prod) {
+          it.productName = prod.name + (prod.units ? ' ' + prod.units : '');
+        }
+        const qty = Number(it.quantity || 0);
+        if (it.manualTotal) {
+          if (qty > 0 && isFinite(qty)) {
+            it.price = +((Number(it.total || 0) / qty)).toFixed(2);
+          }
+        } else {
+          it.total = +((qty * Number(it.price || 0))).toFixed(2);
+        }
+        const discountMultiplier = 1 - (this.discount / 100);
+        it.billingAmount = +((Number(it.total || 0)) * discountMultiplier).toFixed(2);
+        return it;
+      });
+
+    if (!validItems.length) {
+      alert('No valid items to print.');
+      return;
+    }
+
+    // page totals based on visible rows
+    this.totalQuantity = validItems.reduce((a, it) => a + (it.quantity || 0), 0);
+    this.totalAmount = +validItems.reduce((a, it) => a + (it.total || 0), 0).toFixed(2);
+    this.finalAmount = +validItems.reduce((a, it) => a + (it.billingAmount || 0), 0).toFixed(2);
+
+    const html = this.buildPrintHtml(validItems);
+    const w = window.open('', '_blank', 'width=1024,height=768');
+    if (!w) {
+      alert('Please allow pop-ups to print the invoice.');
+      return;
+    }
+    w.document.open();
+    w.document.write(html);
+    w.document.close();
+    w.focus();
+    setTimeout(() => { w.print(); w.close(); }, 150);
+  }
+
+  emailBill(): void {
+    this.ensureRelianceDefaults();
+    const validItems = this.billItems.filter(
+      it => it.productId !== null && it.productName && it.quantity > 0 && it.price > 0
+    );
+    if (!validItems.length) {
+      alert('No valid items to email. Please add at least one valid item.');
+      return;
+    }
+    if (!this.manualEmail || !this.manualEmail.includes('@')) {
+      alert('Please enter a valid email address');
+      return;
+    }
+
+    const billData = {
+      clientName: this.clientName,
+      address: this.address,
+      billNumber: this.billNumber,
+      billDate: this.billDate,
+      discount: this.discount,
+      totalAmount: this.totalAmount,
+      finalAmount: this.finalAmount,
+      billItems: validItems,
+      email: this.manualEmail
+    };
+
+    this.billsService.sendBillByEmail(billData).subscribe({
+      next: () => alert('Email Sent!'),
+      error: (err) => {
+        console.error('Email failed:', err);
+        alert('Failed to send email. Please try again.');
+      }
+    });
+  }
+
+  saveBill(): void {
+    this.ensureRelianceDefaults();
+    const sanitizedItems = this.billItems
+      .filter(it => it.productId !== null)
+      .map(it => ({
+        productId: it.productId,
+        productName: it.productName,
+        quantity: Number(it.quantity || 0),
+        price: Number(it.price || 0),
+        total: Number(it.total || 0),
+        billingAmount: Number(it.billingAmount || 0),
+        manualTotal: !!it.manualTotal
+      }));
+
+    const billData = {
+      clientName: this.clientName || '',
+      address: this.address || '',
+      billNumber: this.billNumber || '',
+      billDate: this.billDate || '',
+      discount: Number(this.discount) || 0,
+      totalAmount: Number(this.totalAmount) || 0,
+      finalAmount: Number(this.finalAmount) || 0,
+      billItems: sanitizedItems,
+      billType: 'reliance'
+    };
+
+    // if bill was loaded for edit, use update; otherwise save as new
+    let obs;
+    if (this.route.snapshot.paramMap.get('billNumber')) {
+      obs = (this.billsService as any).updateBill?.(this.billNumber, billData);
+    } else {
+      obs = (this.billsService as any).saveBill?.(billData);
+    }
+
+    obs.subscribe({
+      next: () => alert('Bill saved successfully!'),
+      error: (error: HttpErrorResponse) => {
+        console.error('Error saving bill:', error);
+        alert(`Failed to save bill: ${error.status} ${error.statusText}${error.error?.message ? ' — ' + error.error.message : ''}`);
+      }
+    });
+  }
+
+  autoResize(event: Event): void {
+    const textarea = event.target as HTMLTextAreaElement;
+    textarea.style.height = 'auto';
+    textarea.style.height = textarea.scrollHeight + 'px';
+  }
+
+  private resizeTextarea(el: HTMLTextAreaElement): void {
+    el.style.height = 'auto';
+    el.style.width = 'auto';
+    const containerWidth = el.parentElement?.clientWidth || 800;
+    const scrollWidth = el.scrollWidth + 2;
+    if (scrollWidth < containerWidth) {
+      el.style.width = scrollWidth + 'px';
+      el.style.height = '60px';
+    } else {
+      el.style.width = '100%';
+      el.style.height = el.scrollHeight + 'px';
+    }
+  }
+}

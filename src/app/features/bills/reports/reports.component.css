@@ -15,12 +15,12 @@
   font-weight: 600;
 }
 
-/* Search Section */
+/* Search Section (smaller input) */
 .search-section {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  align-items: flex-end;
+  display: grid;
+  grid-template-columns: 180px minmax(150px, 200px) auto; /* dropdown | input | button */
+  gap: 12px 8px; /* reduced horizontal gap so they stay close but no overlap */
+  align-items: end;
   background-color: #ffffff;
   padding: 20px;
   border-radius: 12px;
@@ -28,32 +28,57 @@
   margin-bottom: 30px;
 }
 
-.search-section label {
-  font-weight: 600;
-  margin-right: 8px;
-  font-size: 15px;
-  color: #34495e;
+/* Keep input within its column, avoid overflow */
+.search-section input[type="text"] {
+  width: 100%;
+  max-width: 200px;
+  box-sizing: border-box;
 }
 
+/* Field group */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0; /* allow input to shrink gracefully */
+}
+
+/* Field label (soft gray, above control) */
+.field-label {
+  font-weight: 600;
+  font-size: 14px;
+  color: #6b7a90;
+  letter-spacing: .2px;
+  margin: 0;
+}
+
+/* Controls */
 .search-section select,
 .search-section input[type="text"] {
+  width: 100%;
   padding: 10px 14px;
   font-size: 15px;
   border: 1px solid #ccd6dd;
   border-radius: 6px;
   background-color: #f7f9fc;
-  min-width: 180px;
-  transition: border-color 0.3s ease;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+  min-width: 0;
 }
 
 .search-section select:focus,
 .search-section input[type="text"]:focus {
   outline: none;
+  max-width: 300px;
   border-color: #3f51b5;
   background-color: #ffffff;
 }
 
-/* Search Button */
+/* Button container (its own grid cell) */
+.actions {
+  display: flex;
+  align-items: flex-end;
+}
+
 .search-section button {
   background-color: #3f51b5;
   color: #ffffff;
@@ -64,6 +89,7 @@
   cursor: pointer;
   font-size: 15px;
   transition: background-color 0.3s ease, transform 0.2s ease;
+  white-space: nowrap;
 }
 
 .search-section button:hover {
@@ -161,6 +187,20 @@
   .btn-delete {
     width: 100%;
     text-align: center;
+  }
+}
+
+/* Responsive: stack search fields + full-width button */
+@media (max-width: 640px) {
+  .search-section {
+    grid-template-columns: 1fr; /* stack */
+    gap: 10px;
+  }
+  .actions {
+    align-items: stretch;
+  }
+  .search-section button {
+    width: 100%;
   }
 }
 

@@ -10,12 +10,12 @@ import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
-import { AddMerchantComponent } from './features/dashboard/add-merchant/add-merchant.component';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { ReactiveFormsModule } from '@angular/forms';
 import { LoginComponent } from './features/login/login.component';
 import { DashboardComponent } from './features/dashboard/dashboard.component';
+import { AddMerchantComponent } from './features/dashboard/add-merchant/add-merchant.component';
 import { NavbarComponent } from './features/navbar/navbar.component';
 import { ReportsComponent } from './features/bills/reports/reports.component';
 import { RegisterComponent } from './features/register/register.component';
@@ -27,8 +27,26 @@ import { EditBillsComponent } from './features/bills/edit-bills/edit-bills.compo
 import { BillsComponent } from './features/bills/bills.component';
 import { AddLumpsumBillsComponent } from './features/bills/add-lumpsum-bills/add-lumpsum-bills.component';
 import { EditLumpsumBillsComponent } from './features/bills/edit-lumpsum-bills/edit-lumpsum-bills.component';
+import { RelianceBillsComponent } from './features/bills/reliance-bills/reliance-bills.component';
+import { EditRelianceBillsComponent } from './features/bills/edit-reliance-bills/edit-reliance-bills.component';
 
 @NgModule({
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    FormsModule,
+    ReactiveFormsModule,
+    HttpClientModule,
+    MatToolbarModule,
+    MatButtonModule,
+    MatMenuModule,
+    MatIconModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatCardModule
+  ],
+  
   declarations: [
     AppComponent,
     LoginComponent,
@@ -45,22 +63,10 @@ import { EditLumpsumBillsComponent } from './features/bills/edit-lumpsum-bills/e
     EditBillsComponent,
     AddLumpsumBillsComponent,
     EditLumpsumBillsComponent,
+    RelianceBillsComponent,
+    EditRelianceBillsComponent,
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    FormsModule,
-    ReactiveFormsModule,
-    HttpClientModule,
-    MatToolbarModule,
-    MatButtonModule,
-    MatMenuModule,
-    MatIconModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatCardModule
-  ],
+
   providers: [],
   bootstrap: [AppComponent]
 })
