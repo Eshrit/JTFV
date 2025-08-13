@@ -56,8 +56,8 @@
         <th>#</th>
         <th>Item name</th>
         <th>Quantity</th>
-        <th>Item Price</th>
         <th>Amount</th>
+        <th>Item Price</th>
       </tr>
     </thead>
     <tbody>
@@ -79,14 +79,14 @@
                 (input)="calculateRowTotal(i)" />
         </td>
         <td>
+          <input class="form-control" type="number" step="0.01"
+                [(ngModel)]="item.total" (input)="onSalesAmountInput(i)" />
+        </td>
+        <td>
           <input #priceInput class="form-control" type="number"
                 [(ngModel)]="item.price"
                 (input)="calculateRowTotal(i)"
                 (keydown)="onPriceKeydown($event, i)" />
-        </td>
-        <td>
-          <input class="form-control" type="number" step="0.01"
-                [(ngModel)]="item.total" (input)="onSalesAmountInput(i)" />
         </td>
       </tr>
     </tbody>

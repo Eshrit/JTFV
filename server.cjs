@@ -116,9 +116,10 @@ db.run(`
       totalAmount REAL, 
       finalAmount REAL, 
       description TEXT,
-      billItems TEXT
+      billItems TEXT,
+      billType TEXT
     )
-    `);
+  `);
 
   db.run(`
     CREATE TABLE IF NOT EXISTS barcodes (
@@ -306,10 +307,14 @@ app.delete('/api/products/:id', (req, res) => {
 });
 
 // ==================== BILL ROUTES ====================
+// Create bill
 app.post('/api/bills', (req, res) => {
   const b = req.body;
-  const query = `INSERT INTO bills (clientName, address, billNumber, billDate, discount, totalAmount, finalAmount, description, billItems)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+  const query = `
+    INSERT INTO bills (
+      clientName, address, billNumber, billDate, discount, totalAmount, finalAmount, description, billItems, billType
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
   const values = [
     b.clientName,
     b.address,
@@ -319,7 +324,8 @@ app.post('/api/bills', (req, res) => {
     b.totalAmount,
     b.finalAmount,
     b.description || '',
-    JSON.stringify(b.billItems)
+    JSON.stringify(b.billItems),
+    b.billType || '' // store billType
   ];
 
   db.run(query, values, function (err) {
@@ -328,9 +334,9 @@ app.post('/api/bills', (req, res) => {
   });
 });
 
+// Update bill
 app.put('/api/bills/:billNumber', (req, res) => {
   const b = req.body;
-
   const query = `
     UPDATE bills SET
       clientName = ?, 
@@ -340,10 +346,10 @@ app.put('/api/bills/:billNumber', (req, res) => {
       totalAmount = ?, 
       finalAmount = ?, 
       billItems = ?, 
-      description = ?
+      description = ?,
+      billType = ?
     WHERE billNumber = ?
   `;
-
   const values = [
     b.clientName,
     b.address,
@@ -353,6 +359,7 @@ app.put('/api/bills/:billNumber', (req, res) => {
     b.finalAmount,
     JSON.stringify(b.billItems || []),
     b.description || '',
+    b.billType || '',
     req.params.billNumber
   ];
 
@@ -363,7 +370,7 @@ app.put('/api/bills/:billNumber', (req, res) => {
   });
 });
 
-
+// Get latest bill number
 app.get('/api/bills/latest', (req, res) => {
   db.get('SELECT billNumber FROM bills ORDER BY id DESC LIMIT 1', [], (err, row) => {
     if (err) return res.status(500).json({ message: 'Failed to fetch latest bill number' });
@@ -372,6 +379,7 @@ app.get('/api/bills/latest', (req, res) => {
   });
 });
 
+// Get all bills
 app.get('/api/bills', (req, res) => {
   db.all('SELECT * FROM bills ORDER BY id DESC', [], (err, rows) => {
     if (err) return res.status(500).json({ message: 'Failed to fetch bills' });
@@ -379,6 +387,7 @@ app.get('/api/bills', (req, res) => {
   });
 });
 
+// Get bill by number
 app.get('/api/bills/:billNumber', (req, res) => {
   db.get('SELECT * FROM bills WHERE billNumber = ?', [req.params.billNumber], (err, row) => {
     if (err) return res.status(500).json({ message: 'Failed to fetch bill' });
@@ -388,6 +397,7 @@ app.get('/api/bills/:billNumber', (req, res) => {
   });
 });
 
+// Delete bill
 app.delete('/api/bills/:billNumber', (req, res) => {
   db.run('DELETE FROM bills WHERE billNumber = ?', [req.params.billNumber], function (err) {
     if (err) return res.status(500).json({ message: 'Failed to delete bill' });
@@ -395,8 +405,6 @@ app.delete('/api/bills/:billNumber', (req, res) => {
     res.json({ message: 'Bill deleted successfully' });
   });
 });
-
-
 
 // ==================== BARCODE ROUTES ====================
 app.post('/api/barcodes', (req, res) => {

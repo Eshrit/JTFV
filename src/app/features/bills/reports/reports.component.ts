@@ -135,6 +135,14 @@ export class ReportsComponent implements OnInit {
     this.router.navigate(link);
   }
 
+  onRowClick(bill: any) {
+    if (bill.billType === 'reliance') {
+      this.router.navigate(['/edit-reliance-bills', bill.billNumber]);
+    } else {
+      this.router.navigate(['/edit-bills', bill.billNumber]);
+    }
+  }
+
   onSearch(): void {
     const query = this.searchText.toLowerCase();
     if (!query) {

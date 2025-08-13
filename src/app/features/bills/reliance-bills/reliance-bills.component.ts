@@ -539,11 +539,12 @@ private ensureRelianceDefaults(): void {
 
   saveBill(): void {
     this.ensureRelianceDefaults();
+
     const sanitizedItems = this.billItems
       .filter(it => it.productId !== null)
       .map(it => ({
         productId: it.productId,
-        productName: it.productName,
+        productName: it.productName, // includes units if present
         quantity: Number(it.quantity || 0),
         price: Number(it.price || 0),
         total: Number(it.total || 0),
@@ -560,22 +561,24 @@ private ensureRelianceDefaults(): void {
       totalAmount: Number(this.totalAmount) || 0,
       finalAmount: Number(this.finalAmount) || 0,
       billItems: sanitizedItems,
-      billType: 'reliance'
+      billType: 'reliance' // always Reliance
     };
 
-    // if bill was loaded for edit, use update; otherwise save as new
-    let obs;
-    if (this.route.snapshot.paramMap.get('billNumber')) {
-      obs = (this.billsService as any).updateBill?.(this.billNumber, billData);
-    } else {
-      obs = (this.billsService as any).saveBill?.(billData);
-    }
+    // If billNumber exists in route params → update, else create new
+    const billNumberParam = this.route.snapshot.paramMap.get('billNumber');
+    const obs = billNumberParam
+      ? (this.billsService as any).updateBill?.(this.billNumber, billData)
+      : (this.billsService as any).saveBill?.(billData);
 
     obs.subscribe({
       next: () => alert('Bill saved successfully!'),
       error: (error: HttpErrorResponse) => {
         console.error('Error saving bill:', error);
-        alert(`Failed to save bill: ${error.status} ${error.statusText}${error.error?.message ? ' — ' + error.error.message : ''}`);
+        alert(
+          `Failed to save bill: ${error.status} ${error.statusText}${
+            error.error?.message ? ' — ' + error.error.message : ''
+          }`
+        );
       }
     });
   }

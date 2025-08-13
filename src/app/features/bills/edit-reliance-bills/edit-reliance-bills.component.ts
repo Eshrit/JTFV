@@ -618,12 +618,12 @@ export class EditRelianceBillsComponent implements OnInit {
       .filter(it => it.productId !== null)
       .map(it => ({
         productId: it.productId,
-        productName: it.productName, // includes units
+        productName: it.productName, // includes units if applicable
         quantity: Number(it.quantity || 0),
         price: Number(it.price || 0),
         total: Number(it.total || 0), // preserve as-is
         billingAmount: Number(it.billingAmount || 0),
-        manualTotal: !!it.manualTotal // store flag
+        manualTotal: !!it.manualTotal // keep manual total flag
       }));
 
     const payload = {
@@ -631,11 +631,11 @@ export class EditRelianceBillsComponent implements OnInit {
       address: this.address,
       billNumber: this.billNumber,
       billDate: this.billDate,
-      discount: this.discount,
-      totalAmount: this.totalAmount,
-      finalAmount: this.finalAmount,
+      discount: Number(this.discount) || 0,
+      totalAmount: Number(this.totalAmount) || 0,
+      finalAmount: Number(this.finalAmount) || 0,
       billItems: sanitizedItems,
-      billType: 'reliance'
+      billType: 'reliance' // always tag as Reliance
     };
 
     const obs = (this.billsService as any).updateBill
@@ -648,7 +648,7 @@ export class EditRelianceBillsComponent implements OnInit {
       },
       error: (error: HttpErrorResponse) => {
         console.error('Error updating bill:', error);
-        alert('Failed to update bill. Please try again.');
+        alert(`Failed to update bill: ${error.status} ${error.statusText}${error.error?.message ? ' — ' + error.error.message : ''}`);
       }
     });
   }
