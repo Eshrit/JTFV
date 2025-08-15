@@ -7,6 +7,7 @@ const dotenv = require('dotenv');
 const nodemailer = require('nodemailer');
 const path = require('path');
 const fs = require('fs');
+const puppeteer = require('puppeteer');
 
 dotenv.config();
 
@@ -449,171 +450,94 @@ app.post('/api/login', (req, res) => {
   });
 });
 
-// ==================== EMAIL BILL ROUTE ====================
-app.post('/api/send-bill', (req, res) => {
+// ==================== EMAIL BILL ROUTE (PDF attachment) ====================
+app.post('/api/send-bill', async (req, res) => {
   const bill = req.body || {};
+  const {
+    // required for sending
+    email,
+    pdfHtml,
 
-  // --- Helpers ---
-  const esc = (v) =>
-    String(v ?? '')
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
+    // optional cosmetics / metadata
+    subject = `Invoice - ${bill.billNumber || 'JT'}`,
+    filename = `Invoice-${bill.billNumber || 'JT'}.pdf`,
 
-  const inr = (n) =>
-    typeof n === 'number'
-      ? n.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })
-      : esc(n ?? '');
+    // optional: used for the plain-text body
+    billNumber,
+    clientName,
+    billDate,
+    totalAmount,
+    discount,
+    finalAmount,
+    cc,
+    bcc,
+  } = bill;
 
-  const numberOrZero = (n) => (typeof n === 'number' ? n : 0);
+  if (!email) return res.status(400).json({ message: 'Missing recipient email' });
+  if (!pdfHtml) return res.status(400).json({ message: 'Missing pdfHtml' });
 
-  const hasItems = Array.isArray(bill.billItems) && bill.billItems.length > 0;
-  const descriptionHtml =
-    bill.description && String(bill.description).trim() !== ''
-      ? esc(bill.description).replace(/\n/g, '<br/>')
-      : '';
-
-  console.log('📩 Incoming email bill:', JSON.stringify(bill, null, 2));
-
+  // Mail transport (use env vars; do NOT hard-code secrets)
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
       user: process.env.MAIL_USER || 'jkumarshahu5@gmail.com',
-      pass: process.env.MAIL_PASS || 'vobd eiax vdrd yvbh', // ← use an App Password via env var
+      pass: process.env.MAIL_PASS || 'vobd eiax vdrd yvbh',
     },
   });
 
-  // Build Items table (if any)
-  const itemsTable = hasItems
-    ? `
-      <h3 style="margin:24px 0 8px;color:#4B0082;">Items</h3>
-      <table role="table" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;width:100%;background:#ffffff;border:1px solid #ececec;">
-        <thead>
-          <tr>
-            <th align="left" style="padding:10px 12px;border-bottom:1px solid #ececec;font:600 13px/1.2 system-ui,Segoe UI,Roboto,Helvetica,Arial;color:#4B0082;">#</th>
-            <th align="left" style="padding:10px 12px;border-bottom:1px solid #ececec;font:600 13px/1.2 system-ui,Segoe UI,Roboto,Helvetica,Arial;color:#4B0082;">Product</th>
-            <th align="right" style="padding:10px 12px;border-bottom:1px solid #ececec;font:600 13px/1.2 system-ui,Segoe UI,Roboto,Helvetica,Arial;color:#4B0082;">Qty</th>
-            <th align="right" style="padding:10px 12px;border-bottom:1px solid #ececec;font:600 13px/1.2 system-ui,Segoe UI,Roboto,Helvetica,Arial;color:#4B0082;">Price</th>
-            <th align="right" style="padding:10px 12px;border-bottom:1px solid #ececec;font:600 13px/1.2 system-ui,Segoe UI,Roboto,Helvetica,Arial;color:#4B0082;">Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${bill.billItems
-            .map((item, idx) => {
-              const qty = numberOrZero(item?.quantity);
-              const price = numberOrZero(item?.price);
-              const total = typeof item?.total === 'number' ? item.total : qty * price;
-              return `
-                <tr>
-                  <td style="padding:10px 12px;border-top:1px solid #f5f5f5;font:500 13px system-ui,Segoe UI,Roboto,Helvetica,Arial;color:#333;">${idx + 1}</td>
-                  <td style="padding:10px 12px;border-top:1px solid #f5f5f5;font:500 13px system-ui,Segoe UI,Roboto,Helvetica,Arial;color:#333;">${esc(item?.productName)}</td>
-                  <td align="right" style="padding:10px 12px;border-top:1px solid #f5f5f5;font:500 13px system-ui,Segoe UI,Roboto,Helvetica,Arial;color:#333;">${esc(qty)}</td>
-                  <td align="right" style="padding:10px 12px;border-top:1px solid #f5f5f5;font:500 13px system-ui,Segoe UI,Roboto,Helvetica,Arial;color:#333;">${inr(price)}</td>
-                  <td align="right" style="padding:10px 12px;border-top:1px solid #f5f5f5;font:600 13px system-ui,Segoe UI,Roboto,Helvetica,Arial;color:#111;">${inr(total)}</td>
-                </tr>`;
-            })
-            .join('')}
-        </tbody>
-      </table>`
-    : '';
+  let browser;
+  try {
+    // Render HTML → PDF
+    browser = await puppeteer.launch({
+      args: ['--no-sandbox', '--disable-setuid-sandbox'], // keep if your host needs it
+    });
+    const page = await browser.newPage();
+    await page.setViewport({ width: 1280, height: 900, deviceScaleFactor: 2 });
+    await page.setContent(pdfHtml, { waitUntil: 'networkidle0' });
 
-  // Build Description block (if no items but we have a description)
-  const descriptionBlock =
-    !hasItems && descriptionHtml
-      ? `
-        <h3 style="margin:24px 0 8px;color:#4B0082;">Description</h3>
-        <div style="padding:12px;border:1px solid #ececec;background:#fff;border-radius:8px;color:#333;font:500 14px system-ui,Segoe UI,Roboto,Helvetica,Arial;">
-          ${descriptionHtml}
-        </div>`
-      : '';
+    const pdfBuffer = await page.pdf({
+      format: 'A4',
+      printBackground: true,
+      margin: { top: '10mm', right: '10mm', bottom: '10mm', left: '10mm' },
+    });
 
-  const billNumber = esc(bill.billNumber);
-  const clientName = esc(bill.clientName);
-  const address = esc(bill.address);
-  const billDate = esc(bill.billDate);
-  const totalAmount = inr(numberOrZero(bill.totalAmount));
-  const discountPct = typeof bill.discount === 'number' ? bill.discount.toFixed(2) + '%' : esc(bill.discount ?? '0%');
-  const finalAmount = inr(numberOrZero(bill.finalAmount));
+    // Simple text body (kept lightweight)
+    const textSummary =
+`Dear ${clientName || 'Customer'},
 
-  const mailOptions = {
-    from: process.env.MAIL_USER || 'jkumarshahu5@gmail.com',
-    to: bill.email || '', // custom email if provided
-    subject: `Invoice - ${billNumber}`,
-    html: `
-      <div style="margin:0;padding:0;background:#f6f7fb;">
-        <div style="max-width:720px;margin:0 auto;padding:24px;">
-          <!-- Card -->
-          <div style="background:#ffffff;border-radius:14px;box-shadow:0 4px 16px rgba(0,0,0,0.06);overflow:hidden;border:1px solid #f0eef7;">
-            <!-- Header -->
-            <div style="background:linear-gradient(135deg,#5a2ea6,#4B0082);padding:20px 24px;">
-              <h2 style="margin:0;color:#ffffff;font:700 20px/1.2 system-ui,Segoe UI,Roboto,Helvetica,Arial;">Invoice — ${billNumber}</h2>
-              <div style="margin-top:6px;color:#e8dcff;font:500 13px system-ui,Segoe UI,Roboto,Helvetica,Arial;">${clientName}</div>
-            </div>
+Please find attached your invoice${billNumber ? ` (${billNumber})` : ''}${billDate ? ` dated ${billDate}` : ''}.
 
-            <!-- Body -->
-            <div style="padding:20px 24px;">
-              <!-- Meta -->
-              <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:0 0 16px;">
-                <tr>
-                  <td style="padding:6px 0;font:600 13px system-ui,Segoe UI,Roboto,Helvetica,Arial;color:#4B0082;">Client</td>
-                  <td style="padding:6px 0;font:500 13px system-ui,Segoe UI,Roboto,Helvetica,Arial;color:#333;">${clientName}</td>
-                </tr>
-                <tr>
-                  <td style="padding:6px 0;font:600 13px system-ui,Segoe UI,Roboto,Helvetica,Arial;color:#4B0082;">Address</td>
-                  <td style="padding:6px 0;font:500 13px system-ui,Segoe UI,Roboto,Helvetica,Arial;color:#333;">${address}</td>
-                </tr>
-                <tr>
-                  <td style="padding:6px 0;font:600 13px system-ui,Segoe UI,Roboto,Helvetica,Arial;color:#4B0082;">Date</td>
-                  <td style="padding:6px 0;font:500 13px system-ui,Segoe UI,Roboto,Helvetica,Arial;color:#333;">${billDate}</td>
-                </tr>
-              </table>
+${typeof totalAmount === 'number' ? `Total: ₹${Number(totalAmount).toLocaleString('en-IN')}\n` : ''}${typeof discount === 'number' ? `Margin: ${discount}%\n` : ''}${typeof finalAmount === 'number' ? `Final: ₹${Number(finalAmount).toLocaleString('en-IN')}\n` : ''}
 
-              <!-- Totals grid -->
-              <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:separate;border-spacing:12px 0;margin:12px 0 4px;">
-                <tr>
-                  <td style="background:#f7f4ff;border:1px solid #ede7ff;border-radius:10px;padding:12px;">
-                    <div style="font:600 12px system-ui,Segoe UI,Roboto,Helvetica,Arial;color:#4B0082;letter-spacing:.2px;">Total Amount</div>
-                    <div style="margin-top:4px;font:700 18px system-ui,Segoe UI,Roboto,Helvetica,Arial;color:#111;">${totalAmount}</div>
-                  </td>
-                  <td style="background:#f7f4ff;border:1px solid #ede7ff;border-radius:10px;padding:12px;">
-                    <div style="font:600 12px system-ui,Segoe UI,Roboto,Helvetica,Arial;color:#4B0082;letter-spacing:.2px;">Margin</div>
-                    <div style="margin-top:4px;font:700 18px system-ui,Segoe UI,Roboto,Helvetica,Arial;color:#111;">${discountPct}</div>
-                  </td>
-                  <td style="background:#efeaff;border:1px solid #e1d8ff;border-radius:10px;padding:12px;">
-                    <div style="font:600 12px system-ui,Segoe UI,Roboto,Helvetica,Arial;color:#4B0082;letter-spacing:.2px;">Final Total</div>
-                    <div style="margin-top:4px;font:700 18px system-ui,Segoe UI,Roboto,Helvetica,Arial;color:#111;">${finalAmount}</div>
-                  </td>
-                </tr>
-              </table>
+Regards,
+J.T. Fruits & Vegetables`;
 
-              ${itemsTable}
-              ${descriptionBlock}
+    // Send email with PDF attachment
+    await transporter.sendMail({
+      from: process.env.MAIL_USER,
+      to: email,
+      cc,
+      bcc,
+      subject,
+      text: textSummary,
+      attachments: [
+        {
+          filename,
+          content: pdfBuffer,
+          contentType: 'application/pdf',
+        },
+      ],
+    });
 
-              <!-- Footer note -->
-              <div style="margin-top:24px;padding-top:12px;border-top:1px dashed #e8e6f3;color:#666;font:500 12px system-ui,Segoe UI,Roboto,Helvetica,Arial;">
-                This is a system‑generated invoice. For queries, reply to this email.
-              </div>
-            </div>
-          </div>
-
-          <!-- Tiny footer -->
-          <div style="text-align:center;color:#9a96ab;font:500 12px system-ui,Segoe UI,Roboto,Helvetica,Arial;margin-top:14px;">
-            © ${new Date().getFullYear()} J.T. Fruits & Vegetables. All rights reserved.
-          </div>
-        </div>
-      </div>
-    `,
-  };
-
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.error('Email sending failed:', error);
-      return res.status(500).json({ message: 'Failed to send email' });
-    } else {
-      console.log('Email sent:', info.response);
-      return res.status(200).json({ message: 'Email sent successfully' });
+    return res.status(200).json({ message: 'Email sent successfully with PDF attachment' });
+  } catch (error) {
+    console.error('Email sending failed:', error);
+    return res.status(500).json({ message: 'Failed to send email' });
+  } finally {
+    if (browser) {
+      try { await browser.close(); } catch {}
     }
-  });
+  }
 });
 
 // ==================== SERVE ANGULAR APP ====================

@@ -9,10 +9,9 @@ interface BillItem {
   productId: number | null;
   productName: string;
   quantity: number;
-  price: number;         // DB price (or derived if manual total is set)
-  total: number;         // Sales Amount (qty * price) or manual
-  billingAmount?: number; // Sales Amount - discount%
-  manualTotal?: boolean;  // <— NEW: if user typed total directly
+  price: number;   // DB price (or derived if manual total is set)
+  total: number;   // Sales Amount (qty * price) or manual
+  manualTotal?: boolean; // if user typed total directly
 }
 
 type NameWithPrice = Name & { mrp?: number; price?: number; units?: string; name: string; id: number };
@@ -29,7 +28,7 @@ export class RelianceBillsComponent implements OnInit {
 
   products: NameWithPrice[] = [];
   namesMap:  { [id: number]: string } = {};
-  /** NEW: name + units map for consistent display everywhere */
+  /** name + units map for consistent display everywhere */
   namesWithUnitsMap: { [id: number]: string } = {};
   priceMap:  { [id: number]: number } = {};  // id → MRP/price
 
@@ -41,12 +40,10 @@ export class RelianceBillsComponent implements OnInit {
 
   billNumber = '';
   billDate: string = new Date().toISOString().substring(0, 10);
-  discount = 0;        // treated as DISCOUNT (%) just like Edit component
   totalAmount = 0;     // sum of Sales Amount
-  finalAmount = 0;     // sum of Billing Amount (after discount)
   manualEmail = '';
-  totalQuantity = 0;   // NEW (for print totals row)
-  totalItemPrice = 0;  // NEW (sum of unit prices; matches Edit behavior)
+  totalQuantity = 0;   // for print totals row
+  totalItemPrice = 0;  // sum of unit prices
 
   constructor(
     private titleService: Title,
@@ -99,20 +96,20 @@ export class RelianceBillsComponent implements OnInit {
     });
   }
 
-// NEW: Ship-to fields (optional to persist)
-shipToName = 'FRESHPIK SPECTRA POWAI ( T5EP )';
-shipToAddress = 'Spectra, 1st, Central Ave, Hiranandani Gardens, Powai, Mumbai, Maharashtra 400076';
+  // NEW: Ship-to fields (optional to persist)
+  shipToName = 'FRESHPIK SPECTRA POWAI ( T5EP )';
+  shipToAddress = 'Spectra, 1st, Central Ave, Hiranandani Gardens, Powai, Mumbai, Maharashtra 400076';
 
-// Constants
-private readonly RELIANCE_CLIENT = 'Reliance Retail Limited';
-private readonly RELIANCE_ADDR =
-  'Reliance Corporate Park, Thane-Belapur Road, Ghansoli-400701, Navi Mumbai, Maharashtra';
+  // Constants
+  private readonly RELIANCE_CLIENT = 'Reliance Retail Limited';
+  private readonly RELIANCE_ADDR =
+    'Reliance Corporate Park, Thane-Belapur Road, Ghansoli-400701, Navi Mumbai, Maharashtra';
 
-// Ensure client fields are always present
-private ensureRelianceDefaults(): void {
-  if (!this.clientName?.trim()) this.clientName = this.RELIANCE_CLIENT;
-  if (!this.address?.trim()) this.address = this.RELIANCE_ADDR;
-}
+  // Ensure client fields are always present
+  private ensureRelianceDefaults(): void {
+    if (!this.clientName?.trim()) this.clientName = this.RELIANCE_CLIENT;
+    if (!this.address?.trim()) this.address = this.RELIANCE_ADDR;
+  }
 
   loadBillForEdit(billNumber: string): void {
     this.http.get<any>(`http://localhost:3001/api/bills/${billNumber}`).subscribe({
@@ -121,9 +118,7 @@ private ensureRelianceDefaults(): void {
         this.address     = bill.address    || this.address;
         this.billNumber  = bill.billNumber || billNumber;
         this.billDate    = bill.billDate   || this.billDate;
-        this.discount    = Number(bill.discount ?? 0);
         this.totalAmount = Number(bill.totalAmount ?? 0);
-        this.finalAmount = Number(bill.finalAmount ?? 0);
 
         let items: any[] = [];
         if (Array.isArray(bill.billItems)) {
@@ -149,7 +144,6 @@ private ensureRelianceDefaults(): void {
             quantity: qty,
             price,
             total,
-            billingAmount: Number(it.billingAmount ?? total),
             manualTotal: !!it.manualTotal
           } as BillItem;
         });
@@ -248,10 +242,6 @@ private ensureRelianceDefaults(): void {
         it.price = +((Number(it.total || 0) / qty)).toFixed(2);
       }
     }
-
-    const discountMultiplier = 1 - (this.discount / 100);
-    it.billingAmount = +((Number(it.total || 0)) * discountMultiplier).toFixed(2);
-
     this.calculateTotalAmount();
   }
 
@@ -264,13 +254,10 @@ private ensureRelianceDefaults(): void {
     if (qty > 0 && isFinite(qty)) {
       it.price = +((manualTotal / qty)).toFixed(2);
     }
-    const discountMultiplier = 1 - (this.discount / 100);
-    it.billingAmount = +((manualTotal) * discountMultiplier).toFixed(2);
     this.calculateTotalAmount();
   }
 
   calculateTotalAmount(): void {
-    const discountMultiplier = 1 - (this.discount / 100);
     const items = this.billItems.filter(it => it.productId !== null);
 
     items.forEach(it => {
@@ -281,22 +268,11 @@ private ensureRelianceDefaults(): void {
       } else if (qty > 0 && isFinite(qty)) {
         it.price = +((Number(it.total || 0) / qty)).toFixed(2);
       }
-      it.billingAmount = +((Number(it.total || 0)) * discountMultiplier).toFixed(2);
     });
 
     this.totalQuantity = items.reduce((acc, it) => acc + (Number(it.quantity) || 0), 0);
     this.totalItemPrice = +items.reduce((acc, it) => acc + (it.price || 0), 0).toFixed(2);
     this.totalAmount   = +items.reduce((acc, it) => acc + (it.total || 0), 0).toFixed(2);
-    this.finalAmount   = +items.reduce((acc, it) => acc + (it.billingAmount || 0), 0).toFixed(2);
-  }
-
-  calculateFinalAmount(): void {
-    // Kept for the footer input change — same semantics as Edit (discount reduces)
-    const discountMultiplier = 1 - (this.discount / 100);
-    this.billItems.forEach(it => {
-      it.billingAmount = +((it.total || 0) * discountMultiplier).toFixed(2);
-    });
-    this.finalAmount = +this.billItems.reduce((acc, it) => acc + (it.billingAmount || 0), 0).toFixed(2);
   }
 
   amountInWords(num: number): string {
@@ -347,7 +323,15 @@ private ensureRelianceDefaults(): void {
 
     const styles = `
       <style>
-        @media print { * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; } }
+        @page { size: A4; margin: 10mm 8mm; }
+        @media print {
+          * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+          html, body { margin: 0; padding: 0; }
+          .boxes { display: block !important; page-break-inside: auto; break-inside: auto; margin-top: 8px; }
+          .box { page-break-inside: avoid; break-inside: avoid; margin-bottom: 8px; }
+          .left-column { display: block !important; }
+          table { page-break-after: avoid; }
+        }
         body { font-family: 'Poppins','Segoe UI',Tahoma,sans-serif; color:#2c3e50; padding:40px; background:#fff; }
         h1 { margin:0; font-size:25px; font-weight:bold; color:#333; }
         p { margin:5px 0; font-size:13px; color:#546e7a; }
@@ -425,7 +409,6 @@ private ensureRelianceDefaults(): void {
       <div class="invoice-title">TAX FREE INVOICE</div>
 
       <div class="tax-parties">
-        // in buildPrintHtml(...)
         <div class="party">
           <div class="party-title">Bill To</div>
           <div class="party-name">${this.clientName || this.RELIANCE_CLIENT}</div>
@@ -474,8 +457,6 @@ private ensureRelianceDefaults(): void {
         } else {
           it.total = +((qty * Number(it.price || 0))).toFixed(2);
         }
-        const discountMultiplier = 1 - (this.discount / 100);
-        it.billingAmount = +((Number(it.total || 0)) * discountMultiplier).toFixed(2);
         return it;
       });
 
@@ -487,7 +468,6 @@ private ensureRelianceDefaults(): void {
     // page totals based on visible rows
     this.totalQuantity = validItems.reduce((a, it) => a + (it.quantity || 0), 0);
     this.totalAmount = +validItems.reduce((a, it) => a + (it.total || 0), 0).toFixed(2);
-    this.finalAmount = +validItems.reduce((a, it) => a + (it.billingAmount || 0), 0).toFixed(2);
 
     const html = this.buildPrintHtml(validItems);
     const w = window.open('', '_blank', 'width=1024,height=768');
@@ -504,8 +484,10 @@ private ensureRelianceDefaults(): void {
 
   emailBill(): void {
     this.ensureRelianceDefaults();
+
+    // Validate rows
     const validItems = this.billItems.filter(
-      it => it.productId !== null && it.productName && it.quantity > 0 && it.price > 0
+      it => it.productId !== null && (it.productName || this.namesWithUnitsMap[it.productId!]) && it.quantity > 0
     );
     if (!validItems.length) {
       alert('No valid items to email. Please add at least one valid item.');
@@ -516,16 +498,39 @@ private ensureRelianceDefaults(): void {
       return;
     }
 
+    // Normalize items like print does (derive totals/prices consistently)
+    const normalized = validItems.map(it => {
+      const qty = Number(it.quantity || 0);
+      if (it.manualTotal) {
+        if (qty > 0 && isFinite(qty)) {
+          it.price = +((Number(it.total || 0) / qty)).toFixed(2);
+        }
+      } else {
+        it.total = +((qty * Number(it.price || 0))).toFixed(2);
+      }
+      // Ensure display name includes units
+      const prod = this.products.find(p => p.id === it.productId);
+      it.productName = prod ? prod.name + (prod.units ? ' ' + prod.units : '') : (it.productName || '');
+      return it;
+    });
+
+    // Recompute page totals for the PDF
+    this.totalQuantity = normalized.reduce((a, it) => a + (it.quantity || 0), 0);
+    this.totalAmount   = +normalized.reduce((a, it) => a + (it.total || 0), 0).toFixed(2);
+
+    // 🔑 Build the print-ready HTML using the SAME template you print
+    const pdfHtml = this.buildPrintHtml(normalized);
+
     const billData = {
       clientName: this.clientName,
       address: this.address,
       billNumber: this.billNumber,
       billDate: this.billDate,
-      discount: this.discount,
       totalAmount: this.totalAmount,
-      finalAmount: this.finalAmount,
-      billItems: validItems,
-      email: this.manualEmail
+      billItems: normalized,
+      email: this.manualEmail,
+      billType: 'reliance',
+      pdfHtml                                // ✨ send print HTML for PDF rendering
     };
 
     this.billsService.sendBillByEmail(billData).subscribe({
@@ -548,21 +553,22 @@ private ensureRelianceDefaults(): void {
         quantity: Number(it.quantity || 0),
         price: Number(it.price || 0),
         total: Number(it.total || 0),
-        billingAmount: Number(it.billingAmount || 0),
         manualTotal: !!it.manualTotal
       }));
 
-    const billData = {
+    const billData: any = {
       clientName: this.clientName || '',
       address: this.address || '',
       billNumber: this.billNumber || '',
       billDate: this.billDate || '',
-      discount: Number(this.discount) || 0,
       totalAmount: Number(this.totalAmount) || 0,
-      finalAmount: Number(this.finalAmount) || 0,
       billItems: sanitizedItems,
       billType: 'reliance' // always Reliance
     };
+
+    // If your backend fields are non-nullable, you can explicitly set:
+    // billData.finalAmount = null;
+    // billData.discount = null;
 
     // If billNumber exists in route params → update, else create new
     const billNumberParam = this.route.snapshot.paramMap.get('billNumber');

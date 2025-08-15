@@ -447,10 +447,30 @@ export class EditBillsComponent implements OnInit {
       item => item.productId !== null && item.productName && item.quantity > 0 && item.price > 0
     );
 
+    if (validItems.length === 0) {
+      alert('No valid items to email. Please add at least one valid item.');
+      return;
+    }
+
     if (!this.manualEmail || !this.manualEmail.includes('@')) {
       alert('Please enter a valid email address');
       return;
     }
+
+    // Recalculate totals exactly like the print view
+    const totalAmount = validItems.reduce((acc, it) => acc + (it.quantity || 0) * (it.price || 0), 0);
+    const discountAmount = totalAmount * (this.discount / 100);
+    const finalAmount = totalAmount - discountAmount;
+
+    const pdfHtml = this.buildPrintHtml(validItems, {
+      clientName: this.clientName,
+      address: this.address,
+      billNumber: this.billNumber,
+      billDate: this.billDate,
+      discount: this.discount,
+      totalAmount,
+      finalAmount,
+    });
 
     const billData = {
       clientName: this.clientName,
@@ -458,10 +478,11 @@ export class EditBillsComponent implements OnInit {
       billNumber: this.billNumber,
       billDate: this.billDate,
       discount: this.discount,
-      totalAmount: this.totalAmount,
-      finalAmount: this.finalAmount,
+      totalAmount,
+      finalAmount,
       billItems: validItems,
-      email: this.manualEmail
+      email: this.manualEmail,
+      pdfHtml // ✨ send print-ready HTML to server
     };
 
     this.billsService.sendBillByEmail(billData).subscribe({

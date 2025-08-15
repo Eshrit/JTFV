@@ -340,18 +340,30 @@ export class AddLumpsumBillsComponent implements OnInit, AfterViewInit {
   }
 
   emailBill(): void {
-    // ✅ Force Angular to flush textarea binding
-    const active = document.activeElement as HTMLElement;
-    if (active && (active.tagName === 'TEXTAREA' || active.tagName === 'INPUT')) {
-      active.blur();
-    }
+    // Flush any focused control so ngModel writes latest values
+    const active = document.activeElement as HTMLElement | null;
+    if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) active.blur();
 
-    // ✅ Allow model to update
     setTimeout(() => {
       if (!this.manualEmail || !this.manualEmail.includes('@')) {
         alert('Please enter a valid email address');
         return;
       }
+
+      // Make sure amounts are up to date
+      this.calculateFinalAmount();
+
+      // 🔑 Build the print-ready HTML using the SAME template you print
+      const pdfHtml = this.buildPrintHtml({
+        clientName: this.clientName || '',
+        address: this.address || '',
+        billNumber: this.billNumber || '',
+        billDate: this.billDate || '',
+        description: this.description || '',
+        amount: this.amount || 0,
+        discount: this.discount || 0,
+        finalAmount: this.finalAmount || 0,
+      });
 
       const billData = {
         clientName: this.clientName,
@@ -361,18 +373,18 @@ export class AddLumpsumBillsComponent implements OnInit, AfterViewInit {
         discount: this.discount,
         totalAmount: this.amount,
         finalAmount: this.finalAmount,
-        description: this.description,  // ✅ guaranteed defined now
-        billItems: [],
-        email: this.manualEmail
+        description: this.description,
+        billItems: [],              // no line items for lumpsum
+        email: this.manualEmail,
+        billType: 'lumpsum',        // (optional) helpful if you want to branch later
+        pdfHtml                     // ✨ send print HTML to server for PDF rendering
       };
-
-      console.log('✅ SENDING:', billData); // debug
 
       this.billsService.sendBillByEmail(billData).subscribe({
         next: () => alert('Email Sent!'),
         error: () => alert('Failed to send email. Please try again.')
       });
-    }, 10); // delay ensures ngModel flushes into component
+    }, 10);
   }
 
   autoResize(event: Event): void {

@@ -9,9 +9,8 @@ interface BillItem {
   productId: number | null;
   productName: string;
   quantity: number;
-  price: number;        // DB price
-  total: number;        // Sales Amount (qty * price)
-  billingAmount?: number; // Sales Amount - discount%
+  price: number;   // DB price
+  total: number;   // qty * price (or manual total when manualTotal is true)
   manualTotal?: boolean;
 }
 
@@ -40,7 +39,7 @@ export class EditRelianceBillsComponent implements OnInit {
   clientName = '';
   address = '';
 
-  // NEW: Ship-to fields (optional to persist)
+  // Ship-to fields (optional to persist)
   shipToName = 'FRESHPIK SPECTRA POWAI ( T5EP )';
   shipToAddress = 'Spectra, 1st, Central Ave, Hiranandani Gardens, Powai, Mumbai, Maharashtra 400076';
 
@@ -51,9 +50,8 @@ export class EditRelianceBillsComponent implements OnInit {
 
   billNumber = '';
   billDate: string = new Date().toISOString().substring(0, 10);
-  discount = 0;        // used as DISCOUNT (%)
-  totalAmount = 0;     // sum of Sales Amount
-  finalAmount = 0;     // sum of Billing Amount (after discount)
+
+  totalAmount = 0;     // sum of row totals
   manualEmail = '';
   totalQuantity = 0;
   totalItemPrice = 0;
@@ -109,9 +107,7 @@ export class EditRelianceBillsComponent implements OnInit {
         this.address     = bill.address    || this.address;
         this.billNumber  = bill.billNumber || billNumber;
         this.billDate    = bill.billDate   || this.billDate;
-        this.discount    = Number(bill.discount ?? 0);
         this.totalAmount = Number(bill.totalAmount ?? 0);
-        this.finalAmount = Number(bill.finalAmount ?? 0);
 
         let items: any[] = [];
         if (Array.isArray(bill.billItems)) {
@@ -131,14 +127,13 @@ export class EditRelianceBillsComponent implements OnInit {
           const price = Number(it.price ?? this.priceMap[pid] ?? 0);
           const total = Number(it.total ?? qty * price);
           const name = pid ? (this.namesWithUnitsMap[pid] || it.productName || '(Unknown)') : '';
-          
+
           return {
             productId: pid,
             productName: name,
             quantity: qty,
             price,
             total,
-            billingAmount: Number(it.billingAmount ?? total),
             manualTotal: !!it.manualTotal  // restore saved flag
           } as BillItem;
         });
@@ -157,7 +152,7 @@ export class EditRelianceBillsComponent implements OnInit {
         });
       },
       error: err => {
-        console.error('Failed to load bill for edit:', err);
+        console.error('Could not load the bill.', err);
         alert('Could not load the bill.');
       }
     });
@@ -211,7 +206,7 @@ export class EditRelianceBillsComponent implements OnInit {
         this.priceMap[selectedId as number] ??
         Number((selectedProduct as any).mrp ?? (selectedProduct as any).price ?? 0);
 
-      item.price = Number(dbPrice || 0);   // overwrite, don't gate on previous value
+      item.price = Number(dbPrice || 0);
     } else {
       item.productName = '(Unknown)';
       item.price = 0;
@@ -234,9 +229,6 @@ export class EditRelianceBillsComponent implements OnInit {
       }
     }
 
-    const discountMultiplier = 1 - (this.discount / 100);
-    it.billingAmount = +((Number(it.total || 0)) * discountMultiplier).toFixed(2);
-
     this.calculateTotalAmount();
   }
 
@@ -250,14 +242,10 @@ export class EditRelianceBillsComponent implements OnInit {
       it.price = +((manualTotal / qty)).toFixed(2);
     }
 
-    const discountMultiplier = 1 - (this.discount / 100);
-    it.billingAmount = +((manualTotal) * discountMultiplier).toFixed(2);
-
     this.calculateTotalAmount();
   }
 
   calculateTotalAmount(): void {
-    const discountMultiplier = 1 - (this.discount / 100);
     const items = this.billItems.filter(it => it.productId !== null);
 
     items.forEach(it => {
@@ -269,22 +257,11 @@ export class EditRelianceBillsComponent implements OnInit {
       } else if (qty > 0 && isFinite(qty)) {
         it.price = +((Number(it.total || 0) / qty)).toFixed(2);
       }
-
-      it.billingAmount = +((Number(it.total || 0)) * discountMultiplier).toFixed(2);
     });
 
     this.totalQuantity = items.reduce((acc, it) => acc + (Number(it.quantity) || 0), 0);
     this.totalItemPrice = +items.reduce((acc, it) => acc + (it.price || 0), 0).toFixed(2);
     this.totalAmount   = +items.reduce((acc, it) => acc + (it.total || 0), 0).toFixed(2);
-    this.finalAmount   = +items.reduce((acc, it) => acc + (it.billingAmount || 0), 0).toFixed(2);
-  }
-
-  calculateFinalAmount(): void {
-    const discountMultiplier = 1 - (this.discount / 100);
-    this.billItems.forEach(it => {
-      it.billingAmount = (it.total || 0) * discountMultiplier;
-    });
-    this.finalAmount = this.billItems.reduce((acc, it) => acc + (it.billingAmount || 0), 0);
   }
 
   /** Wait for Angular CD + two RAFs so layout is fully painted before printing */
@@ -304,7 +281,6 @@ export class EditRelianceBillsComponent implements OnInit {
     if (prod) {
       return prod.name + (prod.units ? ' ' + prod.units : '');
     }
-    // fall back to whatever is stored
     return it.productName || '';
   }
 
@@ -324,116 +300,38 @@ export class EditRelianceBillsComponent implements OnInit {
     const styles = `
       <style>
         @media print {
-          * {
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-          }
+          * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         }
-        body {
-          font-family: 'Poppins','Segoe UI',Tahoma,sans-serif;
-          color:#2c3e50;
-          padding:40px;
-          background:#fff;
-        }
+        body { font-family: 'Poppins','Segoe UI',Tahoma,sans-serif; color:#2c3e50; padding:40px; background:#fff; }
         h1 { margin:0; font-size:25px; font-weight:bold; color:#333; }
         p { margin:5px 0; font-size:13px; color:#546e7a; }
 
-        .invoice-title {
-          text-align:center;
-          font-size:22px;
-          font-weight:bold;
-          margin:12px 0;
-          color:#2c3e50;
-        }
+        .invoice-title { text-align:center; font-size:22px; font-weight:bold; margin:12px 0; color:#2c3e50; }
         .tax-parties {
-          display:grid;
-          grid-template-columns:1fr 1fr 1fr;
-          gap:24px;
-          padding:10px 0 0;
-          border-top:3px solid #c9c9c9;
-          border-bottom:1px solid #c9c9c9;
-          margin-bottom:12px;
-          font-size:11px;
+          display:grid; grid-template-columns:1fr 1fr 1fr; gap:24px;
+          padding:10px 0 0; border-top:3px solid #c9c9c9; border-bottom:1px solid #c9c9c9; margin-bottom:12px; font-size:11px;
         }
-        .party-title {
-          text-transform:uppercase;
-          font-weight:700;
-          letter-spacing:.4px;
-          margin-bottom:6px;
-        }
+        .party-title { text-transform:uppercase; font-weight:700; letter-spacing:.4px; margin-bottom:6px; }
         .party-name { font-weight:600; margin-bottom:4px; }
         .party-address { line-height:1.45; }
-        .invoice-details .inv-row {
-          display:flex;
-          justify-content:space-between;
-          margin-bottom:6px;
-          white-space:nowrap;
-        }
+        .invoice-details .inv-row { display:flex; justify-content:space-between; margin-bottom:6px; white-space:nowrap; }
         .invoice-details .value { font-weight:600; }
 
-        table {
-          width:100%;
-          border-collapse:collapse;
-          font-size:12px;
-          margin:16px 0;
-          background:#fff;
-        }
-        th, td {
-          border:1px solid #bdbdbd;
-          padding:8px 10px;
-          text-align:center;
-        }
-        th {
-          background:#757575 !important;
-          color:#fff !important;
-          font-weight:700;
-        }
-        .total-row {
-          background:#f4f6f8 !important;
-          font-weight:700;
-        }
+        table { width:100%; border-collapse:collapse; font-size:12px; margin:16px 0; background:#fff; }
+        th, td { border:1px solid #bdbdbd; padding:8px 10px; text-align:center; }
+        th { background:#757575 !important; color:#fff !important; font-weight:700; }
+        .total-row { background:#f4f6f8 !important; font-weight:700; }
         .left { text-align:left; }
-
-        /* Prevent total row from repeating */
         thead { display: table-header-group; }
         .no-repeat { page-break-inside: avoid; }
 
-        /* Boxes styling */
-        .boxes {
-          display:grid;
-          grid-template-columns:2fr 1fr;
-          gap:10px;
-          margin-top:10px;
-        }
-        .left-column {
-          display:flex;
-          flex-direction:column;
-          gap:8px;
-        }
-        .box {
-          border:1px solid #bdbdbd;
-        }
-        .box-title {
-          background:#757575 !important;
-          color:#fff !important;
-          font-weight:700;
-          padding:6px 8px;
-          font-size:12px;
-        }
-        .box-body {
-          padding:6px 8px;
-          font-size:12px;
-        }
-        .amount-grid {
-          display:grid;
-          grid-template-columns:1fr auto;
-          row-gap:4px;
-          padding:6px 8px;
-          font-size:12px;
-        }
-        .amount-grid .v {
-          text-align:right;
-        }
+        .boxes { display:grid; grid-template-columns:2fr 1fr; gap:10px; margin-top:10px; }
+        .left-column { display:flex; flex-direction:column; gap:8px; }
+        .box { border:1px solid #bdbdbd; }
+        .box-title { background:#757575 !important; color:#fff !important; font-weight:700; padding:6px 8px; font-size:12px; }
+        .box-body { padding:6px 8px; font-size:12px; }
+        .amount-grid { display:grid; grid-template-columns:1fr auto; row-gap:4px; padding:6px 8px; font-size:12px; }
+        .amount-grid .v { text-align:right; }
       </style>
     `;
 
@@ -487,16 +385,12 @@ export class EditRelianceBillsComponent implements OnInit {
         <div class="party">
           <div class="party-title">Bill To</div>
           <div class="party-name">${this.clientName || this.RELIANCE_CLIENT}</div>
-          <div class="party-address">
-            ${this.address || this.RELIANCE_ADDR}
-          </div>
+          <div class="party-address">${this.address || this.RELIANCE_ADDR}</div>
         </div>
         <div class="party">
           <div class="party-title">Ship To</div>
-          <div class="party-name">${this.shipToName || 'FRESHPIK SPECTRA POWAI ( T5EP )'}</div>
-          <div class="party-address">
-            ${this.shipToAddress || 'Spectra, 1st, Central Ave, Hiranandani Gardens, Powai, Mumbai, Maharashtra 400076'}
-          </div>
+          <div class="party-name">${this.shipToName}</div>
+          <div class="party-address">${this.shipToAddress}</div>
         </div>
         <div class="invoice-details">
           <div class="party-title">Invoice Details</div>
@@ -539,9 +433,6 @@ export class EditRelianceBillsComponent implements OnInit {
         } else {
           it.total = +((qty * Number(it.price || 0))).toFixed(2);
         }
-
-        const discountMultiplier = 1 - (this.discount / 100);
-        it.billingAmount = +((Number(it.total || 0)) * discountMultiplier).toFixed(2);
         return it;
       });
 
@@ -552,7 +443,6 @@ export class EditRelianceBillsComponent implements OnInit {
 
     // Recompute page totals to match visible rows
     this.totalAmount = +validItems.reduce((a, it) => a + (it.total || 0), 0).toFixed(2);
-    this.finalAmount = +validItems.reduce((a, it) => a + (it.billingAmount || 0), 0).toFixed(2);
     this.totalQuantity = validItems.reduce((a, it) => a + (it.quantity || 0), 0);
 
     const html = this.buildPrintHtml(validItems);
@@ -566,7 +456,6 @@ export class EditRelianceBillsComponent implements OnInit {
     w.document.write(html);
     w.document.close();
 
-    // Wait a moment for layout, then print
     w.focus();
     setTimeout(() => {
       w.print();
@@ -577,8 +466,9 @@ export class EditRelianceBillsComponent implements OnInit {
   emailBill(): void {
     this.ensureRelianceDefaults();
 
+    // Validate rows
     const validItems = this.billItems.filter(
-      it => it.productId !== null && it.productName && it.quantity > 0 && it.price > 0
+      it => it.productId !== null && (it.productName || this.namesWithUnitsMap[it.productId!]) && it.quantity > 0
     );
     if (!validItems.length) {
       alert('No valid items to email. Please add at least one valid item.');
@@ -589,17 +479,39 @@ export class EditRelianceBillsComponent implements OnInit {
       return;
     }
 
+    // Normalize items like print does (derive totals/prices consistently)
+    const normalized = validItems.map(it => {
+      const qty = Number(it.quantity || 0);
+      if (it.manualTotal) {
+        if (qty > 0 && isFinite(qty)) {
+          it.price = +((Number(it.total || 0) / qty)).toFixed(2);
+        }
+      } else {
+        it.total = +((qty * Number(it.price || 0))).toFixed(2);
+      }
+      // Ensure display name includes units
+      const prod = this.products.find(p => p.id === it.productId);
+      it.productName = prod ? prod.name + (prod.units ? ' ' + prod.units : '') : (it.productName || '');
+      return it;
+    });
+
+    // Recompute page totals for the PDF
+    this.totalQuantity = normalized.reduce((a, it) => a + (it.quantity || 0), 0);
+    this.totalAmount   = +normalized.reduce((a, it) => a + (it.total || 0), 0).toFixed(2);
+
+    // 🔑 Build the print-ready HTML using the SAME template you print
+    const pdfHtml = this.buildPrintHtml(normalized);
+
     const billData = {
       clientName: this.clientName,
       address: this.address,
       billNumber: this.billNumber,
       billDate: this.billDate,
-      discount: this.discount,
       totalAmount: this.totalAmount,
-      finalAmount: this.finalAmount,
-      billItems: validItems,
+      billItems: normalized,
       email: this.manualEmail,
-      billType: 'reliance'
+      billType: 'reliance',
+      pdfHtml                                // ✨ send print HTML for PDF rendering
     };
 
     this.billsService.sendBillByEmail(billData).subscribe({
@@ -621,22 +533,23 @@ export class EditRelianceBillsComponent implements OnInit {
         productName: it.productName, // includes units if applicable
         quantity: Number(it.quantity || 0),
         price: Number(it.price || 0),
-        total: Number(it.total || 0), // preserve as-is
-        billingAmount: Number(it.billingAmount || 0),
+        total: Number(it.total || 0),
         manualTotal: !!it.manualTotal // keep manual total flag
       }));
 
-    const payload = {
+    const payload: any = {
       clientName: this.clientName,
       address: this.address,
       billNumber: this.billNumber,
       billDate: this.billDate,
-      discount: Number(this.discount) || 0,
       totalAmount: Number(this.totalAmount) || 0,
-      finalAmount: Number(this.finalAmount) || 0,
       billItems: sanitizedItems,
       billType: 'reliance' // always tag as Reliance
     };
+
+    // If backend requires non-nullable fields, uncomment the following:
+    // payload.finalAmount = null;
+    // payload.discount = null;
 
     const obs = (this.billsService as any).updateBill
       ? (this.billsService as any).updateBill(this.billNumber, payload)
@@ -678,7 +591,7 @@ export class EditRelianceBillsComponent implements OnInit {
               'Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen',
               'Eighteen','Nineteen'];
     const b = ['', '', 'Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
-    
+
     const numToWords = (n: number): string => {
       if (n < 20) return a[n];
       if (n < 100) return b[Math.floor(n / 10)] + (n % 10 ? ' ' + a[n % 10] : '');
