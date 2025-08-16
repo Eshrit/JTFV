@@ -1,3 +1,6 @@
+// main-electron.js (updated)
+// Run with: contextIsolation: true, nodeIntegration: false
+
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import path, { dirname } from 'path';
 import { spawn } from 'child_process';
@@ -22,6 +25,21 @@ function log(message) {
 let mainWindow;
 let serverProcess;
 
+/** Retry loader so dev startup doesn't race the server */
+async function loadWithRetry(win, url, attempts = 15, delayMs = 300) {
+  for (let i = 0; i < attempts; i++) {
+    try {
+      await win.loadURL(url);
+      return;
+    } catch (e) {
+      log(`Load attempt ${i + 1} failed: ${e?.message || e}`);
+      await new Promise(r => setTimeout(r, delayMs));
+    }
+  }
+  // Final try so the error surfaces if still failing
+  await win.loadURL(url);
+}
+
 const createWindow = () => {
   log('Creating main window...');
 
@@ -32,12 +50,12 @@ const createWindow = () => {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      // preload: path.join(__dirname, 'preload.js')
+      preload: path.join(__dirname, 'preload.cjs'),
     }
   });
 
   const url = 'http://localhost:3001';
-  mainWindow.loadURL(url);
+  loadWithRetry(mainWindow, url).catch(err => log(`❌ Final load failed: ${err?.message || err}`));
   log(`Loaded URL: ${url}`);
 
   mainWindow.webContents.on('did-finish-load', () => {
@@ -74,42 +92,48 @@ const SIZES = {
 // Preferred queue names / patterns
 const PRINTER_PREFERENCES = {
   CANON: [
-    'Canon LBP2900',                 // generic
-    'Canon LBP2900 on NEW-PC2017'    // your shared queue
+    'Canon LBP2900',
+    'Canon LBP2900 on NEW-PC2017',
+    '\\\\NEW-PC2017\\Canon LBP2900',   // UNC share
   ],
   CITIZEN: [
-    'Citizen CL-E321'
+    'Citizen CL-E321',
+    'CITIZEN CL-E321',
   ]
 };
 
-// Compat: get printers (async if available)
+// compat: get printers (async if available)
 async function listPrinters(win) {
   const wc = win.webContents;
   if (typeof wc.getPrintersAsync === 'function') {
-    return await wc.getPrintersAsync();
+    return (await wc.getPrintersAsync()) || [];
   }
-  return wc.getPrinters();
+  return wc.getPrinters() || [];
 }
 
-// Pick the best available printer by trying exact matches first, then fuzzy “includes”
+function normalize(s) {
+  return String(s || '').toLowerCase().replace(/\s+/g, ' ').trim();
+}
+
+// Pick the best available printer by trying exact, then case-insensitive, then fuzzy
 async function resolvePrinterName(win, preferredNames) {
   const printers = await listPrinters(win);
   const names = printers.map(p => p.name);
   log(`Available printers: ${JSON.stringify(names)}`);
 
-  // Exact, case-sensitive
+  // exact case-sensitive
   for (const want of preferredNames) {
     const found = printers.find(p => p.name === want);
     if (found) return found.name;
   }
-  // Exact, case-insensitive
-  for (const want of preferredNames) {
-    const found = printers.find(p => p.name.toLowerCase() === want.toLowerCase());
-    if (found) return found.name;
+  // exact case-insensitive
+  const prefNorm = preferredNames.map(normalize);
+  for (const p of printers) {
+    if (prefNorm.includes(normalize(p.name))) return p.name;
   }
-  // Fuzzy contains, case-insensitive
-  for (const want of preferredNames) {
-    const found = printers.find(p => p.name.toLowerCase().includes(want.toLowerCase()));
+  // fuzzy contains (case-insensitive)
+  for (const want of prefNorm) {
+    const found = printers.find(p => normalize(p.name).includes(want));
     if (found) return found.name;
   }
   return null;
@@ -133,39 +157,68 @@ function doPrint(win, { deviceName, pageSize, landscape = false, silent = true, 
   });
 }
 
-// Use a hidden window + isolated session so settings don’t leak between jobs
-function createPrintWindow(url, partition = 'persist:print-default') {
+// Hidden window to load data: URLs for print jobs
+function createPrintWindow() {
   const w = new BrowserWindow({
     show: false,
-    webPreferences: { partition, offscreen: true }
+    width: 600,
+    height: 800,
+    webPreferences: {
+      backgroundThrottling: false,
+      offscreen: false,           // offscreen can interfere with print in some drivers
+    },
   });
-  w.loadURL(url);
   return w;
 }
 
-// Bills → Canon LBP2900 (any queue variant) → A4
-ipcMain.handle('print:canon-a4', async (event, { url, landscape = false } = {}) => {
-  log(`IPC print:canon-a4 URL=${url}`);
-  const win = createPrintWindow(url, 'persist:print-bills');
-  await new Promise(res => win.webContents.once('did-finish-load', res));
+// Helper: load a data URL or normal URL and wait for ready
+async function loadAndWait(win, url) {
+  await win.loadURL(url);
+  await new Promise(res => {
+    if (win.webContents.isLoadingMainFrame()) {
+      win.webContents.once('did-finish-load', res);
+    } else {
+      res();
+    }
+  });
+}
+
+// DEBUG: list printers from renderer
+ipcMain.handle('print:list', async () => {
+  const win = createPrintWindow();
   try {
+    const list = await listPrinters(win);
+    return list;
+  } finally {
+    win.close();
+  }
+});
+
+// Bills → Canon LBP2900 (any queue variant) → A4
+ipcMain.handle('print:canon-a4', async (_event, { url, landscape = false } = {}) => {
+  log(`IPC print:canon-a4 URL len=${(url||'').length}`);
+  const win = createPrintWindow();
+  try {
+    await loadAndWait(win, url);
     const deviceName = await resolvePrinterName(win, PRINTER_PREFERENCES.CANON);
     if (!deviceName) throw new Error('Canon LBP2900 printer not found.');
     await doPrint(win, { deviceName, pageSize: SIZES.A4, landscape });
+    return { ok: true };
   } finally {
     win.close();
   }
 });
 
 // Barcodes → Citizen CL-E321 → 50x50mm
-ipcMain.handle('print:citizen-50', async (event, { url } = {}) => {
-  log(`IPC print:citizen-50 URL=${url}`);
-  const win = createPrintWindow(url, 'persist:print-barcodes');
-  await new Promise(res => win.webContents.once('did-finish-load', res));
+ipcMain.handle('print:citizen-50', async (_event, { url } = {}) => {
+  log(`IPC print:citizen-50 URL len=${(url||'').length}`);
+  const win = createPrintWindow();
   try {
+    await loadAndWait(win, url);
     const deviceName = await resolvePrinterName(win, PRINTER_PREFERENCES.CITIZEN);
     if (!deviceName) throw new Error('Citizen CL-E321 printer not found.');
     await doPrint(win, { deviceName, pageSize: SIZES.LABEL_50x50, landscape: false });
+    return { ok: true };
   } finally {
     win.close();
   }
@@ -185,7 +238,7 @@ app.whenReady().then(() => {
 
   const serverPath = path.join(basePath, 'server.cjs');
   const nodeModulesPath = path.join(basePath, 'node_modules');
-  const angularDistPath = path.join(basePath, 'dist', 'my-login-app');
+  const angularDistPath = path.join(basePath, 'dist', 'my-login-app'); // currently logged only
   const userDataPath = app.getPath('userData');
 
   log('======================');
@@ -199,7 +252,8 @@ app.whenReady().then(() => {
 
   serverProcess = spawn('node', [serverPath], {
     env: {
-      ...process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true',
+      ...process.env,
+      ELECTRON_DISABLE_SECURITY_WARNINGS: 'true',
       NODE_ENV: isDev ? 'development' : 'production',
       RUNNING_IN_ELECTRON: 'true',
       USER_DATA_PATH: userDataPath,
@@ -228,7 +282,7 @@ app.whenReady().then(() => {
 
 app.on('window-all-closed', () => {
   log('Window closed. Killing server process...');
-  if (serverProcess) serverProcess.kill();
+  if (serverProcess) try { serverProcess.kill(); } catch {}
   if (process.platform !== 'darwin') {
     app.quit();
   }
@@ -236,5 +290,5 @@ app.on('window-all-closed', () => {
 
 process.on('uncaughtException', (err) => {
   log(`❌ Uncaught exception: ${err.message}`);
-  if (serverProcess) serverProcess.kill();
+  if (serverProcess) try { serverProcess.kill(); } catch {}
 });
