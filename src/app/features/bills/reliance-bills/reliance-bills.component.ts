@@ -1,9 +1,19 @@
-import { Component, OnInit, ViewChildren, QueryList, ElementRef, ChangeDetectorRef, NgZone } from '@angular/core';
+import { Component, OnInit, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { ProductService, Name } from 'src/app/core/services/products.service';
 import { BillsService } from 'src/app/core/services/bills.service';
+
+declare global {
+  interface Window {
+    electron?: {
+      ipcRenderer: {
+        invoke: (channel: string, args?: any) => Promise<any>;
+      };
+    };
+  }
+}
 
 interface BillItem {
   productId: number | null;
@@ -44,15 +54,15 @@ export class RelianceBillsComponent implements OnInit {
   manualEmail = '';
   totalQuantity = 0;   // for print totals row
   totalItemPrice = 0;  // sum of unit prices
+  receivedAmount: number = 0;   // user-entered value
+  balanceAmount: number = 0;    // computed balance
 
   constructor(
     private titleService: Title,
     private productService: ProductService,
     private billsService: BillsService,
     private route: ActivatedRoute,
-    private http: HttpClient,
-    private cdr: ChangeDetectorRef,
-    private zone: NgZone
+    private http: HttpClient
   ) {}
 
   ngOnInit(): void {
@@ -68,18 +78,14 @@ export class RelianceBillsComponent implements OnInit {
       );
       this.priceMap = Object.fromEntries(this.products.map(n => [n.id, Number(n.mrp ?? n.price ?? 0)]));
 
-      // 2) Are we editing an existing bill?
+      // 2) Editing existing or creating new
       const billNumber = this.route.snapshot.paramMap.get('billNumber');
       if (billNumber) {
         this.billNumber = billNumber;
         this.loadBillForEdit(billNumber);
       } else {
-        // If creating new, pre-create a few empty rows for convenience
-        for (let i = 0; i < 20; i++) {
-          this.billItems.push({ productId: null, productName: '', quantity: 0, price: 0, total: 0, manualTotal: false });
-        }
+        this.billItems.push({ productId: null, productName: '', quantity: 0, price: 0, total: 0, manualTotal: false });
 
-        // Optionally fetch next bill number if your service supports it
         if ((this.billsService as any).getLatestBillNumber) {
           (this.billsService as any).getLatestBillNumber().subscribe({
             next: (res: { billNumber: string }) => (this.billNumber = res.billNumber),
@@ -89,14 +95,14 @@ export class RelianceBillsComponent implements OnInit {
       }
     });
 
-    // Load clients (for future dynamic Name/Address if needed)
+    // Load clients
     this.http.get<any[]>('http://localhost:3001/api/clients').subscribe({
       next: (data) => (this.clients = data),
       error: () => {}
     });
   }
 
-  // NEW: Ship-to fields (optional to persist)
+  // Ship-to fields (can be edited in UI if you want)
   shipToName = 'FRESHPIK SPECTRA POWAI ( T5EP )';
   shipToAddress = 'Spectra, 1st, Central Ave, Hiranandani Gardens, Powai, Mumbai, Maharashtra 400076';
 
@@ -148,7 +154,7 @@ export class RelianceBillsComponent implements OnInit {
           } as BillItem;
         });
 
-        // Pad rows for editing convenience
+        // Pad rows
         if (this.billItems.length < 10) {
           const pad = 10 - this.billItems.length;
           for (let i = 0; i < pad; i++) {
@@ -162,7 +168,6 @@ export class RelianceBillsComponent implements OnInit {
           this.addressTextareas?.forEach(t => this.resizeTextarea(t.nativeElement));
         });
 
-        // best-effort preselect client
         const match = this.clients.find(c => c.firstName === bill.clientName);
         if (match) this.selectedClient = match;
       },
@@ -196,13 +201,11 @@ export class RelianceBillsComponent implements OnInit {
         this.billItems.push({ productId: null, productName: '', quantity: 0, price: 0, total: 0, manualTotal: false });
         setTimeout(() => {
           const productSelectArray = this.productSelectInputs.toArray();
-          const next = productSelectArray[index + 1];
-          next?.nativeElement?.focus();
+          productSelectArray[index + 1]?.nativeElement?.focus();
         }, 0);
       } else {
         const productSelectArray = this.productSelectInputs.toArray();
-        const next = productSelectArray[index + 1];
-        next?.nativeElement?.focus();
+        productSelectArray[index + 1]?.nativeElement?.focus();
       }
     }
   }
@@ -216,7 +219,6 @@ export class RelianceBillsComponent implements OnInit {
       const nameWithUnits = selectedProduct.name + (selectedProduct.units ? ' ' + selectedProduct.units : '');
       item.productName = nameWithUnits;
 
-      // Always take DB price for new selection (user can override later or set manual total)
       const dbPrice =
         this.priceMap[selectedId as number] ??
         Number((selectedProduct as any).mrp ?? (selectedProduct as any).price ?? 0);
@@ -237,7 +239,6 @@ export class RelianceBillsComponent implements OnInit {
     if (!it.manualTotal) {
       it.total = +((qty * price)).toFixed(2);
     } else {
-      // Keep total fixed, derive unit price if qty present
       if (qty > 0 && isFinite(qty)) {
         it.price = +((Number(it.total || 0) / qty)).toFixed(2);
       }
@@ -246,7 +247,6 @@ export class RelianceBillsComponent implements OnInit {
   }
 
   onSalesAmountInput(index: number): void {
-    // When user types Sales Amount directly
     const it = this.billItems[index];
     it.manualTotal = true;
     const qty = Number(it.quantity || 0);
@@ -270,9 +270,11 @@ export class RelianceBillsComponent implements OnInit {
       }
     });
 
-    this.totalQuantity = items.reduce((acc, it) => acc + (Number(it.quantity) || 0), 0);
+    this.totalQuantity  = items.reduce((acc, it) => acc + (Number(it.quantity) || 0), 0);
     this.totalItemPrice = +items.reduce((acc, it) => acc + (it.price || 0), 0).toFixed(2);
-    this.totalAmount   = +items.reduce((acc, it) => acc + (it.total || 0), 0).toFixed(2);
+    this.totalAmount    = +items.reduce((acc, it) => acc + (it.total || 0), 0).toFixed(2);
+
+    this.balanceAmount  = +(this.totalAmount - (this.receivedAmount || 0)).toFixed(2);
   }
 
   amountInWords(num: number): string {
@@ -302,15 +304,16 @@ export class RelianceBillsComponent implements OnInit {
     const prod = this.products.find(p => p.id === it.productId);
     if (prod) return prod.name + (prod.units ? ' ' + prod.units : '');
     return it.productName || '';
-  }
+    }
 
   private fmt(n: number): string {
     return (n ?? 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
-  /** Build print HTML (same structure as Edit component) */
+  /** Build print HTML (A4 with no preview dialog customizations) */
   private buildPrintHtml(validItems: BillItem[]): string {
     const totalUnitPrice = validItems.reduce((sum, it) => sum + (it.price ?? 0), 0);
+
     const rows = validItems.map((it, i) => `
       <tr>
         <td>${i + 1}</td>
@@ -323,18 +326,12 @@ export class RelianceBillsComponent implements OnInit {
 
     const styles = `
       <style>
-        @page { size: A4; margin: 10mm 8mm; }
-        @media print {
-          * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-          html, body { margin: 0; padding: 0; }
-          .boxes { display: block !important; page-break-inside: auto; break-inside: auto; margin-top: 8px; }
-          .box { page-break-inside: avoid; break-inside: avoid; margin-bottom: 8px; }
-          .left-column { display: block !important; }
-          table { page-break-after: avoid; }
-        }
+        @page { size: A4; margin: 10mm; }
+        @media print { * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; } }
         body { font-family: 'Poppins','Segoe UI',Tahoma,sans-serif; color:#2c3e50; padding:40px; background:#fff; }
         h1 { margin:0; font-size:25px; font-weight:bold; color:#333; }
         p { margin:5px 0; font-size:13px; color:#546e7a; }
+
         .invoice-title { text-align:center; font-size:22px; font-weight:bold; margin:12px 0; color:#2c3e50; }
         .tax-parties {
           display:grid; grid-template-columns:1fr 1fr 1fr; gap:24px;
@@ -345,6 +342,7 @@ export class RelianceBillsComponent implements OnInit {
         .party-address { line-height:1.45; }
         .invoice-details .inv-row { display:flex; justify-content:space-between; margin-bottom:6px; white-space:nowrap; }
         .invoice-details .value { font-weight:600; }
+
         table { width:100%; border-collapse:collapse; font-size:12px; margin:16px 0; background:#fff; }
         th, td { border:1px solid #bdbdbd; padding:8px 10px; text-align:center; }
         th { background:#757575 !important; color:#fff !important; font-weight:700; }
@@ -352,6 +350,7 @@ export class RelianceBillsComponent implements OnInit {
         .left { text-align:left; }
         thead { display: table-header-group; }
         .no-repeat { page-break-inside: avoid; }
+
         .boxes { display:grid; grid-template-columns:2fr 1fr; gap:10px; margin-top:10px; }
         .left-column { display:flex; flex-direction:column; gap:8px; }
         .box { border:1px solid #bdbdbd; }
@@ -391,8 +390,8 @@ export class RelianceBillsComponent implements OnInit {
           <div class="amount-grid">
             <div>Sub Total</div><div class="v">₹ ${this.fmt(this.totalAmount)}</div>
             <div><strong>Total</strong></div><div class="v"><strong>₹ ${this.fmt(this.totalAmount)}</strong></div>
-            <div>Received</div><div class="v">₹ 0.00</div>
-            <div>Balance</div><div class="v">₹ ${this.fmt(this.totalAmount)}</div>
+            <div>Received</div><div class="v">₹ ${this.fmt(this.receivedAmount || 0)}</div>
+            <div>Balance</div><div class="v">₹ ${this.fmt(this.balanceAmount)}</div>
           </div>
         </div>
       </div>
@@ -406,7 +405,7 @@ export class RelianceBillsComponent implements OnInit {
         <p>Email: jkumarshahu5@gmail.com</p>
       </div>
 
-      <div class="invoice-title">TAX FREE INVOICE</div>
+      <div class="invoice-title">Tax Invoice</div>
 
       <div class="tax-parties">
         <div class="party">
@@ -416,8 +415,8 @@ export class RelianceBillsComponent implements OnInit {
         </div>
         <div class="party">
           <div class="party-title">Ship To</div>
-          <div class="party-name">${this.shipToName || 'FRESHPIK SPECTRA POWAI ( T5EP )'}</div>
-          <div class="party-address">${this.shipToAddress || 'Spectra, 1st, Central Ave, Hiranandani Gardens, Powai, Mumbai, Maharashtra 400076'}</div>
+          <div class="party-name">${this.shipToName}</div>
+          <div class="party-address">${this.shipToAddress}</div>
         </div>
         <div class="invoice-details">
           <div class="party-title">Invoice Details</div>
@@ -440,20 +439,19 @@ export class RelianceBillsComponent implements OnInit {
     </body></html>`;
   }
 
-  printBill(): void {
+  /** PRINT — no preview. Uses Electron IPC first; hidden-iframe as fallback. */
+  async printBill(): Promise<void> {
     this.ensureRelianceDefaults();
+
+    // Normalize rows like you do before emailing
     const validItems = this.billItems
       .filter(it => it.productId !== null)
       .map(it => {
         const prod = this.products.find(p => p.id === it.productId);
-        if (prod) {
-          it.productName = prod.name + (prod.units ? ' ' + prod.units : '');
-        }
+        if (prod) it.productName = prod.name + (prod.units ? ' ' + prod.units : '');
         const qty = Number(it.quantity || 0);
         if (it.manualTotal) {
-          if (qty > 0 && isFinite(qty)) {
-            it.price = +((Number(it.total || 0) / qty)).toFixed(2);
-          }
+          if (qty > 0 && isFinite(qty)) it.price = +((Number(it.total || 0) / qty)).toFixed(2);
         } else {
           it.total = +((qty * Number(it.price || 0))).toFixed(2);
         }
@@ -467,25 +465,29 @@ export class RelianceBillsComponent implements OnInit {
 
     // page totals based on visible rows
     this.totalQuantity = validItems.reduce((a, it) => a + (it.quantity || 0), 0);
-    this.totalAmount = +validItems.reduce((a, it) => a + (it.total || 0), 0).toFixed(2);
+    this.totalAmount   = +validItems.reduce((a, it) => a + (it.total || 0), 0).toFixed(2);
 
     const html = this.buildPrintHtml(validItems);
-    const w = window.open('', '_blank', 'width=1024,height=768');
-    if (!w) {
-      alert('Please allow pop-ups to print the invoice.');
-      return;
+
+    try {
+      if (window.electron?.ipcRenderer?.invoke) {
+        const dataUrl = this.htmlToDataUrl(html);
+        await window.electron.ipcRenderer.invoke('print:canon-a4', {
+          url: dataUrl,
+          landscape: false
+        });
+      } else {
+        await this.printHtmlInHiddenIframe(html);
+      }
+    } catch (err) {
+      console.error('Print failed:', err);
+      alert('Print failed. Please check the printer connection.');
     }
-    w.document.open();
-    w.document.write(html);
-    w.document.close();
-    w.focus();
-    setTimeout(() => { w.print(); w.close(); }, 150);
   }
 
   emailBill(): void {
     this.ensureRelianceDefaults();
 
-    // Validate rows
     const validItems = this.billItems.filter(
       it => it.productId !== null && (it.productName || this.namesWithUnitsMap[it.productId!]) && it.quantity > 0
     );
@@ -498,27 +500,21 @@ export class RelianceBillsComponent implements OnInit {
       return;
     }
 
-    // Normalize items like print does (derive totals/prices consistently)
     const normalized = validItems.map(it => {
       const qty = Number(it.quantity || 0);
       if (it.manualTotal) {
-        if (qty > 0 && isFinite(qty)) {
-          it.price = +((Number(it.total || 0) / qty)).toFixed(2);
-        }
+        if (qty > 0 && isFinite(qty)) it.price = +((Number(it.total || 0) / qty)).toFixed(2);
       } else {
         it.total = +((qty * Number(it.price || 0))).toFixed(2);
       }
-      // Ensure display name includes units
       const prod = this.products.find(p => p.id === it.productId);
       it.productName = prod ? prod.name + (prod.units ? ' ' + prod.units : '') : (it.productName || '');
       return it;
     });
 
-    // Recompute page totals for the PDF
     this.totalQuantity = normalized.reduce((a, it) => a + (it.quantity || 0), 0);
     this.totalAmount   = +normalized.reduce((a, it) => a + (it.total || 0), 0).toFixed(2);
 
-    // 🔑 Build the print-ready HTML using the SAME template you print
     const pdfHtml = this.buildPrintHtml(normalized);
 
     const billData = {
@@ -530,7 +526,7 @@ export class RelianceBillsComponent implements OnInit {
       billItems: normalized,
       email: this.manualEmail,
       billType: 'reliance',
-      pdfHtml                                // ✨ send print HTML for PDF rendering
+      pdfHtml
     };
 
     this.billsService.sendBillByEmail(billData).subscribe({
@@ -549,7 +545,7 @@ export class RelianceBillsComponent implements OnInit {
       .filter(it => it.productId !== null)
       .map(it => ({
         productId: it.productId,
-        productName: it.productName, // includes units if present
+        productName: it.productName,
         quantity: Number(it.quantity || 0),
         price: Number(it.price || 0),
         total: Number(it.total || 0),
@@ -563,14 +559,9 @@ export class RelianceBillsComponent implements OnInit {
       billDate: this.billDate || '',
       totalAmount: Number(this.totalAmount) || 0,
       billItems: sanitizedItems,
-      billType: 'reliance' // always Reliance
+      billType: 'reliance'
     };
 
-    // If your backend fields are non-nullable, you can explicitly set:
-    // billData.finalAmount = null;
-    // billData.discount = null;
-
-    // If billNumber exists in route params → update, else create new
     const billNumberParam = this.route.snapshot.paramMap.get('billNumber');
     const obs = billNumberParam
       ? (this.billsService as any).updateBill?.(this.billNumber, billData)
@@ -580,11 +571,7 @@ export class RelianceBillsComponent implements OnInit {
       next: () => alert('Bill saved successfully!'),
       error: (error: HttpErrorResponse) => {
         console.error('Error saving bill:', error);
-        alert(
-          `Failed to save bill: ${error.status} ${error.statusText}${
-            error.error?.message ? ' — ' + error.error.message : ''
-          }`
-        );
+        alert(`Failed to save bill: ${error.status} ${error.statusText}${error.error?.message ? ' — ' + error.error.message : ''}`);
       }
     });
   }
@@ -607,5 +594,55 @@ export class RelianceBillsComponent implements OnInit {
       el.style.width = '100%';
       el.style.height = el.scrollHeight + 'px';
     }
+  }
+
+  /** Hidden-iframe fallback (used only when not in Electron) */
+  private async printHtmlInHiddenIframe(html: string): Promise<void> {
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = '0';
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentDocument || iframe.contentWindow?.document;
+    if (!doc) {
+      document.body.removeChild(iframe);
+      alert('Unable to create print frame.');
+      return;
+    }
+
+    doc.open();
+    doc.write(html);
+    doc.close();
+
+    const waitForAssets = async () => {
+      const promises: Promise<unknown>[] = [];
+      if ((doc as any).fonts?.ready) promises.push((doc as any).fonts.ready);
+      Array.from(doc.images || []).forEach(img => {
+        if (!img.complete) {
+          promises.push(new Promise(res => {
+            img.addEventListener('load', res, { once: true });
+            img.addEventListener('error', res, { once: true });
+          }));
+        }
+      });
+      promises.push(new Promise(res => setTimeout(res, 80)));
+      await Promise.all(promises);
+    };
+
+    try {
+      await waitForAssets();
+      iframe.contentWindow?.focus();
+      iframe.contentWindow?.print();
+    } finally {
+      setTimeout(() => document.body.removeChild(iframe), 1000);
+    }
+  }
+
+  /** Convert HTML to a data URL for Electron */
+  private htmlToDataUrl(html: string): string {
+    const b64 = btoa(unescape(encodeURIComponent(html)));
+    return `data:text/html;base64,${b64}`;
   }
 }

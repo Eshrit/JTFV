@@ -123,8 +123,12 @@
       <div class="amount-grid">
         <div>Sub Total</div><div class="v">₹ {{ totalAmount | number:'1.2-2' }}</div>
         <div><strong>Total</strong></div><div class="v"><strong>₹ {{ totalAmount | number:'1.2-2' }}</strong></div>
-        <div>Received</div><div class="v">₹ 0.00</div>
-        <div>Balance</div><div class="v">₹ {{ totalAmount | number:'1.2-2' }}</div>
+        <div>Received</div>
+        <div class="v">
+          ₹ <input type="number" [(ngModel)]="receivedAmount" (input)="balanceAmount = totalAmount - (receivedAmount || 0)" style="border:none;outline:none;width:80px;" />
+        </div>
+        <div>Balance</div>
+        <div class="v">₹ {{ balanceAmount | number:'1.2-2' }}</div>
       </div>
     </div>
   </div>

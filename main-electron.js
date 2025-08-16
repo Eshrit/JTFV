@@ -1,4 +1,4 @@
-import { app, BrowserWindow, shell } from 'electron';
+import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import path, { dirname } from 'path';
 import { spawn } from 'child_process';
 import fs from 'fs';
@@ -32,6 +32,7 @@ const createWindow = () => {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
+      // preload: path.join(__dirname, 'preload.js')
     }
   });
 
@@ -48,20 +49,131 @@ const createWindow = () => {
   });
 
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    if (url === 'about:blank') {
-      return { action: 'allow' };
-    }
-
-    // For external URLs
+    if (url === 'about:blank') return { action: 'allow' };
     shell.openExternal(url);
     return { action: 'deny' };
   });
 
-  // Only open dev tools in development
   if (!app.isPackaged) {
     mainWindow.webContents.openDevTools();
   }
 };
+
+/* ======================
+   PRINT HELPERS & IPC
+   ====================== */
+
+// Electron/Chromium custom size uses MICRONS (1 mm = 1000 µm)
+const mm = n => n * 1000;
+
+const SIZES = {
+  A4: 'A4',
+  LABEL_50x50: { width: mm(50), height: mm(50) }
+};
+
+// Preferred queue names / patterns
+const PRINTER_PREFERENCES = {
+  CANON: [
+    'Canon LBP2900',                 // generic
+    'Canon LBP2900 on NEW-PC2017'    // your shared queue
+  ],
+  CITIZEN: [
+    'Citizen CL-E321'
+  ]
+};
+
+// Compat: get printers (async if available)
+async function listPrinters(win) {
+  const wc = win.webContents;
+  if (typeof wc.getPrintersAsync === 'function') {
+    return await wc.getPrintersAsync();
+  }
+  return wc.getPrinters();
+}
+
+// Pick the best available printer by trying exact matches first, then fuzzy “includes”
+async function resolvePrinterName(win, preferredNames) {
+  const printers = await listPrinters(win);
+  const names = printers.map(p => p.name);
+  log(`Available printers: ${JSON.stringify(names)}`);
+
+  // Exact, case-sensitive
+  for (const want of preferredNames) {
+    const found = printers.find(p => p.name === want);
+    if (found) return found.name;
+  }
+  // Exact, case-insensitive
+  for (const want of preferredNames) {
+    const found = printers.find(p => p.name.toLowerCase() === want.toLowerCase());
+    if (found) return found.name;
+  }
+  // Fuzzy contains, case-insensitive
+  for (const want of preferredNames) {
+    const found = printers.find(p => p.name.toLowerCase().includes(want.toLowerCase()));
+    if (found) return found.name;
+  }
+  return null;
+}
+
+function doPrint(win, { deviceName, pageSize, landscape = false, silent = true, printBackground = true }) {
+  log(`🖨️ Printing on "${deviceName}" pageSize=${JSON.stringify(pageSize)} landscape=${landscape}`);
+  return new Promise((resolve, reject) => {
+    win.webContents.print(
+      { deviceName, pageSize, landscape, silent, printBackground },
+      (success, failureReason) => {
+        if (!success) {
+          log(`❌ Print failed: ${failureReason || 'Unknown reason'}`);
+          reject(new Error(failureReason || 'Print failed'));
+        } else {
+          log('✅ Print succeeded');
+          resolve();
+        }
+      }
+    );
+  });
+}
+
+// Use a hidden window + isolated session so settings don’t leak between jobs
+function createPrintWindow(url, partition = 'persist:print-default') {
+  const w = new BrowserWindow({
+    show: false,
+    webPreferences: { partition, offscreen: true }
+  });
+  w.loadURL(url);
+  return w;
+}
+
+// Bills → Canon LBP2900 (any queue variant) → A4
+ipcMain.handle('print:canon-a4', async (event, { url, landscape = false } = {}) => {
+  log(`IPC print:canon-a4 URL=${url}`);
+  const win = createPrintWindow(url, 'persist:print-bills');
+  await new Promise(res => win.webContents.once('did-finish-load', res));
+  try {
+    const deviceName = await resolvePrinterName(win, PRINTER_PREFERENCES.CANON);
+    if (!deviceName) throw new Error('Canon LBP2900 printer not found.');
+    await doPrint(win, { deviceName, pageSize: SIZES.A4, landscape });
+  } finally {
+    win.close();
+  }
+});
+
+// Barcodes → Citizen CL-E321 → 50x50mm
+ipcMain.handle('print:citizen-50', async (event, { url } = {}) => {
+  log(`IPC print:citizen-50 URL=${url}`);
+  const win = createPrintWindow(url, 'persist:print-barcodes');
+  await new Promise(res => win.webContents.once('did-finish-load', res));
+  try {
+    const deviceName = await resolvePrinterName(win, PRINTER_PREFERENCES.CITIZEN);
+    if (!deviceName) throw new Error('Citizen CL-E321 printer not found.');
+    await doPrint(win, { deviceName, pageSize: SIZES.LABEL_50x50, landscape: false });
+  } finally {
+    win.close();
+  }
+});
+
+/* ======================
+   APP LIFECYCLE / SERVER
+   ====================== */
 
 app.whenReady().then(() => {
   const isDev = !app.isPackaged;

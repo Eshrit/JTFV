@@ -15,7 +15,7 @@ interface BillItem {
 @Component({
   selector: 'app-edit-bills',
   templateUrl: './edit-bills.component.html',
-  styleUrls: ['./edit-bills.component.css']
+  styleUrls: ['./edit-bills.component.css'],
 })
 export class EditBillsComponent implements OnInit {
   @ViewChildren('productSelect') productSelectInputs!: QueryList<ElementRef>;
@@ -43,36 +43,14 @@ export class EditBillsComponent implements OnInit {
     private titleService: Title
   ) {}
 
-  autoResize(event: Event): void {
-    const textarea = event.target as HTMLTextAreaElement;
-    textarea.style.height = 'auto';
-    textarea.style.height = textarea.scrollHeight + 'px';
-  }
-
-  triggerResize(): void {
-    if (this.addressTextarea) {
-      const el = this.addressTextarea.nativeElement;
-      el.style.height = 'auto';
-      el.style.height = el.scrollHeight + 'px';
-    }
-  }
-
-  autoResizeTextarea(): void {
-    if (this.addressTextarea?.nativeElement) {
-      const el = this.addressTextarea.nativeElement;
-      el.style.height = 'auto';
-      el.style.height = el.scrollHeight + 'px';
-    }
-  }
-  
   ngOnInit(): void {
     this.titleService.setTitle('Edit Bill - J.T. Fruits & Vegetables');
 
     this.productService.getNames().subscribe((names: Name[]) => {
       this.products = names.sort((a, b) => a.name.localeCompare(b.name));
-      this.namesMap = Object.fromEntries(this.products.map(n => [n.id, n.name]));
+      this.namesMap = Object.fromEntries(this.products.map((n) => [n.id, n.name]));
 
-      this.route.paramMap.subscribe(params => {
+      this.route.paramMap.subscribe((params) => {
         const billNumber = params.get('billNumber');
         if (billNumber) this.loadBillForEdit(billNumber);
       });
@@ -82,14 +60,41 @@ export class EditBillsComponent implements OnInit {
       this.clients = data;
     });
 
-    for (let i = 0; i < 20; i++) {
-      this.billItems.push({ productId: null, productName: '', quantity: 0, price: 0, total: 0 });
+    // Initialize with one empty row
+    this.billItems.push({
+      productId: null,
+      productName: '',
+      quantity: 0,
+      price: 0,
+      total: 0,
+    });
+  }
+
+  /** ========== Helpers for Textarea Resize ========== */
+  autoResize(event: Event): void {
+    const textarea = event.target as HTMLTextAreaElement;
+    textarea.style.height = 'auto';
+    textarea.style.height = textarea.scrollHeight + 'px';
+  }
+  triggerResize(): void {
+    if (this.addressTextarea) {
+      const el = this.addressTextarea.nativeElement;
+      el.style.height = 'auto';
+      el.style.height = el.scrollHeight + 'px';
+    }
+  }
+  autoResizeTextarea(): void {
+    if (this.addressTextarea?.nativeElement) {
+      const el = this.addressTextarea.nativeElement;
+      el.style.height = 'auto';
+      el.style.height = el.scrollHeight + 'px';
     }
   }
 
+  /** ========== Load Bill for Editing ========== */
   loadBillForEdit(billNumber: string) {
     this.billsService.getBillByNumber(billNumber).subscribe({
-      next: bill => {
+      next: (bill) => {
         this.clientName = bill.clientName;
         this.address = bill.address;
 
@@ -102,36 +107,40 @@ export class EditBillsComponent implements OnInit {
         this.finalAmount = bill.finalAmount;
         this.billItems = bill.billItems || [];
 
-        this.billItems.forEach(item => {
-          item.productName = item.productId ? this.namesMap[item.productId] || '(Unknown)' : '';
+        this.billItems.forEach((item) => {
+          item.productName = item.productId
+            ? this.namesMap[item.productId] || '(Unknown)'
+            : '';
         });
 
-        const match = this.clients.find(c => c.firstName === bill.clientName);
+        const match = this.clients.find((c) => c.firstName === bill.clientName);
         if (match) this.selectedClient = match;
       },
-      error: err => {
+      error: (err) => {
         console.error('Failed to load bill:', err);
         alert('Failed to load bill.');
-      }
+      },
     });
   }
 
+  /** ========== Client & Product Handling ========== */
   onClientChange(): void {
     if (this.selectedClient) {
       const c = this.selectedClient;
       const parts = [c.address1, c.address2, c.area, c.city].filter(Boolean);
       this.clientName = c.firstName;
       this.address = parts.join(', ');
-      setTimeout(() => this.autoResizeTextarea(), 0);  // 👈 ensure view updates first
+      setTimeout(() => this.autoResizeTextarea(), 0);
     }
   }
 
   onProductChange(index: number): void {
     const selectedId = this.billItems[index].productId;
-    const selectedProduct = this.products.find(p => p.id === selectedId);
+    const selectedProduct = this.products.find((p) => p.id === selectedId);
 
     if (selectedProduct) {
-      const nameWithUnits = selectedProduct.name + (selectedProduct.units ? ' ' + selectedProduct.units : '');
+      const nameWithUnits =
+        selectedProduct.name + (selectedProduct.units ? ' ' + selectedProduct.units : '');
       this.billItems[index].productName = nameWithUnits;
     } else {
       this.billItems[index].productName = '(Unknown)';
@@ -140,22 +149,22 @@ export class EditBillsComponent implements OnInit {
     this.calculateRowTotal(index);
   }
 
+  /** ========== Calculations ========== */
   calculateRowTotal(index: number): void {
     const item = this.billItems[index];
     item.total = (item.quantity || 0) * (item.price || 0);
     this.calculateTotalAmount();
   }
-
   calculateTotalAmount(): void {
     this.totalAmount = this.billItems.reduce((acc, item) => acc + item.total, 0);
     this.calculateFinalAmount();
   }
-
   calculateFinalAmount(): void {
     const discountAmount = this.totalAmount * (this.discount / 100);
     this.finalAmount = this.totalAmount - discountAmount;
   }
 
+  /** ========== Keyboard Row Add (Tab) ========== */
   onPriceKeydown(event: KeyboardEvent, index: number): void {
     if (event.key === 'Tab' && !event.shiftKey) {
       event.preventDefault();
@@ -166,7 +175,7 @@ export class EditBillsComponent implements OnInit {
           productName: '',
           quantity: 0,
           price: 0,
-          total: 0
+          total: 0,
         });
 
         setTimeout(() => {
@@ -186,17 +195,16 @@ export class EditBillsComponent implements OnInit {
     }
   }
 
-  // 1) REPLACE your current printBill() with this
+  /** ========== PRINT BILL ========== */
   printBill(): void {
-    // Keep only valid rows for print
     const validItems = this.billItems
-      .filter(i => i.productId !== null && i.quantity > 0 && i.price > 0)
-      .map(i => ({
+      .filter((i) => i.productId !== null && i.quantity > 0 && i.price > 0)
+      .map((i) => ({
         ...i,
         productName:
           i.productName ||
           (() => {
-            const prod = this.products.find(p => p.id === i.productId);
+            const prod = this.products.find((p) => p.id === i.productId);
             return prod ? prod.name + (prod.units ? ' ' + prod.units : '') : '(Unknown)';
           })(),
       }));
@@ -206,8 +214,10 @@ export class EditBillsComponent implements OnInit {
       return;
     }
 
-    // Recalc totals for the printed copy
-    const totalAmount = validItems.reduce((acc, it) => acc + (it.quantity || 0) * (it.price || 0), 0);
+    const totalAmount = validItems.reduce(
+      (acc, it) => acc + (it.quantity || 0) * (it.price || 0),
+      0
+    );
     const discountAmount = totalAmount * (this.discount / 100);
     const finalAmount = totalAmount - discountAmount;
 
@@ -221,15 +231,12 @@ export class EditBillsComponent implements OnInit {
       finalAmount,
     });
 
-    this.printHtmlInHiddenIframe(html); // no popup
+    this.printHtmlInHiddenIframe(html);
   }
 
-  // 2) ADD this helper (no popups, silent iframe print)
   private async printHtmlInHiddenIframe(html: string): Promise<void> {
     const iframe = document.createElement('iframe');
     iframe.style.position = 'fixed';
-    iframe.style.right = '0';
-    iframe.style.bottom = '0';
     iframe.style.width = '0';
     iframe.style.height = '0';
     iframe.style.border = '0';
@@ -249,17 +256,20 @@ export class EditBillsComponent implements OnInit {
 
     const waitForAssets = async () => {
       const promises: Promise<unknown>[] = [];
-      // @ts-ignore fonts may not exist in older engines
-      if (doc.fonts && typeof doc.fonts.ready?.then === 'function') promises.push((doc as any).fonts.ready);
-      const imgs = Array.from(doc.images || []);
-      imgs.forEach(img => {
-        if (img.complete) return;
-        promises.push(new Promise(res => {
-          img.addEventListener('load', res, { once: true });
-          img.addEventListener('error', res, { once: true });
-        }));
+      // Wait for fonts
+      if ((doc as any).fonts?.ready) promises.push((doc as any).fonts.ready);
+      // Wait for images
+      Array.from(doc.images || []).forEach((img) => {
+        if (!img.complete) {
+          promises.push(
+            new Promise((res) => {
+              img.addEventListener('load', res, { once: true });
+              img.addEventListener('error', res, { once: true });
+            })
+          );
+        }
       });
-      promises.push(new Promise(res => setTimeout(res, 100)));
+      promises.push(new Promise((res) => setTimeout(res, 100)));
       await Promise.all(promises);
     };
 
@@ -272,14 +282,13 @@ export class EditBillsComponent implements OnInit {
     }
   }
 
-  // 3) ADD this (same date format you show in UI)
   private formatDateDDMMYYYY(iso: string): string {
     const d = new Date(iso);
     if (Number.isNaN(d.getTime())) return iso || '';
     return d.toLocaleDateString('en-GB'); // dd/mm/yyyy
   }
 
-  // 4) ADD this compact, UI-matching print HTML
+  /** ========== PRINT HTML TEMPLATE ========== */
   private buildPrintHtml(
     items: Array<{ productId: number | null; productName: string; quantity: number; price: number; total?: number }>,
     meta: {
@@ -292,74 +301,61 @@ export class EditBillsComponent implements OnInit {
       finalAmount: number;
     }
   ): string {
-    const esc = (s: string) => (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const esc = (s: string) =>
+      (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     const fmtINR = (n: number) =>
-      new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 2 }).format(n);
+      new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR',
+        maximumFractionDigits: 2,
+      }).format(n);
     const n2 = (n: number) => (Number.isFinite(n) ? n.toFixed(2) : '');
     const dateStr = this.formatDateDDMMYYYY(meta.billDate);
 
-    const rows = items.map((it, i) => {
-      const total = (it.quantity || 0) * (it.price || 0);
-      return `
-        <tr>
-          <td>${i + 1}</td>
-          <td><span class="print-view">${esc(it.productName)}</span></td>
-          <td><span class="print-view">${esc(String(it.quantity))}</span></td>
-          <td><span class="print-view">${n2(it.price)}</span></td>
-          <td>${n2(total)}</td>
-        </tr>`;
-    }).join('');
+    const rows = items
+      .map((it, i) => {
+        const total = (it.quantity || 0) * (it.price || 0);
+        return `
+          <tr>
+            <td>${i + 1}</td>
+            <td>${esc(it.productName)}</td>
+            <td>${esc(String(it.quantity))}</td>
+            <td>${n2(it.price)}</td>
+            <td>${n2(total)}</td>
+          </tr>`;
+      })
+      .join('');
 
     const styles = `
     <style>
-      @page { size: A4; margin: 10mm; }
+      @page { size: A4 portrait; margin: 10mm; }
       html, body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-
-      /* Compact base */
       body { background: #fff; }
+
       .container {
         max-width: 900px; margin: 0 auto; padding: 20px;
         font-family: 'Poppins','Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
         color: #2c3e50; font-size: 10px; line-height: 1.25;
       }
-
-      /* Header — match your screenshot size */
       .header { text-align: center; margin-bottom: 12px; }
       .header h1 { margin: 0; font-size: 22px; font-weight: 700; color: #333; }
       .header p { margin: 2px 0; font-size: 10px; color: #546e7a; }
 
       .invoice-header { margin-top: 10px; }
-      .header-flex { display: flex; align-items: center; justify-content: space-between; }
-      .invoice-title { font-size: 13px; font-weight: 700; color: #2c3e50; white-space: nowrap; }
-      .date-control, .bill-number-block { display: flex; align-items: center; gap: 4px; font-size: 10px; white-space: nowrap; }
+      .header-flex { display: flex; justify-content: space-between; align-items: center; }
+      .invoice-title { font-size: 13px; font-weight: 700; }
       .bold-label { font-weight: 700; }
 
-      /* Info rows */
-      .horizontal-info { display: flex; gap: 10px; justify-content: space-between; flex-wrap: wrap; margin-bottom: 12px; }
-      .field-row { display: flex; align-items: center; gap: 6px; min-width: 180px; flex: 1; font-size: 9.5px; }
-      .field-row label { font-weight: 600; white-space: nowrap; min-width: 60px; text-align: right; margin-top: 2px; }
-      .print-value { word-break: break-word; max-width: 240px; }
-      .print-view { display: inline; }
+      .horizontal-info { display: flex; gap: 10px; justify-content: space-between; margin-bottom: 12px; }
+      .field-row { display: flex; align-items: center; gap: 6px; font-size: 9.5px; }
+      .field-row label { font-weight: 600; min-width: 60px; }
 
-      /* Table — compact */
-      .table {
-        width: 100%; border-collapse: collapse; font-size: 9.5px;
-        margin-top: 10px; margin-bottom: 10px; background: #fff;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.05); border-radius: 4px; overflow: hidden;
-      }
-      .table th, .table td { border: 1px solid #ccc; padding: 3px 5px; text-align: center; }
-      .table th { background: #ecf0f1; font-weight: 700; color: #2c3e50; }
-      .table tbody tr:hover { background: #f4f6f8; }
+      table { width: 100%; border-collapse: collapse; font-size: 9.5px; margin: 10px 0; }
+      th, td { border: 1px solid #ccc; padding: 3px 5px; text-align: center; }
+      th { background: #ecf0f1; font-weight: 700; }
+      tr { page-break-inside: avoid; }
 
-      /* Summary — compact */
-      .summary {
-        display: flex; justify-content: flex-end; align-items: center;
-        font-size: 10px; font-weight: 700; margin-bottom: 4px; gap: 6px;
-      }
-      .summary label { white-space: nowrap; }
-
-      /* Page-break hygiene for long bills */
-      table, tr, td, th { page-break-inside: avoid; }
+      .summary { display: flex; justify-content: flex-end; font-weight: 700; font-size: 10px; margin-bottom: 4px; gap: 6px; }
     </style>`;
 
     return `
@@ -377,88 +373,55 @@ export class EditBillsComponent implements OnInit {
             <p>Shop No. 31-32, Bldg No. 27, EMP Op Jogers Park, Thakur Village, Kandivali(E), Mumbai 400101</p>
             <p>PAN: AAJFJ0258J | FSS LICENSE ACT 2006 LICENSE NO: 11517011000128</p>
             <p>Email: jkumarshahu5@gmail.com</p>
-
             <div class="invoice-header">
               <div class="header-flex">
-                <div class="date-control">
-                  <span class="bold-label">Date:</span>
-                  <div class="print-toggle print-value">
-                    <span class="print-view">${esc(dateStr)}</span>
-                  </div>
-                </div>
-                <h2 class="invoice-title">TAX FREE INVOICE</h2>
-                <div class="bill-number-block print-toggle print-value">
-                  <span class="bold-label">Bill No:</span>
-                  <span class="print-view">${esc(meta.billNumber)}</span>
-                </div>
+                <div><span class="bold-label">Date:</span> ${esc(dateStr)}</div>
+                <div class="invoice-title">TAX FREE INVOICE</div>
+                <div><span class="bold-label">Bill No:</span> ${esc(meta.billNumber)}</div>
               </div>
             </div>
           </div>
 
           <div class="horizontal-info">
-            <div class="field-row">
-              <label>Name:</label>
-              <div class="print-toggle print-value">
-                <span class="print-view">${esc(meta.clientName || '')}</span>
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Address:</label>
-              <div class="print-toggle print-value">
-                <span class="print-view" style="white-space: pre-line;">${esc(meta.address || '')}</span>
-              </div>
-            </div>
+            <div class="field-row"><label>Name:</label><div>${esc(meta.clientName)}</div></div>
+            <div class="field-row"><label>Address:</label><div style="white-space: pre-line;">${esc(meta.address)}</div></div>
           </div>
 
-          <table class="table">
+          <table>
             <thead>
               <tr>
-                <th>No</th>
-                <th>Product</th>
-                <th>Quantity</th>
-                <th>Product Price</th>
-                <th>Total Amount</th>
+                <th>No</th><th>Product</th><th>Quantity</th><th>Product Price</th><th>Total Amount</th>
               </tr>
             </thead>
-            <tbody>
-              ${rows}
-            </tbody>
+            <tbody>${rows}</tbody>
           </table>
 
-          <div class="summary">
-            <label>Total Amount:</label>
-            <div>${fmtINR(meta.totalAmount)}</div>
-          </div>
-          <div class="summary">
-            <label>Margin (%):</label>
-            <div>${esc(String(meta.discount || 0))}</div>
-          </div>
-          <div class="summary">
-            <label>Final Amount:</label>
-            <div>${fmtINR(meta.finalAmount)}</div>
-          </div>
+          <div class="summary"><label>Total Amount:</label><div>${fmtINR(meta.totalAmount)}</div></div>
+          <div class="summary"><label>Margin (%):</label><div>${esc(String(meta.discount || 0))}</div></div>
+          <div class="summary"><label>Final Amount:</label><div>${fmtINR(meta.finalAmount)}</div></div>
         </div>
       </body>
     </html>`;
   }
 
+  /** ========== EMAIL BILL ========== */
   emailBill(): void {
     const validItems = this.billItems.filter(
-      item => item.productId !== null && item.productName && item.quantity > 0 && item.price > 0
+      (item) => item.productId !== null && item.productName && item.quantity > 0 && item.price > 0
     );
-
     if (validItems.length === 0) {
-      alert('No valid items to email. Please add at least one valid item.');
+      alert('No valid items to email.');
       return;
     }
-
     if (!this.manualEmail || !this.manualEmail.includes('@')) {
       alert('Please enter a valid email address');
       return;
     }
 
-    // Recalculate totals exactly like the print view
-    const totalAmount = validItems.reduce((acc, it) => acc + (it.quantity || 0) * (it.price || 0), 0);
+    const totalAmount = validItems.reduce(
+      (acc, it) => acc + (it.quantity || 0) * (it.price || 0),
+      0
+    );
     const discountAmount = totalAmount * (this.discount / 100);
     const finalAmount = totalAmount - discountAmount;
 
@@ -482,18 +445,19 @@ export class EditBillsComponent implements OnInit {
       finalAmount,
       billItems: validItems,
       email: this.manualEmail,
-      pdfHtml // ✨ send print-ready HTML to server
+      pdfHtml,
     };
 
     this.billsService.sendBillByEmail(billData).subscribe({
       next: () => alert('Email Sent!'),
       error: (err) => {
         console.error('Email failed:', err);
-        alert('Failed to send email. Please try again.');
-      }
+        alert('Failed to send email.');
+      },
     });
   }
 
+  /** ========== SAVE BILL ========== */
   saveBill(): void {
     const updatedBill = {
       clientName: this.clientName,
@@ -502,7 +466,7 @@ export class EditBillsComponent implements OnInit {
       discount: this.discount,
       totalAmount: this.totalAmount,
       finalAmount: this.finalAmount,
-      billItems: this.billItems
+      billItems: this.billItems,
     };
 
     this.billsService.updateBill(this.billNumber, updatedBill).subscribe({
@@ -510,7 +474,7 @@ export class EditBillsComponent implements OnInit {
       error: (err) => {
         alert('Failed to update bill.');
         console.error('Error updating bill:', err);
-      }
+      },
     });
   }
 }

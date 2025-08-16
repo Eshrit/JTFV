@@ -4,6 +4,16 @@ import { BillsService } from 'src/app/core/services/bills.service';
 import { HttpClient } from '@angular/common/http';
 import { Title } from '@angular/platform-browser';
 
+declare global {
+  interface Window {
+    electron?: {
+      ipcRenderer: {
+        invoke: (channel: string, args?: any) => Promise<any>;
+      };
+    };
+  }
+}
+
 @Component({
   selector: 'app-edit-lumpsum-bills',
   templateUrl: './edit-lumpsum-bills.component.html',
@@ -72,7 +82,6 @@ export class EditLumpsumBillsComponent implements OnInit, AfterViewInit {
       const c = this.selectedClient;
       this.clientName = c.firstName;
       this.address = [c.address1, c.address2, c.area, c.city].filter(Boolean).join(', ');
-
       setTimeout(() => this.autoResize(), 0);
     }
   }
@@ -101,7 +110,7 @@ export class EditLumpsumBillsComponent implements OnInit, AfterViewInit {
     });
   }
 
-  printBill(): void {
+  async printBill(): Promise<void> {
     // Blur active element so ngModel updates
     const active = document.activeElement as HTMLElement | null;
     if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) active.blur();
@@ -124,7 +133,22 @@ export class EditLumpsumBillsComponent implements OnInit, AfterViewInit {
       finalAmount: this.finalAmount,
     });
 
-    this.printHtmlInHiddenIframe(html);
+    try {
+      // Prefer Electron IPC → forces A4 via Canon (handled in main process)
+      if (window.electron?.ipcRenderer?.invoke) {
+        const dataUrl = this.htmlToDataUrl(html);
+        await window.electron.ipcRenderer.invoke('print:canon-a4', {
+          url: dataUrl,
+          landscape: false
+        });
+      } else {
+        // Fallback when running in a normal browser
+        await this.printHtmlInHiddenIframe(html);
+      }
+    } catch (err) {
+      console.error('Print failed:', err);
+      alert('Print failed. Please check the printer connection.');
+    }
   }
 
   private async printHtmlInHiddenIframe(html: string): Promise<void> {
@@ -190,9 +214,10 @@ export class EditLumpsumBillsComponent implements OnInit, AfterViewInit {
         maximumFractionDigits: 2
       }).format(n);
 
-    const dateStr = new Date(meta.billDate).toLocaleDateString('en-GB');
+    const dateStr = meta.billDate ? new Date(meta.billDate).toLocaleDateString('en-GB') : '';
 
     return `
+    <!doctype html>
     <html>
       <head>
         <meta charset="utf-8"/>
@@ -205,17 +230,17 @@ export class EditLumpsumBillsComponent implements OnInit, AfterViewInit {
 
           .top-section { text-align: center; margin-bottom: 20px; }
           .title { font-size: 28px; font-weight: bold; margin-bottom: 6px; }
-          .address-line,.license-line,.email-line { font-size: 13px; margin: 2px 0; }
+          .address-line,.license-line,.email-line { font-size: 13px; margin: 2px 0; color: #546e7a; }
 
           .invoice-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin: 20px 0; }
           .invoice-title { flex: 1; text-align: center; font-size: 20px; font-weight: bold; }
 
-          .horizontal-info { display: flex; justify-content: space-between; margin-bottom: 20px; }
+          .horizontal-info { display: flex; justify-content: space-between; gap: 20px; margin-bottom: 20px; }
           .field-row { display: flex; gap: 10px; }
-          .field-row label { font-weight: 600; }
+          .field-row label { font-weight: 600; white-space: nowrap; }
 
           .description-container { text-align: center; margin: 16px 0 22px; }
-          .description-print { font-size: 13px; line-height: 1.45; max-width: 85%; margin: auto; white-space: pre-line; }
+          .description-print { font-size: 13px; line-height: 1.45; max-width: 85%; margin: auto; white-space: pre-line; word-break: break-word; }
 
           .print-summary-footer { margin-top: 30px; border-top: 1px solid #e0e0e0; padding-top: 20px; }
           .summary { display: flex; justify-content: flex-end; font-size: 16px; font-weight: bold; margin-bottom: 12px; gap: 12px; }
@@ -236,7 +261,7 @@ export class EditLumpsumBillsComponent implements OnInit, AfterViewInit {
           </div>
 
           <div class="horizontal-info">
-            <div class="field-row"><label>Name:</label> ${esc(meta.clientName)}</div>
+            <div class="field-row"><label>Name:</label> <span>${esc(meta.clientName)}</span></div>
             <div class="field-row"><label>Address:</label> <span style="white-space: pre-line;">${esc(meta.address)}</span></div>
           </div>
 
@@ -245,9 +270,9 @@ export class EditLumpsumBillsComponent implements OnInit, AfterViewInit {
           </div>
 
           <div class="print-summary-footer">
-            <div class="summary"><label>Total Amount:</label> ${fmtINR(meta.amount)}</div>
-            <div class="summary"><label>Margin (%):</label> ${esc(String(meta.discount))}</div>
-            <div class="summary"><label>Final Amount:</label> ${fmtINR(meta.finalAmount)}</div>
+            <div class="summary"><label>Total Amount:</label> <div>${fmtINR(meta.amount)}</div></div>
+            <div class="summary"><label>Margin (%):</label> <div>${esc(String(meta.discount))}</div></div>
+            <div class="summary"><label>Final Amount:</label> <div>${fmtINR(meta.finalAmount)}</div></div>
           </div>
         </div>
       </body>
@@ -268,7 +293,7 @@ export class EditLumpsumBillsComponent implements OnInit, AfterViewInit {
       // Make sure amounts are up to date
       this.calculateFinalAmount();
 
-      // 🔑 Build the print-ready HTML using the SAME template you print
+      // Build the print-ready HTML using the SAME template you print
       const pdfHtml = this.buildPrintHtml({
         clientName: this.clientName || '',
         address: this.address || '',
@@ -291,8 +316,8 @@ export class EditLumpsumBillsComponent implements OnInit, AfterViewInit {
         description: this.description,
         billItems: [],              // no line items for lumpsum
         email: this.manualEmail,
-        billType: 'lumpsum',        // (optional) helpful if you want to branch later
-        pdfHtml                     // ✨ send print HTML to server for PDF rendering
+        billType: 'lumpsum',        // optional flag
+        pdfHtml                     // send print HTML to server for PDF rendering
       };
 
       this.billsService.sendBillByEmail(billData).subscribe({
@@ -311,5 +336,11 @@ export class EditLumpsumBillsComponent implements OnInit, AfterViewInit {
       textarea.style.height = 'auto';
       textarea.style.height = `${textarea.scrollHeight}px`;
     }
+  }
+
+  /** Convert raw HTML to a data URL for Electron printing */
+  private htmlToDataUrl(html: string): string {
+    const b64 = btoa(unescape(encodeURIComponent(html)));
+    return `data:text/html;base64,${b64}`;
   }
 }

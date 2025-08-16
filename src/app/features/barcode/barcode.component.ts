@@ -20,27 +20,27 @@ export class BarcodeComponent implements OnInit {
   constructor(
     private cdRef: ChangeDetectorRef,
     private productService: ProductService,
-  ) { }
+  ) {}
 
   ngOnInit(): void {
-    for (let i = 0; i < 1; i++) this.addRow();
+    this.addRow();
     this.onPrintStyleChange(this.selectedPrintStyle);
-    this.packedOnDate = this.getTodayLocalDate(); // Initialize packed date to today
+    this.packedOnDate = this.getTodayLocalDate();
+
     this.productService.getNames().subscribe({
       next: (names) => {
         this.nameOptions = names.sort((a, b) =>
           (`${a.name} ${a.units}`).localeCompare(`${b.name} ${b.units}`)
         );
       },
-      error: (err) => console.error('Failed to load names:', err)
+      error: (err) => console.error('Failed to load names:', err),
     });
   }
 
   onQtyKeyDown(event: KeyboardEvent, index: number) {
     if (event.key === 'Tab' && index === this.products.length - 1) {
-      event.preventDefault(); // Stop default tabbing
+      event.preventDefault();
       this.addRow();
-      // Wait for view update before focusing on the new row's product select
       setTimeout(() => {
         const inputs = document.querySelectorAll(
           `tr:nth-child(${this.products.length + 1}) select[name^='productName']`
@@ -86,9 +86,9 @@ export class BarcodeComponent implements OnInit {
   }
 
   resetForm() {
-    this.packedOnDate = this.getTodayLocalDate(); // reset packed date to today
+    this.packedOnDate = this.getTodayLocalDate();
     this.products = [];
-    for (let i = 0; i < 1; i++) this.addRow();
+    this.addRow();
   }
 
   removeRow(index: number) {
@@ -110,11 +110,10 @@ export class BarcodeComponent implements OnInit {
   }
 
   onPackedOnChange() {
-    this.products.forEach((p, i) => {
+    this.products.forEach((p) => {
       const packed = new Date(this.packedOnDate);
       packed.setDate(packed.getDate() + Number(p.expiryDays));
       p.expiryDate = packed.toISOString().substring(0, 10);
-
       this.generateBarcode(p);
     });
 
@@ -128,7 +127,6 @@ export class BarcodeComponent implements OnInit {
 
     if (selected) {
       const product = this.products[i];
-
       product.productName = `${selected.name} ${selected.units}`;
       product.category = selected.type
         ? selected.type.charAt(0).toUpperCase() + selected.type.slice(1)
@@ -136,15 +134,12 @@ export class BarcodeComponent implements OnInit {
       product.units = selected.units;
       product.dbBarcode = selected.barcode;
 
-      // ✅ Always update MRP from DB
       product.mrp = selected.mrp ?? 0;
       product.mrpEdited = false;
 
-      // ✅ Always update expiryDays from DB
       product.expiryDays = selected.expiryDays ?? 1;
       product.expiryEdited = false;
 
-      // ✅ Recalculate expiry date
       const today = new Date(this.packedOnDate);
       today.setDate(today.getDate() + product.expiryDays);
       product.expiryDate = today.toISOString().split('T')[0];
@@ -158,10 +153,8 @@ export class BarcodeComponent implements OnInit {
 
     const isVegetable = product.category.toLowerCase() === 'vegetable';
     const prefix = isVegetable ? '953779' : '95378';
+    const paise = Math.round(product.mrp * 100);
 
-    const paise = Math.round(product.mrp * 100);               // ₹45.25 → 4525, ₹45 → 4500
-
-    // ✅ Final format: prefix + 0000 + paise (no padding)
     if (this.selectedPrintStyle === 'dmart' || this.selectedPrintStyle === 'old-dmart') {
       product.barcode = `${prefix}0000${paise}`;
     } else {
@@ -173,27 +166,36 @@ export class BarcodeComponent implements OnInit {
     return index;
   }
 
+  // 🚀 Direct printing without preview
   printSelected() {
     this.preparePrintItems();
 
-    const win = window.open('', '_blank', 'width=0,height=0,top=-1000,left=-1000');
-    if (!win) {
-      alert('Popup blocked. Please allow pop-ups for this site.');
-      return;
-    }
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.right = '0';
+    iframe.style.bottom = '0';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = '0';
+    document.body.appendChild(iframe);
 
-    win.document.open();
-    win.document.write(this.generatePrintHTML());
-    win.document.close();
+    const doc = iframe.contentDocument || iframe.contentWindow?.document;
+    if (!doc) return;
 
-    const checkReady = () => {
-      if (win.document.readyState === 'complete') {
-        this.renderBarcodesInWindow(win);
-      } else {
-        setTimeout(checkReady, 50);
-      }
+    doc.open();
+    doc.write(this.generatePrintHTML());
+    doc.close();
+
+    iframe.onload = () => {
+      this.renderBarcodesInWindow(iframe.contentWindow as Window).then(() => {
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+
+        setTimeout(() => {
+          document.body.removeChild(iframe);
+        }, 1000);
+      });
     };
-    checkReady();
   }
 
   private preparePrintItems() {
@@ -603,27 +605,17 @@ export class BarcodeComponent implements OnInit {
       })
       .join('');
   }
-
+  
   private async renderBarcodesInWindow(win: Window) {
     const promises: Promise<void>[] = [];
 
     this.printItems.forEach((p, i) => {
-      let imgId = '';
-      if (this.selectedPrintStyle === 'dmart' || this.selectedPrintStyle === 'old-dmart') {
-        imgId = `dmart-bar-${i}`;
-      } else {
-        imgId = `rel-barcode-img-${i}`;
-      }
+      let imgId = this.selectedPrintStyle === 'reliance'
+        ? `rel-barcode-img-${i}`
+        : `dmart-bar-${i}`;
 
       const imgEl = win.document.getElementById(imgId) as HTMLImageElement;
-      if (!imgEl) {
-        console.warn(`Barcode image element not found: ${imgId}`);
-        return;
-      }
-      if (!p.barcode || p.barcode.trim().length === 0) {
-        console.warn(`Empty or missing barcode: ${p.productName}`);
-        return;
-      }
+      if (!imgEl || !p.barcode) return;
 
       const canvas = document.createElement('canvas');
       try {
@@ -636,7 +628,6 @@ export class BarcodeComponent implements OnInit {
           textxalign: 'center',
           backgroundcolor: 'FFFFFF',
         });
-
         const dataUrl = canvas.toDataURL('image/png');
 
         const loadPromise = new Promise<void>((resolve, reject) => {
@@ -651,31 +642,17 @@ export class BarcodeComponent implements OnInit {
       }
     });
 
-    try {
-      await Promise.all(promises);
-
-      // ✅ Only call print ONCE here — no onafterprint, no media query listener
-      win.focus();
-      win.print();
-
-      // Optional safe delay to close the print window
-      setTimeout(() => {
-        if (!win.closed) win.close();
-      },);
-
-    } catch (e) {
-      console.error('Error loading one or more barcode images:', e);
-    }
+    await Promise.all(promises);
   }
 
-  // Handle print style change from UI
   onPrintStyleChange(style: LabelStyle) {
     this.selectedPrintStyle = style;
 
-    // Clear invalid product selections if print style is 'reliance'
     if (style === 'reliance') {
-      this.products.forEach(p => {
-        const match = this.nameOptions.find(n => `${n.name} ${n.units}` === p.productName);
+      this.products.forEach((p) => {
+        const match = this.nameOptions.find(
+          (n) => `${n.name} ${n.units}` === p.productName
+        );
         if (!match || match.type?.toLowerCase() !== 'vegetable') {
           p.productName = '';
           p.category = '';
@@ -685,7 +662,7 @@ export class BarcodeComponent implements OnInit {
       });
     }
 
-    this.products.forEach(p => this.generateBarcode(p));
+    this.products.forEach((p) => this.generateBarcode(p));
     this.cdRef.detectChanges();
   }
 }

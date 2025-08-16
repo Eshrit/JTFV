@@ -1,9 +1,19 @@
-import { Component, OnInit, ViewChildren, QueryList, ElementRef, ChangeDetectorRef, NgZone } from '@angular/core';
+import { Component, OnInit, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { ProductService, Name } from 'src/app/core/services/products.service';
 import { BillsService } from 'src/app/core/services/bills.service';
+
+declare global {
+  interface Window {
+    electron?: {
+      ipcRenderer: {
+        invoke: (channel: string, args?: any) => Promise<any>;
+      };
+    };
+  }
+}
 
 interface BillItem {
   productId: number | null;
@@ -43,7 +53,7 @@ export class EditRelianceBillsComponent implements OnInit {
   shipToName = 'FRESHPIK SPECTRA POWAI ( T5EP )';
   shipToAddress = 'Spectra, 1st, Central Ave, Hiranandani Gardens, Powai, Mumbai, Maharashtra 400076';
 
-  // Constants for Reliance defaults
+  // Reliance defaults
   private readonly RELIANCE_CLIENT = 'Reliance Retail Limited';
   private readonly RELIANCE_ADDR =
     'Reliance Corporate Park, Thane-Belapur Road, Ghansoli-400701, Navi Mumbai, Maharashtra';
@@ -55,6 +65,8 @@ export class EditRelianceBillsComponent implements OnInit {
   manualEmail = '';
   totalQuantity = 0;
   totalItemPrice = 0;
+  receivedAmount: number = 0;   // user-entered value
+  balanceAmount: number = 0;    // computed balance
 
   constructor(
     private titleService: Title,
@@ -62,8 +74,6 @@ export class EditRelianceBillsComponent implements OnInit {
     private billsService: BillsService,
     private route: ActivatedRoute,
     private http: HttpClient,
-    private cdr: ChangeDetectorRef,
-    private zone: NgZone
   ) {}
 
   ngOnInit(): void {
@@ -84,6 +94,9 @@ export class EditRelianceBillsComponent implements OnInit {
       if (billNumber) {
         this.billNumber = billNumber;
         this.loadBillForEdit(billNumber);
+      } else {
+        // If needed, ensure one blank row exists for editing
+        this.billItems.push({ productId: null, productName: '', quantity: 0, price: 0, total: 0, manualTotal: false });
       }
     });
 
@@ -251,7 +264,6 @@ export class EditRelianceBillsComponent implements OnInit {
     items.forEach(it => {
       const qty = Number(it.quantity || 0);
       const price = Number(it.price || 0);
-
       if (!it.manualTotal) {
         it.total = +((qty * price)).toFixed(2);
       } else if (qty > 0 && isFinite(qty)) {
@@ -259,16 +271,11 @@ export class EditRelianceBillsComponent implements OnInit {
       }
     });
 
-    this.totalQuantity = items.reduce((acc, it) => acc + (Number(it.quantity) || 0), 0);
+    this.totalQuantity  = items.reduce((acc, it) => acc + (Number(it.quantity) || 0), 0);
     this.totalItemPrice = +items.reduce((acc, it) => acc + (it.price || 0), 0).toFixed(2);
-    this.totalAmount   = +items.reduce((acc, it) => acc + (it.total || 0), 0).toFixed(2);
-  }
+    this.totalAmount    = +items.reduce((acc, it) => acc + (it.total || 0), 0).toFixed(2);
 
-  /** Wait for Angular CD + two RAFs so layout is fully painted before printing */
-  private waitForRender(): Promise<void> {
-    return new Promise(resolve => {
-      requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
-    });
+    this.balanceAmount  = +(this.totalAmount - (this.receivedAmount || 0)).toFixed(2);
   }
 
   private fmt(n: number): string {
@@ -284,6 +291,7 @@ export class EditRelianceBillsComponent implements OnInit {
     return it.productName || '';
   }
 
+  /** Build A4 print HTML (no preview window) */
   private buildPrintHtml(validItems: BillItem[]): string {
     const totalUnitPrice = validItems.reduce((sum, it) => sum + (it.price ?? 0), 0);
 
@@ -299,6 +307,7 @@ export class EditRelianceBillsComponent implements OnInit {
 
     const styles = `
       <style>
+        @page { size: A4; margin: 10mm; }
         @media print {
           * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         }
@@ -364,8 +373,8 @@ export class EditRelianceBillsComponent implements OnInit {
           <div class="amount-grid">
             <div>Sub Total</div><div class="v">₹ ${this.fmt(this.totalAmount)}</div>
             <div><strong>Total</strong></div><div class="v"><strong>₹ ${this.fmt(this.totalAmount)}</strong></div>
-            <div>Received</div><div class="v">₹ 0.00</div>
-            <div>Balance</div><div class="v">₹ ${this.fmt(this.totalAmount)}</div>
+            <div>Received</div><div class="v">₹ ${this.fmt(this.receivedAmount || 0)}</div>
+            <div>Balance</div><div class="v">₹ ${this.fmt(this.balanceAmount)}</div>
           </div>
         </div>
       </div>
@@ -413,9 +422,11 @@ export class EditRelianceBillsComponent implements OnInit {
     </body></html>`;
   }
 
+  /** PRINT — no preview. Uses Electron IPC first; hidden-iframe as fallback. */
   async printBill(): Promise<void> {
     this.ensureRelianceDefaults();
 
+    // Normalize rows
     const validItems = this.billItems
       .filter(it => it.productId !== null)
       .map(it => {
@@ -426,7 +437,6 @@ export class EditRelianceBillsComponent implements OnInit {
 
         const qty = Number(it.quantity || 0);
         if (it.manualTotal) {
-          // keep total fixed; derive price from total/qty when possible
           if (qty > 0 && isFinite(qty)) {
             it.price = +((Number(it.total || 0) / qty)).toFixed(2);
           }
@@ -447,20 +457,20 @@ export class EditRelianceBillsComponent implements OnInit {
 
     const html = this.buildPrintHtml(validItems);
 
-    const w = window.open('', '_blank', 'width=1024,height=768');
-    if (!w) {
-      alert('Please allow pop-ups to print the invoice.');
-      return;
+    try {
+      if (window.electron?.ipcRenderer?.invoke) {
+        const dataUrl = this.htmlToDataUrl(html);
+        await window.electron.ipcRenderer.invoke('print:canon-a4', {
+          url: dataUrl,
+          landscape: false
+        });
+      } else {
+        await this.printHtmlInHiddenIframe(html);
+      }
+    } catch (err) {
+      console.error('Print failed:', err);
+      alert('Print failed. Please check the printer connection.');
     }
-    w.document.open();
-    w.document.write(html);
-    w.document.close();
-
-    w.focus();
-    setTimeout(() => {
-      w.print();
-      w.close();
-    }, 150);
   }
 
   emailBill(): void {
@@ -489,7 +499,6 @@ export class EditRelianceBillsComponent implements OnInit {
       } else {
         it.total = +((qty * Number(it.price || 0))).toFixed(2);
       }
-      // Ensure display name includes units
       const prod = this.products.find(p => p.id === it.productId);
       it.productName = prod ? prod.name + (prod.units ? ' ' + prod.units : '') : (it.productName || '');
       return it;
@@ -499,7 +508,7 @@ export class EditRelianceBillsComponent implements OnInit {
     this.totalQuantity = normalized.reduce((a, it) => a + (it.quantity || 0), 0);
     this.totalAmount   = +normalized.reduce((a, it) => a + (it.total || 0), 0).toFixed(2);
 
-    // 🔑 Build the print-ready HTML using the SAME template you print
+    // Build the same print HTML
     const pdfHtml = this.buildPrintHtml(normalized);
 
     const billData = {
@@ -511,7 +520,7 @@ export class EditRelianceBillsComponent implements OnInit {
       billItems: normalized,
       email: this.manualEmail,
       billType: 'reliance',
-      pdfHtml                                // ✨ send print HTML for PDF rendering
+      pdfHtml
     };
 
     this.billsService.sendBillByEmail(billData).subscribe({
@@ -546,10 +555,6 @@ export class EditRelianceBillsComponent implements OnInit {
       billItems: sanitizedItems,
       billType: 'reliance' // always tag as Reliance
     };
-
-    // If backend requires non-nullable fields, uncomment the following:
-    // payload.finalAmount = null;
-    // payload.discount = null;
 
     const obs = (this.billsService as any).updateBill
       ? (this.billsService as any).updateBill(this.billNumber, payload)
@@ -606,5 +611,55 @@ export class EditRelianceBillsComponent implements OnInit {
     let words = `${numToWords(rupees)} Rupees`;
     if (paise > 0) words += ` and ${numToWords(paise)} Paisa`;
     return words + ' only';
+  }
+
+  /** Hidden-iframe fallback (only used when not in Electron) */
+  private async printHtmlInHiddenIframe(html: string): Promise<void> {
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = '0';
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentDocument || iframe.contentWindow?.document;
+    if (!doc) {
+      document.body.removeChild(iframe);
+      alert('Unable to create print frame.');
+      return;
+    }
+
+    doc.open();
+    doc.write(html);
+    doc.close();
+
+    const waitForAssets = async () => {
+      const promises: Promise<unknown>[] = [];
+      if ((doc as any).fonts?.ready) promises.push((doc as any).fonts.ready);
+      Array.from(doc.images || []).forEach(img => {
+        if (!img.complete) {
+          promises.push(new Promise(res => {
+            img.addEventListener('load', res, { once: true });
+            img.addEventListener('error', res, { once: true });
+          }));
+        }
+      });
+      promises.push(new Promise(res => setTimeout(res, 80)));
+      await Promise.all(promises);
+    };
+
+    try {
+      await waitForAssets();
+      iframe.contentWindow?.focus();
+      iframe.contentWindow?.print();
+    } finally {
+      setTimeout(() => document.body.removeChild(iframe), 1000);
+    }
+  }
+
+  /** Convert HTML to a data URL for Electron IPC printing */
+  private htmlToDataUrl(html: string): string {
+    const b64 = btoa(unescape(encodeURIComponent(html)));
+    return `data:text/html;base64,${b64}`;
   }
 }

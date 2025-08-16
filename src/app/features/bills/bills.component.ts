@@ -5,6 +5,16 @@ import { ActivatedRoute } from '@angular/router';
 import { ProductService, Name } from 'src/app/core/services/products.service';
 import { BillsService } from 'src/app/core/services/bills.service';
 
+declare global {
+  interface Window {
+    electron?: {
+      ipcRenderer: {
+        invoke: (channel: string, args?: any) => Promise<any>;
+      };
+    };
+  }
+}
+
 interface BillItem {
   productId: number | null;
   productName: string;
@@ -22,7 +32,7 @@ export class BillsComponent implements OnInit {
   @ViewChildren('productSelect') productSelectInputs!: QueryList<ElementRef>;
   @ViewChildren('priceInput') priceInputs!: QueryList<ElementRef>;
   @ViewChildren('addressTextarea') addressTextareas!: QueryList<ElementRef>;
-  
+
   products: Name[] = [];
   namesMap: { [id: number]: string } = {};
   billItems: BillItem[] = [];
@@ -62,13 +72,12 @@ export class BillsComponent implements OnInit {
       this.clients = data;
     });
 
-    for (let i = 0; i < 20; i++) {
-      this.billItems.push({ productId: null, productName: '', quantity: 0, price: 0, total: 0 });
-    }
+    // start with one empty row
+    this.billItems.push({ productId: null, productName: '', quantity: 0, price: 0, total: 0 });
 
     this.billsService.getLatestBillNumber().subscribe({
-      next: (res: { billNumber: string }) => this.billNumber = res.billNumber,
-      error: () => this.billNumber = '001'
+      next: (res: { billNumber: string }) => (this.billNumber = res.billNumber),
+      error: () => (this.billNumber = '001')
     });
   }
 
@@ -85,10 +94,10 @@ export class BillsComponent implements OnInit {
         this.billItems = bill.billItems || [];
 
         setTimeout(() => {
-        this.addressTextareas.forEach(textarea => {
-          this.resizeTextarea(textarea.nativeElement);
+          this.addressTextareas.forEach(textarea => {
+            this.resizeTextarea(textarea.nativeElement);
+          });
         });
-      });
 
         this.billItems.forEach(item => {
           item.productName = item.productId ? this.namesMap[item.productId] || '(Unknown)' : '';
@@ -108,7 +117,6 @@ export class BillsComponent implements OnInit {
       this.clientName = c.firstName;
       this.address = parts.join(', ');
 
-      // Resize after DOM update
       setTimeout(() => {
         this.addressTextareas.forEach(textarea => {
           const el = textarea.nativeElement;
@@ -121,33 +129,20 @@ export class BillsComponent implements OnInit {
 
   onPriceKeydown(event: KeyboardEvent, index: number): void {
     if (event.key === 'Tab' && !event.shiftKey) {
-      event.preventDefault(); // Stop default tabbing behavior
+      event.preventDefault();
 
       if (index === this.billItems.length - 1) {
-        // Add a new row
-        this.billItems.push({
-          productId: null,
-          productName: '',
-          quantity: 0,
-          price: 0,
-          total: 0
-        });
+        this.billItems.push({ productId: null, productName: '', quantity: 0, price: 0, total: 0 });
 
-        // Wait for view to update, then focus next product select
         setTimeout(() => {
           const productSelectArray = this.productSelectInputs.toArray();
           const nextProductSelect = productSelectArray[index + 1];
-          if (nextProductSelect) {
-            nextProductSelect.nativeElement.focus();
-          }
+          if (nextProductSelect) nextProductSelect.nativeElement.focus();
         }, 0);
       } else {
-        // Focus next product select directly if row already exists
         const productSelectArray = this.productSelectInputs.toArray();
         const nextProductSelect = productSelectArray[index + 1];
-        if (nextProductSelect) {
-          nextProductSelect.nativeElement.focus();
-        }
+        if (nextProductSelect) nextProductSelect.nativeElement.focus();
       }
     }
   }
@@ -182,8 +177,7 @@ export class BillsComponent implements OnInit {
     this.finalAmount = this.totalAmount - discountAmount;
   }
 
-  printBill(): void {
-    // build valid rows
+  async printBill(): Promise<void> {
     const validItems = this.billItems
       .filter(i => i.productId !== null && i.quantity > 0 && i.price > 0)
       .map(i => ({
@@ -193,7 +187,7 @@ export class BillsComponent implements OnInit {
           (() => {
             const prod = this.products.find(p => p.id === i.productId);
             return prod ? prod.name + (prod.units ? ' ' + prod.units : '') : '(Unknown)';
-          })(),
+          })()
       }));
 
     if (validItems.length === 0) {
@@ -201,7 +195,6 @@ export class BillsComponent implements OnInit {
       return;
     }
 
-    // recalc totals for print view
     const totalAmount = validItems.reduce((acc, it) => acc + (it.quantity || 0) * (it.price || 0), 0);
     const discountAmount = totalAmount * (this.discount / 100);
     const finalAmount = totalAmount - discountAmount;
@@ -213,11 +206,23 @@ export class BillsComponent implements OnInit {
       billDate: this.billDate,
       discount: this.discount,
       totalAmount,
-      finalAmount,
+      finalAmount
     });
 
-    // print via hidden iframe (no popup)
-    this.printHtmlInHiddenIframe(html);
+    try {
+      if (window.electron?.ipcRenderer?.invoke) {
+        const dataUrl = this.htmlToDataUrl(html);
+        await window.electron.ipcRenderer.invoke('print:canon-a4', {
+          url: dataUrl,
+          landscape: false
+        });
+      } else {
+        await this.printHtmlInHiddenIframe(html);
+      }
+    } catch (err) {
+      console.error('Print failed:', err);
+      alert('Print failed. Please check the printer connection.');
+    }
   }
 
   private buildPrintHtml(
@@ -226,118 +231,30 @@ export class BillsComponent implements OnInit {
       clientName: string;
       address: string;
       billNumber: string;
-      billDate: string; // ISO yyyy-mm-dd
+      billDate: string;
       discount: number;
       totalAmount: number;
       finalAmount: number;
     }
   ): string {
-    const esc = (s: string) =>
-      (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-
+    const esc = (s: string) => (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     const fmtINR = (n: number) =>
       new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 2 }).format(n);
-
     const fmt2 = (n: number) => (Number.isFinite(n) ? n.toFixed(2) : '');
     const dateStr = this.formatDateDDMMYYYY(meta.billDate);
 
     const rows = items
-      .map((it, i) => {
-        const total = (it.quantity || 0) * (it.price || 0);
-        return `
+      .map(
+        (it, i) => `
           <tr>
             <td>${i + 1}</td>
-            <td>
-              <div class="print-toggle">
-                <span class="print-view">${esc(it.productName)}</span>
-              </div>
-            </td>
-            <td>
-              <div class="print-toggle">
-                <span class="print-view">${esc(String(it.quantity))}</span>
-              </div>
-            </td>
-            <td>
-              <div class="print-toggle">
-                <span class="print-view">${fmt2(it.price)}</span>
-              </div>
-            </td>
-            <td>${fmt2(total)}</td>
-          </tr>`;
-      })
+            <td>${esc(it.productName)}</td>
+            <td>${esc(String(it.quantity))}</td>
+            <td>${fmt2(it.price)}</td>
+            <td>${fmt2((it.quantity || 0) * (it.price || 0))}</td>
+          </tr>`
+      )
       .join('');
-
-    // exact UI styles (no @media print). Keep colors/shadows with print-color-adjust.
-    const styles = `
-    <style>
-      @page { size: A4; margin: 10mm; }
-      html, body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      .print-view { display: inline; }
-
-      .container {
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 20px;
-        font-family: 'Poppins','Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
-        background-color: #ffffff;
-        color: #2c3e50;
-        font-size: 11px;
-        line-height: 1.3;
-      }
-
-      /* Header */
-      .header { text-align: center; margin-bottom: 12px; }
-      .header h1 {margin: 0; font-size: 22px; font-weight: bold; color: #333; }
-      .header p { margin: 2px 0; font-size: 10px; color: #546e7a; }
-
-      /* Info blocks */
-      .horizontal-info { display: flex; gap: 10px; justify-content: space-between; flex-wrap: wrap; margin-bottom: 12px; }
-      .field-row { display: flex; align-items: center; gap: 6px; min-width: 180px; flex: 1; font-size: 10px; }
-      .field-row label { font-weight: 600; white-space: nowrap; min-width: 60px; text-align: right; }
-
-      /* Invoice header flex row */
-      .invoice-header { margin-top: 10px; }
-      .header-flex { display: flex; align-items: center; justify-content: space-between; }
-      .invoice-title { font-size: 13px; font-weight: bold; color: #2c3e50; white-space: nowrap; }
-      .date-control, .bill-number-block { display: flex; align-items: center; gap: 4px; font-size: 10px; white-space: nowrap; }
-      .bold-label { font-weight: bold; }
-
-      /* Table */
-      .table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 10px;
-        margin-top: 10px;
-        margin-bottom: 10px;
-        background-color: #ffffff;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-        border-radius: 4px;
-        overflow: hidden;
-      }
-      .table th, .table td {
-        border: 1px solid #ccc;
-        padding: 4px 6px;
-        text-align: center;
-      }
-      .table th {
-        background-color: #ecf0f1;
-        font-weight: bold;
-        color: #2c3e50;
-        font-size: 10px;
-      }
-
-      /* Summary */
-      .summary {
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        font-size: 10px;
-        font-weight: bold;
-        margin-bottom: 4px;
-        gap: 6px;
-      }
-      .summary label { white-space: nowrap; }
-    </style>`;
 
     return `
     <!doctype html>
@@ -345,77 +262,37 @@ export class BillsComponent implements OnInit {
       <head>
         <meta charset="utf-8"/>
         <title>Invoice ${esc(meta.billNumber)}</title>
-        ${styles}
+        <style>
+          @page { size: A4; margin: 10mm; }
+          body { font-family: 'Poppins','Segoe UI',Tahoma,sans-serif; -webkit-print-color-adjust: exact; }
+          .container { max-width: 900px; margin: 0 auto; padding: 20px; font-size: 11px; }
+          .header { text-align: center; }
+          .header h1 { margin: 0; font-size: 22px; }
+          .header p { margin: 2px 0; font-size: 10px; }
+          table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+          th, td { border: 1px solid #ccc; padding: 4px; font-size: 10px; text-align: center; }
+          th { background: #eee; }
+          .summary { text-align: right; font-weight: bold; margin-top: 8px; font-size: 11px; }
+        </style>
       </head>
       <body>
         <div class="container">
           <div class="header">
             <h1>J.T. Fruits &amp; Vegetables</h1>
             <p>Shop No. 31-32, Bldg No. 27, EMP Op Jogers Park, Thakur Village, Kandivali(E), Mumbai 400101</p>
-            <p>PAN: AAJFJ0258J | FSS LICENSE ACT 2006 LICENSE NO: 11517011000128</p>
-            <p>Email: jkumarshahu5@gmail.com</p>
-
-            <div class="invoice-header">
-              <div class="header-flex">
-                <div class="date-control">
-                  <span class="bold-label">Date:</span>
-                  <div class="print-toggle print-value">
-                    <span class="print-view">${esc(dateStr)}</span>
-                  </div>
-                </div>
-                <h2 class="invoice-title">TAX FREE INVOICE</h2>
-                <div class="bill-number-block print-toggle print-value">
-                  <span class="bold-label">Bill No:</span>
-                  <span class="print-view">${esc(meta.billNumber)}</span>
-                </div>
-              </div>
-            </div>
+            <p>PAN: AAJFJ0258J | License: 11517011000128 | Email: jkumarshahu5@gmail.com</p>
+            <p>Date: ${esc(dateStr)} &nbsp;&nbsp; Bill No: ${esc(meta.billNumber)}</p>
           </div>
-
-          <div class="horizontal-info">
-            <div class="field-row">
-              <label>Name:</label>
-              <div class="print-toggle print-value">
-                <span class="print-view">${esc(meta.clientName || '')}</span>
-              </div>
-            </div>
-            <div class="field-row">
-              <label>Address:</label>
-              <div class="print-toggle print-value">
-                <span class="print-view" style="white-space: pre-line;">${esc(meta.address || '')}</span>
-              </div>
-            </div>
-          </div>
-
-          <table class="table">
+          <p><b>Name:</b> ${esc(meta.clientName)}<br/><b>Address:</b> ${esc(meta.address)}</p>
+          <table>
             <thead>
-              <tr>
-                <th>No</th>
-                <th>Product</th>
-                <th>Quantity</th>
-                <th>Product Price</th>
-                <th>Total Amount</th>
-              </tr>
+              <tr><th>No</th><th>Product</th><th>Qty</th><th>Price</th><th>Total</th></tr>
             </thead>
-            <tbody>
-              ${rows}
-            </tbody>
+            <tbody>${rows}</tbody>
           </table>
-
-          <div class="summary">
-            <label>Total Amount:</label>
-            <div>${fmtINR(meta.totalAmount)}</div>
-          </div>
-
-          <div class="summary">
-            <label>Margin (%):</label>
-            <div>${esc(String(meta.discount || 0))}</div>
-          </div>
-
-          <div class="summary">
-            <label>Final Amount:</label>
-            <div>${fmtINR(meta.finalAmount)}</div>
-          </div>
+          <div class="summary">Total Amount: ${fmtINR(meta.totalAmount)}</div>
+          <div class="summary">Margin (%): ${esc(String(meta.discount))}</div>
+          <div class="summary">Final Amount: ${fmtINR(meta.finalAmount)}</div>
         </div>
       </body>
     </html>`;
@@ -424,69 +301,30 @@ export class BillsComponent implements OnInit {
   private async printHtmlInHiddenIframe(html: string): Promise<void> {
     const iframe = document.createElement('iframe');
     iframe.style.position = 'fixed';
-    iframe.style.right = '0';
-    iframe.style.bottom = '0';
     iframe.style.width = '0';
     iframe.style.height = '0';
     iframe.style.border = '0';
-    iframe.setAttribute('aria-hidden', 'true');
     document.body.appendChild(iframe);
 
     const doc = iframe.contentDocument || iframe.contentWindow?.document;
     if (!doc) {
       document.body.removeChild(iframe);
-      alert('Unable to create print frame.');
       return;
     }
-
     doc.open();
     doc.write(html);
     doc.close();
 
-    // Wait for fonts & images to be ready before printing
-    const waitForAssets = async () => {
-      const promises: Promise<unknown>[] = [];
-
-      // fonts
-      // @ts-ignore: fonts might not exist in some browsers
-      if (doc.fonts && typeof doc.fonts.ready?.then === 'function') {
-        // @ts-ignore
-        promises.push(doc.fonts.ready);
-      }
-
-      // images
-      const imgs = Array.from(doc.images || []);
-      imgs.forEach(img => {
-        if (img.complete) return;
-        promises.push(
-          new Promise(res => {
-            img.addEventListener('load', res, { once: true });
-            img.addEventListener('error', res, { once: true });
-          })
-        );
-      });
-
-      // give layout a tick even if no assets
-      promises.push(new Promise(res => setTimeout(res, 100)));
-
-      await Promise.all(promises);
-    };
-
-    try {
-      await waitForAssets();
-      iframe.contentWindow?.focus();
-      iframe.contentWindow?.print();
-    } finally {
-      // clean up after a short delay so the print dialog can appear
-      setTimeout(() => document.body.removeChild(iframe), 1000);
-    }
+    await new Promise(res => setTimeout(res, 100));
+    iframe.contentWindow?.focus();
+    iframe.contentWindow?.print();
+    setTimeout(() => document.body.removeChild(iframe), 1000);
   }
 
   private formatDateDDMMYYYY(iso: string): string {
-    // Accepts 'yyyy-mm-dd' from <input type="date">
     const d = new Date(iso);
     if (Number.isNaN(d.getTime())) return iso || '';
-    return d.toLocaleDateString('en-GB'); // dd/mm/yyyy
+    return d.toLocaleDateString('en-GB');
   }
 
   highlightInvalidRows(): void {
@@ -501,18 +339,15 @@ export class BillsComponent implements OnInit {
     const validItems = this.billItems.filter(
       item => item.productId !== null && item.productName && item.quantity > 0 && item.price > 0
     );
-
     if (validItems.length === 0) {
-      alert('No valid items to email. Please add at least one valid item.');
+      alert('No valid items to email.');
       return;
     }
-
     if (!this.manualEmail || !this.manualEmail.includes('@')) {
       alert('Please enter a valid email address');
       return;
     }
 
-    // Recalculate totals exactly like the print view
     const totalAmount = validItems.reduce((acc, it) => acc + (it.quantity || 0) * (it.price || 0), 0);
     const discountAmount = totalAmount * (this.discount / 100);
     const finalAmount = totalAmount - discountAmount;
@@ -524,7 +359,7 @@ export class BillsComponent implements OnInit {
       billDate: this.billDate,
       discount: this.discount,
       totalAmount,
-      finalAmount,
+      finalAmount
     });
 
     const billData = {
@@ -537,7 +372,7 @@ export class BillsComponent implements OnInit {
       finalAmount,
       billItems: validItems,
       email: this.manualEmail,
-      pdfHtml // ✨ send print-ready HTML to server
+      pdfHtml
     };
 
     this.billsService.sendBillByEmail(billData).subscribe({
@@ -562,10 +397,7 @@ export class BillsComponent implements OnInit {
     };
 
     this.billsService.saveBill(billData).subscribe({
-      next: (response) => {
-        alert('Bill saved successfully!');
-        console.log('Saved bill response:', response);
-      },
+      next: () => alert('Bill saved successfully!'),
       error: (error: HttpErrorResponse) => {
         alert('Failed to save bill. Please try again.');
         console.error('Error saving bill:', error);
@@ -575,24 +407,27 @@ export class BillsComponent implements OnInit {
 
   autoResize(event: Event): void {
     const textarea = event.target as HTMLTextAreaElement;
-    textarea.style.height = 'auto'; // reset height
-    textarea.style.height = textarea.scrollHeight + 'px'; // expand to fit
+    textarea.style.height = 'auto';
+    textarea.style.height = textarea.scrollHeight + 'px';
   }
 
   private resizeTextarea(el: HTMLTextAreaElement): void {
     el.style.height = 'auto';
     el.style.width = 'auto';
-
-    const containerWidth = el.parentElement?.clientWidth || 800; // fallback if no parent
+    const containerWidth = el.parentElement?.clientWidth || 800;
     const scrollWidth = el.scrollWidth + 2;
-
-    // Limit width to container width
     if (scrollWidth < containerWidth) {
       el.style.width = scrollWidth + 'px';
-      el.style.height = '60px'; // fixed height
+      el.style.height = '60px';
     } else {
-      el.style.width = '100%'; // full container
-      el.style.height = el.scrollHeight + 'px'; // allow vertical growth
+      el.style.width = '100%';
+      el.style.height = el.scrollHeight + 'px';
     }
+  }
+
+  /** Convert HTML into data URL for Electron printing */
+  private htmlToDataUrl(html: string): string {
+    const b64 = btoa(unescape(encodeURIComponent(html)));
+    return `data:text/html;base64,${b64}`;
   }
 }

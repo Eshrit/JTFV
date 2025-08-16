@@ -1,15 +1,23 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Title } from '@angular/platform-browser';
 import { BillsService } from 'src/app/core/services/bills.service';
-import { AfterViewInit, ElementRef, ViewChild } from '@angular/core';
+
+declare global {
+  interface Window {
+    electron?: {
+      ipcRenderer: {
+        invoke: (channel: string, args?: any) => Promise<any>;
+      };
+    };
+  }
+}
 
 @Component({
   selector: 'app-add-lumpsum-bills',
   templateUrl: './add-lumpsum-bills.component.html',
   styleUrls: ['./add-lumpsum-bills.component.css']
 })
-
 export class AddLumpsumBillsComponent implements OnInit, AfterViewInit {
   @ViewChild('addressBox') addressBox!: ElementRef<HTMLTextAreaElement>;
 
@@ -38,8 +46,8 @@ export class AddLumpsumBillsComponent implements OnInit, AfterViewInit {
     });
 
     this.billsService.getLatestBillNumber().subscribe({
-      next: (res: { billNumber: string }) => this.billNumber = res.billNumber,
-      error: () => this.billNumber = '001'
+      next: (res: { billNumber: string }) => (this.billNumber = res.billNumber),
+      error: () => (this.billNumber = '001')
     });
 
     this.calculateFinalAmount();
@@ -54,7 +62,7 @@ export class AddLumpsumBillsComponent implements OnInit, AfterViewInit {
       }
     });
   }
-  
+
   onClientChange(): void {
     if (this.selectedClient) {
       const c = this.selectedClient;
@@ -101,7 +109,7 @@ export class AddLumpsumBillsComponent implements OnInit, AfterViewInit {
     });
   }
 
-  printBill(): void {
+  async printBill(): Promise<void> {
     // Flush any focused input/textarea so ngModel updates first
     const active = document.activeElement as HTMLElement | null;
     if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) active.blur();
@@ -123,12 +131,28 @@ export class AddLumpsumBillsComponent implements OnInit, AfterViewInit {
       description: this.description || '',
       amount: this.amount || 0,
       discount: this.discount || 0,
-      finalAmount: this.finalAmount,
+      finalAmount: this.finalAmount
     });
 
-    this.printHtmlInHiddenIframe(html); // no new tab / no popup
+    try {
+      // Prefer Electron IPC route → will force Canon (A4) on the main process
+      if (window.electron?.ipcRenderer?.invoke) {
+        const dataUrl = this.htmlToDataUrl(html);
+        await window.electron.ipcRenderer.invoke('print:canon-a4', {
+          url: dataUrl,
+          landscape: false
+        });
+      } else {
+        // Fallback to hidden-iframe print if not running under Electron
+        await this.printHtmlInHiddenIframe(html);
+      }
+    } catch (err) {
+      console.error('Print failed:', err);
+      alert('Print failed. Please check the printer connection.');
+    }
   }
 
+  /** Fallback for non-Electron environments (kept from your original) */
   private async printHtmlInHiddenIframe(html: string): Promise<void> {
     const iframe = document.createElement('iframe');
     iframe.style.position = 'fixed';
@@ -158,10 +182,12 @@ export class AddLumpsumBillsComponent implements OnInit, AfterViewInit {
       const imgs = Array.from(doc.images || []);
       imgs.forEach(img => {
         if (img.complete) return;
-        promises.push(new Promise(res => {
-          img.addEventListener('load', res, { once: true });
-          img.addEventListener('error', res, { once: true });
-        }));
+        promises.push(
+          new Promise(res => {
+            img.addEventListener('load', res, { once: true });
+            img.addEventListener('error', res, { once: true });
+          })
+        );
       });
       promises.push(new Promise(res => setTimeout(res, 50)));
       await Promise.all(promises);
@@ -248,23 +274,23 @@ export class AddLumpsumBillsComponent implements OnInit, AfterViewInit {
       .print-toggle .print-view { display: inline; }
       .print-toggle input,
       .print-toggle textarea,
-      .print-toggle select { display: none; }   /* <- hides the input box in print */
+      .print-toggle select { display: none; }
 
       /* === DESCRIPTION (plain text, centered) === */
       .description-container { text-align: center; margin: 16px 0 22px; }
       .description-print {
         display: block;
         margin: 0 auto;
-        padding: 0;                 /* remove padding so it doesn’t look like an input */
-        border: 0;                  /* no border */
-        background: transparent;    /* no background */
-        border-radius: 0;           /* no rounded corners */
-        font-size: 13px;            /* compact */
+        padding: 0;
+        border: 0;
+        background: transparent;
+        border-radius: 0;
+        font-size: 13px;
         line-height: 1.45;
         max-width: 85%;
-        white-space: pre-line;      /* keep line breaks */
-        word-break: break-word;     /* wrap long words */
-        text-align: center;         /* stays centered—change to left if you prefer */
+        white-space: pre-line;
+        word-break: break-word;
+        text-align: center;
       }
 
       /* === SUMMARY BLOCK === */
@@ -362,7 +388,7 @@ export class AddLumpsumBillsComponent implements OnInit, AfterViewInit {
         description: this.description || '',
         amount: this.amount || 0,
         discount: this.discount || 0,
-        finalAmount: this.finalAmount || 0,
+        finalAmount: this.finalAmount || 0
       });
 
       const billData = {
@@ -376,7 +402,7 @@ export class AddLumpsumBillsComponent implements OnInit, AfterViewInit {
         description: this.description,
         billItems: [],              // no line items for lumpsum
         email: this.manualEmail,
-        billType: 'lumpsum',        // (optional) helpful if you want to branch later
+        billType: 'lumpsum',
         pdfHtml                     // ✨ send print HTML to server for PDF rendering
       };
 
@@ -391,5 +417,12 @@ export class AddLumpsumBillsComponent implements OnInit, AfterViewInit {
     const target = event.target as HTMLTextAreaElement;
     target.style.height = 'auto'; // Reset
     target.style.height = target.scrollHeight + 'px'; // Resize
+  }
+
+  /** Convert raw HTML to a data URL that Electron can load in a hidden window */
+  private htmlToDataUrl(html: string): string {
+    // Important: base64-encode to avoid data URL size/encoding quirks
+    const b64 = btoa(unescape(encodeURIComponent(html)));
+    return `data:text/html;base64,${b64}`;
   }
 }
