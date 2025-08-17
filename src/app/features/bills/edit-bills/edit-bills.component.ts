@@ -36,6 +36,8 @@ export class EditBillsComponent implements OnInit {
   clients: any[] = [];
   selectedClient: any = null;
 
+  private isPrinting = false;
+
   constructor(
     private productService: ProductService,
     private billsService: BillsService,
@@ -196,42 +198,63 @@ export class EditBillsComponent implements OnInit {
   }
 
   /** ========== PRINT BILL ========== */
-  printBill(): void {
-    const validItems = this.billItems
-      .filter((i) => i.productId !== null && i.quantity > 0 && i.price > 0)
-      .map((i) => ({
-        ...i,
-        productName:
-          i.productName ||
-          (() => {
-            const prod = this.products.find((p) => p.id === i.productId);
-            return prod ? prod.name + (prod.units ? ' ' + prod.units : '') : '(Unknown)';
-          })(),
-      }));
+  async printBill(): Promise<void> {
+    if (this.isPrinting) return;
+    this.isPrinting = true;
 
-    if (validItems.length === 0) {
-      alert('No valid items to print. Please check quantity and price fields.');
-      return;
+    try {
+      const validItems = this.billItems
+        .filter((i) => i.productId !== null && i.quantity > 0 && i.price > 0)
+        .map((i) => ({
+          ...i,
+          productName:
+            i.productName ||
+            (() => {
+              const prod = this.products.find((p) => p.id === i.productId);
+              return prod ? prod.name + (prod.units ? ' ' + prod.units : '') : '(Unknown)';
+            })(),
+        }));
+
+      if (validItems.length === 0) {
+        alert('No valid items to print. Please check quantity and price fields.');
+        return;
+      }
+
+      const totalAmount = validItems.reduce(
+        (acc, it) => acc + (it.quantity || 0) * (it.price || 0),
+        0
+      );
+      const discountAmount = totalAmount * (this.discount / 100);
+      const finalAmount = totalAmount - discountAmount;
+
+      const html = this.buildPrintHtml(validItems, {
+        clientName: this.clientName,
+        address: this.address,
+        billNumber: this.billNumber,
+        billDate: this.billDate,
+        discount: this.discount,
+        totalAmount,
+        finalAmount,
+      });
+
+      const dataUrl = this.htmlToDataUrl(html);
+      const el = (window as any).electron;
+
+      if (el?.printCanonA4) {
+        const res = await el.printCanonA4(dataUrl, { landscape: false });
+        if (!res?.ok) {
+          console.error('Print failed:', res?.error);
+          alert('Print failed: ' + (res?.error || 'Unknown error'));
+        }
+      } else {
+        await this.printHtmlInHiddenIframe(html);
+      }
+    } catch (err: any) {
+      console.error('Print failed:', err);
+      alert('Print failed. ' + (err?.message || 'Please check the printer connection.'));
+    } finally {
+      this.isPrinting = false;
     }
-
-    const totalAmount = validItems.reduce(
-      (acc, it) => acc + (it.quantity || 0) * (it.price || 0),
-      0
-    );
-    const discountAmount = totalAmount * (this.discount / 100);
-    const finalAmount = totalAmount - discountAmount;
-
-    const html = this.buildPrintHtml(validItems, {
-      clientName: this.clientName,
-      address: this.address,
-      billNumber: this.billNumber,
-      billDate: this.billDate,
-      discount: this.discount,
-      totalAmount,
-      finalAmount,
-    });
-
-    this.printHtmlInHiddenIframe(html);
   }
 
   private async printHtmlInHiddenIframe(html: string): Promise<void> {
@@ -476,5 +499,10 @@ export class EditBillsComponent implements OnInit {
         console.error('Error updating bill:', err);
       },
     });
+  }
+
+  /** Convert HTML into data URL for Electron printing (UTF-8, no base64) */
+  private htmlToDataUrl(html: string): string {
+    return `data:text/html;charset=utf-8,${encodeURIComponent(html)}`;
   }
 }

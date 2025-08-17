@@ -3,16 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { Title } from '@angular/platform-browser';
 import { BillsService } from 'src/app/core/services/bills.service';
 
-declare global {
-  interface Window {
-    electron?: {
-      ipcRenderer: {
-        invoke: (channel: string, args?: any) => Promise<any>;
-      };
-    };
-  }
-}
-
 @Component({
   selector: 'app-add-lumpsum-bills',
   templateUrl: './add-lumpsum-bills.component.html',
@@ -32,6 +22,8 @@ export class AddLumpsumBillsComponent implements OnInit, AfterViewInit {
   billNumber: string = '';
   billDate: string = new Date().toISOString().substring(0, 10);
   manualEmail: string = '';
+
+  private isPrinting = false;
 
   constructor(
     private http: HttpClient,
@@ -110,38 +102,44 @@ export class AddLumpsumBillsComponent implements OnInit, AfterViewInit {
   }
 
   async printBill(): Promise<void> {
-    // Flush any focused input/textarea so ngModel updates first
-    const active = document.activeElement as HTMLElement | null;
-    if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) active.blur();
-
-    // Validate minimal data to print
-    if (!this.clientName && !this.address && !this.description && !this.amount) {
-      alert('Nothing to print. Please fill bill details.');
-      return;
-    }
-
-    // Ensure latest final amount is calculated
-    this.calculateFinalAmount();
-
-    const html = this.buildPrintHtml({
-      clientName: this.clientName || '',
-      address: this.address || '',
-      billNumber: this.billNumber || '',
-      billDate: this.billDate || '',
-      description: this.description || '',
-      amount: this.amount || 0,
-      discount: this.discount || 0,
-      finalAmount: this.finalAmount
-    });
+    if (this.isPrinting) return;
+    this.isPrinting = true;
 
     try {
-      // Prefer Electron IPC route → will force Canon (A4) on the main process
-      if (window.electron?.ipcRenderer?.invoke) {
-        const dataUrl = this.htmlToDataUrl(html);
-        await window.electron.ipcRenderer.invoke('print:canon-a4', {
-          url: dataUrl,
-          landscape: false
-        });
+      // Flush any focused input/textarea so ngModel updates first
+      const active = document.activeElement as HTMLElement | null;
+      if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) active.blur();
+
+      // Validate minimal data to print
+      if (!this.clientName && !this.address && !this.description && !this.amount) {
+        alert('Nothing to print. Please fill bill details.');
+        return;
+      }
+
+      // Ensure latest final amount is calculated
+      this.calculateFinalAmount();
+
+      const html = this.buildPrintHtml({
+        clientName: this.clientName || '',
+        address: this.address || '',
+        billNumber: this.billNumber || '',
+        billDate: this.billDate || '',
+        description: this.description || '',
+        amount: this.amount || 0,
+        discount: this.discount || 0,
+        finalAmount: this.finalAmount
+      });
+
+      const dataUrl = this.htmlToDataUrl(html);
+      const el = (window as any).electron;
+
+      // Prefer Electron IPC route → Canon A4 on main process
+      if (el?.printCanonA4) {
+        const res = await el.printCanonA4(dataUrl, { landscape: false });
+        if (!res?.ok) {
+          console.error('Print failed:', res?.error);
+          alert('Print failed: ' + (res?.error || 'Unknown error'));
+        }
       } else {
         // Fallback to hidden-iframe print if not running under Electron
         await this.printHtmlInHiddenIframe(html);
@@ -149,6 +147,8 @@ export class AddLumpsumBillsComponent implements OnInit, AfterViewInit {
     } catch (err) {
       console.error('Print failed:', err);
       alert('Print failed. Please check the printer connection.');
+    } finally {
+      this.isPrinting = false;
     }
   }
 
@@ -379,7 +379,7 @@ export class AddLumpsumBillsComponent implements OnInit, AfterViewInit {
       // Make sure amounts are up to date
       this.calculateFinalAmount();
 
-      // 🔑 Build the print-ready HTML using the SAME template you print
+      // Build the print-ready HTML using the SAME template you print
       const pdfHtml = this.buildPrintHtml({
         clientName: this.clientName || '',
         address: this.address || '',
@@ -403,7 +403,7 @@ export class AddLumpsumBillsComponent implements OnInit, AfterViewInit {
         billItems: [],              // no line items for lumpsum
         email: this.manualEmail,
         billType: 'lumpsum',
-        pdfHtml                     // ✨ send print HTML to server for PDF rendering
+        pdfHtml                     // send print HTML to server for PDF rendering
       };
 
       this.billsService.sendBillByEmail(billData).subscribe({
@@ -419,10 +419,8 @@ export class AddLumpsumBillsComponent implements OnInit, AfterViewInit {
     target.style.height = target.scrollHeight + 'px'; // Resize
   }
 
-  /** Convert raw HTML to a data URL that Electron can load in a hidden window */
+  /** Convert raw HTML to a data URL that Electron can load in a hidden window (UTF-8, no base64) */
   private htmlToDataUrl(html: string): string {
-    // Important: base64-encode to avoid data URL size/encoding quirks
-    const b64 = btoa(unescape(encodeURIComponent(html)));
-    return `data:text/html;base64,${b64}`;
+    return `data:text/html;charset=utf-8,${encodeURIComponent(html)}`;
   }
 }

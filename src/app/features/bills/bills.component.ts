@@ -5,16 +5,6 @@ import { ActivatedRoute } from '@angular/router';
 import { ProductService, Name } from 'src/app/core/services/products.service';
 import { BillsService } from 'src/app/core/services/bills.service';
 
-declare global {
-  interface Window {
-    electron?: {
-      ipcRenderer: {
-        invoke: (channel: string, args?: any) => Promise<any>;
-      };
-    };
-  }
-}
-
 interface BillItem {
   productId: number | null;
   productName: string;
@@ -46,6 +36,9 @@ export class BillsComponent implements OnInit {
   totalAmount: number = 0;
   finalAmount: number = 0;
   manualEmail: string = '';
+
+  // prevent double-prints
+  private isPrinting = false;
 
   constructor(
     private titleService: Title,
@@ -178,50 +171,59 @@ export class BillsComponent implements OnInit {
   }
 
   async printBill(): Promise<void> {
-    const validItems = this.billItems
-      .filter(i => i.productId !== null && i.quantity > 0 && i.price > 0)
-      .map(i => ({
-        ...i,
-        productName:
-          i.productName ||
-          (() => {
-            const prod = this.products.find(p => p.id === i.productId);
-            return prod ? prod.name + (prod.units ? ' ' + prod.units : '') : '(Unknown)';
-          })()
-      }));
-
-    if (validItems.length === 0) {
-      alert('No valid items to print. Please check quantity and price fields.');
-      return;
-    }
-
-    const totalAmount = validItems.reduce((acc, it) => acc + (it.quantity || 0) * (it.price || 0), 0);
-    const discountAmount = totalAmount * (this.discount / 100);
-    const finalAmount = totalAmount - discountAmount;
-
-    const html = this.buildPrintHtml(validItems, {
-      clientName: this.clientName,
-      address: this.address,
-      billNumber: this.billNumber,
-      billDate: this.billDate,
-      discount: this.discount,
-      totalAmount,
-      finalAmount
-    });
+    if (this.isPrinting) return;
+    this.isPrinting = true;
 
     try {
-      if (window.electron?.ipcRenderer?.invoke) {
-        const dataUrl = this.htmlToDataUrl(html);
-        await window.electron.ipcRenderer.invoke('print:canon-a4', {
-          url: dataUrl,
-          landscape: false
-        });
+      const validItems = this.billItems
+        .filter(i => i.productId !== null && i.quantity > 0 && i.price > 0)
+        .map(i => ({
+          ...i,
+          productName:
+            i.productName ||
+            (() => {
+              const prod = this.products.find(p => p.id === i.productId);
+              return prod ? prod.name + (prod.units ? ' ' + prod.units : '') : '(Unknown)';
+            })()
+        }));
+
+      if (validItems.length === 0) {
+        alert('No valid items to print. Please check quantity and price fields.');
+        return;
+      }
+
+      const totalAmount = validItems.reduce((acc, it) => acc + (it.quantity || 0) * (it.price || 0), 0);
+      const discountAmount = totalAmount * (this.discount / 100);
+      const finalAmount = totalAmount - discountAmount;
+
+      const html = this.buildPrintHtml(validItems, {
+        clientName: this.clientName,
+        address: this.address,
+        billNumber: this.billNumber,
+        billDate: this.billDate,
+        discount: this.discount,
+        totalAmount,
+        finalAmount
+      });
+
+      const dataUrl = this.htmlToDataUrl(html);
+
+      const el = (window as any).electron;
+      if (el?.printCanonA4) {
+        const res = await el.printCanonA4(dataUrl, { landscape: false });
+        if (!res?.ok) {
+          console.error('Print failed:', res?.error);
+          alert('Print failed: ' + (res?.error || 'Unknown error'));
+        }
       } else {
+        // Browser fallback (dev-in-browser)
         await this.printHtmlInHiddenIframe(html);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Print failed:', err);
-      alert('Print failed. Please check the printer connection.');
+      alert('Print failed. ' + (err?.message || 'Please check the printer connection.'));
+    } finally {
+      this.isPrinting = false;
     }
   }
 
@@ -368,8 +370,8 @@ export class BillsComponent implements OnInit {
       billNumber: this.billNumber,
       billDate: this.billDate,
       discount: this.discount,
-      totalAmount,
-      finalAmount,
+      totalAmount: this.totalAmount, // keep UI totals
+      finalAmount: this.finalAmount, // keep UI totals
       billItems: validItems,
       email: this.manualEmail,
       pdfHtml
@@ -425,9 +427,8 @@ export class BillsComponent implements OnInit {
     }
   }
 
-  /** Convert HTML into data URL for Electron printing */
+  /** Convert HTML into data URL for Electron printing (UTF-8, no base64) */
   private htmlToDataUrl(html: string): string {
-    const b64 = btoa(unescape(encodeURIComponent(html)));
-    return `data:text/html;base64,${b64}`;
+    return `data:text/html;charset=utf-8,${encodeURIComponent(html)}`;
   }
 }

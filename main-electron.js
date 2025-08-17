@@ -1,4 +1,4 @@
-// main-electron.js (updated)
+// main-electron.js
 // Run with: contextIsolation: true, nodeIntegration: false
 
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
@@ -157,7 +157,7 @@ function doPrint(win, { deviceName, pageSize, landscape = false, silent = true, 
   });
 }
 
-// Hidden window to load data: URLs for print jobs
+// Create a hidden window for print jobs
 function createPrintWindow() {
   const w = new BrowserWindow({
     show: false,
@@ -165,22 +165,50 @@ function createPrintWindow() {
     height: 800,
     webPreferences: {
       backgroundThrottling: false,
-      offscreen: false,           // offscreen can interfere with print in some drivers
+      offscreen: false, // offscreen can interfere with print in some drivers
     },
   });
   return w;
 }
 
-// Helper: load a data URL or normal URL and wait for ready
-async function loadAndWait(win, url) {
+// --- Data URL helpers & robust loader ---
+
+/** Decode HTML from data: URL (supports base64 or UTF-8 encoded payloads) */
+function htmlFromDataUrl(dataUrl) {
+  const m = /^data:text\/html(?:;charset=[^;]+)?(;base64)?,(.*)$/i.exec(dataUrl || '');
+  if (!m) return '<!doctype html><meta charset="utf-8"><p>Invalid data URL</p>';
+  const isB64 = Boolean(m[1]);
+  const payload = m[2];
+  try {
+    return isB64
+      ? Buffer.from(payload, 'base64').toString('utf8')
+      : decodeURIComponent(payload);
+  } catch (e) {
+    return '<!doctype html><meta charset="utf-8"><p>Failed to decode data URL</p>';
+  }
+}
+
+/** Load HTML robustly by writing into about:blank, avoiding flaky data:URL events */
+async function loadHtmlIntoWindow(win, html) {
+  await win.loadURL('about:blank');
+  await win.webContents.executeJavaScript(`
+    document.open();
+    document.write(${JSON.stringify(html)});
+    document.close();
+  `);
+  // allow layout/paint
+  await new Promise(r => setTimeout(r, 100));
+}
+
+/** Optional old path; now unused but kept for reference */
+async function loadAndWait(win, url, timeoutMs = 8000) {
   await win.loadURL(url);
-  await new Promise(res => {
-    if (win.webContents.isLoadingMainFrame()) {
-      win.webContents.once('did-finish-load', res);
-    } else {
-      res();
-    }
+  const finished = new Promise((res) => {
+    if (!win.webContents.isLoadingMainFrame()) return res();
+    win.webContents.once('did-finish-load', res);
   });
+  const timed = new Promise((_, rej) => setTimeout(() => rej(new Error('Timeout waiting for did-finish-load')), timeoutMs));
+  return Promise.race([finished, timed]);
 }
 
 // DEBUG: list printers from renderer
@@ -199,11 +227,18 @@ ipcMain.handle('print:canon-a4', async (_event, { url, landscape = false } = {})
   log(`IPC print:canon-a4 URL len=${(url||'').length}`);
   const win = createPrintWindow();
   try {
-    await loadAndWait(win, url);
+    // Robust path: decode data URL and write into about:blank
+    const html = htmlFromDataUrl(url);
+    await loadHtmlIntoWindow(win, html);
+
     const deviceName = await resolvePrinterName(win, PRINTER_PREFERENCES.CANON);
     if (!deviceName) throw new Error('Canon LBP2900 printer not found.');
-    await doPrint(win, { deviceName, pageSize: SIZES.A4, landscape });
+    // For debugging driver issues once, set silent:false
+    await doPrint(win, { deviceName, pageSize: SIZES.A4, landscape, silent: true });
     return { ok: true };
+  } catch (err) {
+    log(`❌ IPC print:canon-a4 error: ${err?.message || err}`);
+    return { ok: false, error: String(err?.message || err) };
   } finally {
     win.close();
   }
@@ -214,11 +249,17 @@ ipcMain.handle('print:citizen-50', async (_event, { url } = {}) => {
   log(`IPC print:citizen-50 URL len=${(url||'').length}`);
   const win = createPrintWindow();
   try {
-    await loadAndWait(win, url);
+    // Robust path: decode data URL and write into about:blank
+    const html = htmlFromDataUrl(url);
+    await loadHtmlIntoWindow(win, html);
+
     const deviceName = await resolvePrinterName(win, PRINTER_PREFERENCES.CITIZEN);
     if (!deviceName) throw new Error('Citizen CL-E321 printer not found.');
-    await doPrint(win, { deviceName, pageSize: SIZES.LABEL_50x50, landscape: false });
+    await doPrint(win, { deviceName, pageSize: SIZES.LABEL_50x50, landscape: false, silent: true });
     return { ok: true };
+  } catch (err) {
+    log(`❌ IPC print:citizen-50 error: ${err?.message || err}`);
+    return { ok: false, error: String(err?.message || err) };
   } finally {
     win.close();
   }

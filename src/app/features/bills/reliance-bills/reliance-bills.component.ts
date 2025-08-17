@@ -5,16 +5,6 @@ import { ActivatedRoute } from '@angular/router';
 import { ProductService, Name } from 'src/app/core/services/products.service';
 import { BillsService } from 'src/app/core/services/bills.service';
 
-declare global {
-  interface Window {
-    electron?: {
-      ipcRenderer: {
-        invoke: (channel: string, args?: any) => Promise<any>;
-      };
-    };
-  }
-}
-
 interface BillItem {
   productId: number | null;
   productName: string;
@@ -56,6 +46,8 @@ export class RelianceBillsComponent implements OnInit {
   totalItemPrice = 0;  // sum of unit prices
   receivedAmount: number = 0;   // user-entered value
   balanceAmount: number = 0;    // computed balance
+
+  private isPrinting = false;
 
   constructor(
     private titleService: Title,
@@ -304,7 +296,7 @@ export class RelianceBillsComponent implements OnInit {
     const prod = this.products.find(p => p.id === it.productId);
     if (prod) return prod.name + (prod.units ? ' ' + prod.units : '');
     return it.productName || '';
-    }
+  }
 
   private fmt(n: number): string {
     return (n ?? 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -439,49 +431,56 @@ export class RelianceBillsComponent implements OnInit {
     </body></html>`;
   }
 
-  /** PRINT — no preview. Uses Electron IPC first; hidden-iframe as fallback. */
+  /** PRINT — no preview. Uses Electron API first; hidden-iframe as fallback. */
   async printBill(): Promise<void> {
-    this.ensureRelianceDefaults();
-
-    // Normalize rows like you do before emailing
-    const validItems = this.billItems
-      .filter(it => it.productId !== null)
-      .map(it => {
-        const prod = this.products.find(p => p.id === it.productId);
-        if (prod) it.productName = prod.name + (prod.units ? ' ' + prod.units : '');
-        const qty = Number(it.quantity || 0);
-        if (it.manualTotal) {
-          if (qty > 0 && isFinite(qty)) it.price = +((Number(it.total || 0) / qty)).toFixed(2);
-        } else {
-          it.total = +((qty * Number(it.price || 0))).toFixed(2);
-        }
-        return it;
-      });
-
-    if (!validItems.length) {
-      alert('No valid items to print.');
-      return;
-    }
-
-    // page totals based on visible rows
-    this.totalQuantity = validItems.reduce((a, it) => a + (it.quantity || 0), 0);
-    this.totalAmount   = +validItems.reduce((a, it) => a + (it.total || 0), 0).toFixed(2);
-
-    const html = this.buildPrintHtml(validItems);
+    if (this.isPrinting) return;
+    this.isPrinting = true;
 
     try {
-      if (window.electron?.ipcRenderer?.invoke) {
-        const dataUrl = this.htmlToDataUrl(html);
-        await window.electron.ipcRenderer.invoke('print:canon-a4', {
-          url: dataUrl,
-          landscape: false
+      this.ensureRelianceDefaults();
+
+      // Normalize rows like you do before emailing
+      const validItems = this.billItems
+        .filter(it => it.productId !== null)
+        .map(it => {
+          const prod = this.products.find(p => p.id === it.productId);
+          if (prod) it.productName = prod.name + (prod.units ? ' ' + prod.units : '');
+          const qty = Number(it.quantity || 0);
+          if (it.manualTotal) {
+            if (qty > 0 && isFinite(qty)) it.price = +((Number(it.total || 0) / qty)).toFixed(2);
+          } else {
+            it.total = +((qty * Number(it.price || 0))).toFixed(2);
+          }
+          return it;
         });
+
+      if (!validItems.length) {
+        alert('No valid items to print.');
+        return;
+      }
+
+      // page totals based on visible rows
+      this.totalQuantity = validItems.reduce((a, it) => a + (it.quantity || 0), 0);
+      this.totalAmount   = +validItems.reduce((a, it) => a + (it.total || 0), 0).toFixed(2);
+
+      const html = this.buildPrintHtml(validItems);
+      const dataUrl = this.htmlToDataUrl(html);
+      const el = (window as any).electron;
+
+      if (el?.printCanonA4) {
+        const res = await el.printCanonA4(dataUrl, { landscape: false });
+        if (!res?.ok) {
+          console.error('Print failed:', res?.error);
+          alert('Print failed: ' + (res?.error || 'Unknown error'));
+        }
       } else {
         await this.printHtmlInHiddenIframe(html);
       }
     } catch (err) {
       console.error('Print failed:', err);
       alert('Print failed. Please check the printer connection.');
+    } finally {
+      this.isPrinting = false;
     }
   }
 
@@ -640,9 +639,8 @@ export class RelianceBillsComponent implements OnInit {
     }
   }
 
-  /** Convert HTML to a data URL for Electron */
+  /** Convert HTML to a data URL for Electron (UTF-8, no base64) */
   private htmlToDataUrl(html: string): string {
-    const b64 = btoa(unescape(encodeURIComponent(html)));
-    return `data:text/html;base64,${b64}`;
+    return `data:text/html;charset=utf-8,${encodeURIComponent(html)}`;
   }
 }

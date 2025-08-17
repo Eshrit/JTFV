@@ -4,16 +4,6 @@ import { BillsService } from 'src/app/core/services/bills.service';
 import { HttpClient } from '@angular/common/http';
 import { Title } from '@angular/platform-browser';
 
-declare global {
-  interface Window {
-    electron?: {
-      ipcRenderer: {
-        invoke: (channel: string, args?: any) => Promise<any>;
-      };
-    };
-  }
-}
-
 @Component({
   selector: 'app-edit-lumpsum-bills',
   templateUrl: './edit-lumpsum-bills.component.html',
@@ -33,6 +23,8 @@ export class EditLumpsumBillsComponent implements OnInit, AfterViewInit {
   billNumber = '';
   billDate = '';
   manualEmail = '';
+
+  private isPrinting = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -111,43 +103,51 @@ export class EditLumpsumBillsComponent implements OnInit, AfterViewInit {
   }
 
   async printBill(): Promise<void> {
-    // Blur active element so ngModel updates
-    const active = document.activeElement as HTMLElement | null;
-    if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) active.blur();
-
-    if (!this.clientName && !this.address && !this.description && !this.amount) {
-      alert('Nothing to print. Please fill bill details.');
-      return;
-    }
-
-    this.calculateFinalAmount();
-
-    const html = this.buildPrintHtml({
-      clientName: this.clientName || '',
-      address: this.address || '',
-      billNumber: this.billNumber || '',
-      billDate: this.billDate || '',
-      description: this.description || '',
-      amount: this.amount || 0,
-      discount: this.discount || 0,
-      finalAmount: this.finalAmount,
-    });
+    if (this.isPrinting) return;
+    this.isPrinting = true;
 
     try {
+      // Blur active element so ngModel updates
+      const active = document.activeElement as HTMLElement | null;
+      if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) active.blur();
+
+      if (!this.clientName && !this.address && !this.description && !this.amount) {
+        alert('Nothing to print. Please fill bill details.');
+        return;
+      }
+
+      this.calculateFinalAmount();
+
+      const html = this.buildPrintHtml({
+        clientName: this.clientName || '',
+        address: this.address || '',
+        billNumber: this.billNumber || '',
+        billDate: this.billDate || '',
+        description: this.description || '',
+        amount: this.amount || 0,
+        discount: this.discount || 0,
+        finalAmount: this.finalAmount,
+      });
+
+      const dataUrl = this.htmlToDataUrl(html);
+      const el = (window as any).electron;
+
       // Prefer Electron IPC → forces A4 via Canon (handled in main process)
-      if (window.electron?.ipcRenderer?.invoke) {
-        const dataUrl = this.htmlToDataUrl(html);
-        await window.electron.ipcRenderer.invoke('print:canon-a4', {
-          url: dataUrl,
-          landscape: false
-        });
+      if (el?.printCanonA4) {
+        const res = await el.printCanonA4(dataUrl, { landscape: false });
+        if (!res?.ok) {
+          console.error('Print failed:', res?.error);
+          alert('Print failed: ' + (res?.error || 'Unknown error'));
+        }
       } else {
         // Fallback when running in a normal browser
         await this.printHtmlInHiddenIframe(html);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Print failed:', err);
-      alert('Print failed. Please check the printer connection.');
+      alert('Print failed. ' + (err?.message || 'Please check the printer connection.'));
+    } finally {
+      this.isPrinting = false;
     }
   }
 
@@ -338,9 +338,8 @@ export class EditLumpsumBillsComponent implements OnInit, AfterViewInit {
     }
   }
 
-  /** Convert raw HTML to a data URL for Electron printing */
+  /** Convert raw HTML to a data URL for Electron printing (UTF-8, no base64) */
   private htmlToDataUrl(html: string): string {
-    const b64 = btoa(unescape(encodeURIComponent(html)));
-    return `data:text/html;base64,${b64}`;
+    return `data:text/html;charset=utf-8,${encodeURIComponent(html)}`;
   }
 }
