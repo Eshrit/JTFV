@@ -172,6 +172,11 @@ export class BillsComponent implements OnInit {
 
   async printBill(): Promise<void> {
     if (this.isPrinting) return;
+
+    // Show confirmation before proceeding
+    const confirmed = confirm("Are you sure you want to print this bill?");
+    if (!confirmed) return; // stop if user clicks Cancel / No
+  
     this.isPrinting = true;
 
     try {

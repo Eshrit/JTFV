@@ -505,7 +505,7 @@ app.post('/api/send-bill', async (req, res) => {
     const textSummary =
 `Dear ${clientName || 'Customer'},
 
-Please find attached your invoice${billNumber ? ` (${billNumber})` : ''}${billDate ? ` dated ${billDate}` : ''}.
+Please find attached invoice${billNumber ? ` (${billNumber})` : ''}${billDate ? ` dated ${billDate}` : ''}.
 
 ${typeof totalAmount === 'number' ? `Total: ₹${Number(totalAmount).toLocaleString('en-IN')}\n` : ''}${typeof discount === 'number' ? `Margin: ${discount}%\n` : ''}${typeof finalAmount === 'number' ? `Final: ₹${Number(finalAmount).toLocaleString('en-IN')}\n` : ''}
 
