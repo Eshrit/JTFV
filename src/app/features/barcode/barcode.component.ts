@@ -37,7 +37,7 @@ export class BarcodeComponent implements OnInit {
     });
   }
 
-  onQtyKeyDown(event: KeyboardEvent, index: number) {
+  onMrpKeyDown(event: KeyboardEvent, index: number) {
     if (event.key === 'Tab' && index === this.products.length - 1) {
       event.preventDefault();
       this.addRow();
