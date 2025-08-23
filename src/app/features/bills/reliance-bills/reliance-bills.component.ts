@@ -437,14 +437,14 @@ export class RelianceBillsComponent implements OnInit {
 
     // Show confirmation before proceeding
     const confirmed = confirm("Are you sure you want to print this bill?");
-    if (!confirmed) return; // stop if user clicks Cancel / No
-  
+    if (!confirmed) return;
+
     this.isPrinting = true;
 
     try {
       this.ensureRelianceDefaults();
 
-      // Normalize rows like you do before emailing
+      // Normalize rows
       const validItems = this.billItems
         .filter(it => it.productId !== null)
         .map(it => {
@@ -464,11 +464,23 @@ export class RelianceBillsComponent implements OnInit {
         return;
       }
 
-      // page totals based on visible rows
+      // Totals for footer
       this.totalQuantity = validItems.reduce((a, it) => a + (it.quantity || 0), 0);
       this.totalAmount   = +validItems.reduce((a, it) => a + (it.total || 0), 0).toFixed(2);
 
-      const html = this.buildPrintHtml(validItems);
+      // Build base HTML
+      let html = this.buildPrintHtml(validItems);
+
+      // ✅ Ask for number of copies (Cancel ⇒ abort)
+      const copiesStr = prompt('How many copies to print?', '1');
+      if (copiesStr === null) return; // user cancelled
+      const parsed = parseInt(copiesStr, 10);
+      const copies = Number.isFinite(parsed) ? Math.max(1, Math.min(10, parsed)) : 1;
+
+      if (copies > 1) {
+        html = this.duplicatePages(html, copies);
+      }
+
       const dataUrl = this.htmlToDataUrl(html);
       const el = (window as any).electron;
 
@@ -487,6 +499,31 @@ export class RelianceBillsComponent implements OnInit {
     } finally {
       this.isPrinting = false;
     }
+  }
+
+  /** Duplicate the printed page N times inside the same print job */
+  private duplicatePages(html: string, copies: number): string {
+    if (!copies || copies <= 1) return html;
+
+    const bodyMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+    if (!bodyMatch) return html;
+
+    // Ensure pagebreak styles exist
+    const headCloseIdx = html.search(/<\/head>/i);
+    const extraStyle = `<style>@media print{.pagebreak{page-break-after:always}.print-copy{break-inside:avoid}}</style>`;
+    const withStyle =
+      headCloseIdx > -1
+        ? html.slice(0, headCloseIdx) + extraStyle + html.slice(headCloseIdx)
+        : html;
+
+    const inner = bodyMatch[1];
+    const repeated = Array.from({ length: copies }, (_, i) =>
+      i < copies - 1
+        ? `<div class="print-copy">${inner}</div><div class="pagebreak"></div>`
+        : `<div class="print-copy">${inner}</div>`
+    ).join("");
+
+    return withStyle.replace(bodyMatch[0], `<body>${repeated}</body>`);
   }
 
   emailBill(): void {

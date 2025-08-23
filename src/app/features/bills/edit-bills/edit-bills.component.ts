@@ -197,71 +197,6 @@ export class EditBillsComponent implements OnInit {
     }
   }
 
-  /** ========== PRINT BILL ========== */
-  async printBill(): Promise<void> {
-    if (this.isPrinting) return;
-
-    // Show confirmation before proceeding
-    const confirmed = confirm("Are you sure you want to print this bill?");
-    if (!confirmed) return; // stop if user clicks Cancel / No
-  
-    this.isPrinting = true;
-
-    try {
-      const validItems = this.billItems
-        .filter((i) => i.productId !== null && i.quantity > 0 && i.price > 0)
-        .map((i) => ({
-          ...i,
-          productName:
-            i.productName ||
-            (() => {
-              const prod = this.products.find((p) => p.id === i.productId);
-              return prod ? prod.name + (prod.units ? ' ' + prod.units : '') : '(Unknown)';
-            })(),
-        }));
-
-      if (validItems.length === 0) {
-        alert('No valid items to print. Please check quantity and price fields.');
-        return;
-      }
-
-      const totalAmount = validItems.reduce(
-        (acc, it) => acc + (it.quantity || 0) * (it.price || 0),
-        0
-      );
-      const discountAmount = totalAmount * (this.discount / 100);
-      const finalAmount = totalAmount - discountAmount;
-
-      const html = this.buildPrintHtml(validItems, {
-        clientName: this.clientName,
-        address: this.address,
-        billNumber: this.billNumber,
-        billDate: this.billDate,
-        discount: this.discount,
-        totalAmount,
-        finalAmount,
-      });
-
-      const dataUrl = this.htmlToDataUrl(html);
-      const el = (window as any).electron;
-
-      if (el?.printCanonA4) {
-        const res = await el.printCanonA4(dataUrl, { landscape: false });
-        if (!res?.ok) {
-          console.error('Print failed:', res?.error);
-          alert('Print failed: ' + (res?.error || 'Unknown error'));
-        }
-      } else {
-        await this.printHtmlInHiddenIframe(html);
-      }
-    } catch (err: any) {
-      console.error('Print failed:', err);
-      alert('Print failed. ' + (err?.message || 'Please check the printer connection.'));
-    } finally {
-      this.isPrinting = false;
-    }
-  }
-
   private async printHtmlInHiddenIframe(html: string): Promise<void> {
     const iframe = document.createElement('iframe');
     iframe.style.position = 'fixed';
@@ -329,62 +264,24 @@ export class EditBillsComponent implements OnInit {
       finalAmount: number;
     }
   ): string {
-    const esc = (s: string) =>
-      (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const esc = (s: string) => (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     const fmtINR = (n: number) =>
-      new Intl.NumberFormat('en-IN', {
-        style: 'currency',
-        currency: 'INR',
-        maximumFractionDigits: 2,
-      }).format(n);
-    const n2 = (n: number) => (Number.isFinite(n) ? n.toFixed(2) : '');
+      new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 2 }).format(n);
+    const fmt2 = (n: number) => (Number.isFinite(n) ? n.toFixed(2) : '');
     const dateStr = this.formatDateDDMMYYYY(meta.billDate);
 
     const rows = items
-      .map((it, i) => {
-        const total = (it.quantity || 0) * (it.price || 0);
-        return `
+      .map(
+        (it, i) => `
           <tr>
             <td>${i + 1}</td>
             <td>${esc(it.productName)}</td>
             <td>${esc(String(it.quantity))}</td>
-            <td>${n2(it.price)}</td>
-            <td>${n2(total)}</td>
-          </tr>`;
-      })
+            <td>${fmt2(it.price)}</td>
+            <td>${fmt2((it.quantity || 0) * (it.price || 0))}</td>
+          </tr>`
+      )
       .join('');
-
-    const styles = `
-    <style>
-      @page { size: A4 portrait; margin: 10mm; }
-      html, body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      body { background: #fff; }
-
-      .container {
-        max-width: 900px; margin: 0 auto; padding: 20px;
-        font-family: 'Poppins','Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
-        color: #2c3e50; font-size: 10px; line-height: 1.25;
-      }
-      .header { text-align: center; margin-bottom: 12px; }
-      .header h1 { margin: 0; font-size: 22px; font-weight: 700; color: #333; }
-      .header p { margin: 2px 0; font-size: 10px; color: #546e7a; }
-
-      .invoice-header { margin-top: 10px; }
-      .header-flex { display: flex; justify-content: space-between; align-items: center; }
-      .invoice-title { font-size: 13px; font-weight: 700; }
-      .bold-label { font-weight: 700; }
-
-      .horizontal-info { display: flex; gap: 10px; justify-content: space-between; margin-bottom: 12px; }
-      .field-row { display: flex; align-items: center; gap: 6px; font-size: 9.5px; }
-      .field-row label { font-weight: 600; min-width: 60px; }
-
-      table { width: 100%; border-collapse: collapse; font-size: 9.5px; margin: 10px 0; }
-      th, td { border: 1px solid #ccc; padding: 3px 5px; text-align: center; }
-      th { background: #ecf0f1; font-weight: 700; }
-      tr { page-break-inside: avoid; }
-
-      .summary { display: flex; justify-content: flex-end; font-weight: 700; font-size: 10px; margin-bottom: 4px; gap: 6px; }
-    </style>`;
 
     return `
     <!doctype html>
@@ -392,44 +289,142 @@ export class EditBillsComponent implements OnInit {
       <head>
         <meta charset="utf-8"/>
         <title>Invoice ${esc(meta.billNumber)}</title>
-        ${styles}
+        <style>
+          @page { size: A4; margin: 10mm; }
+          body { font-family: 'Poppins','Segoe UI',Tahoma,sans-serif; -webkit-print-color-adjust: exact; }
+          .container { max-width: 900px; margin: 0 auto; padding: 20px; font-size: 11px; }
+          .header { text-align: center; }
+          .header h1 { margin: 0; font-size: 22px; }
+          .header p { margin: 2px 0; font-size: 10px; }
+          table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+          th, td { border: 1px solid #ccc; padding: 4px; font-size: 10px; text-align: center; }
+          th { background: #eee; }
+          .summary { text-align: right; font-weight: bold; margin-top: 8px; font-size: 11px; }
+        </style>
       </head>
       <body>
         <div class="container">
           <div class="header">
             <h1>J.T. Fruits &amp; Vegetables</h1>
             <p>Shop No. 31-32, Bldg No. 27, EMP Op Jogers Park, Thakur Village, Kandivali(E), Mumbai 400101</p>
-            <p>PAN: AAJFJ0258J | FSS LICENSE ACT 2006 LICENSE NO: 11517011000128</p>
-            <p>Email: jkumarshahu5@gmail.com</p>
-            <div class="invoice-header">
-              <div class="header-flex">
-                <div><span class="bold-label">Date:</span> ${esc(dateStr)}</div>
-                <div class="invoice-title">TAX FREE INVOICE</div>
-                <div><span class="bold-label">Bill No:</span> ${esc(meta.billNumber)}</div>
-              </div>
-            </div>
+            <p>PAN: AAJFJ0258J | License: 11517011000128 | Email: jkumarshahu5@gmail.com</p>
+            <p>Date: ${esc(dateStr)} &nbsp;&nbsp; Bill No: ${esc(meta.billNumber)}</p>
           </div>
-
-          <div class="horizontal-info">
-            <div class="field-row"><label>Name:</label><div>${esc(meta.clientName)}</div></div>
-            <div class="field-row"><label>Address:</label><div style="white-space: pre-line;">${esc(meta.address)}</div></div>
-          </div>
-
+          <p><b>Name:</b> ${esc(meta.clientName)}<br/><b>Address:</b> ${esc(meta.address)}</p>
           <table>
             <thead>
-              <tr>
-                <th>No</th><th>Product</th><th>Quantity</th><th>Product Price</th><th>Total Amount</th>
-              </tr>
+              <tr><th>No</th><th>Product</th><th>Qty</th><th>Price</th><th>Total</th></tr>
             </thead>
             <tbody>${rows}</tbody>
           </table>
-
-          <div class="summary"><label>Total Amount:</label><div>${fmtINR(meta.totalAmount)}</div></div>
-          <div class="summary"><label>Margin (%):</label><div>${esc(String(meta.discount || 0))}</div></div>
-          <div class="summary"><label>Final Amount:</label><div>${fmtINR(meta.finalAmount)}</div></div>
+          <div class="summary">Total Amount: ${fmtINR(meta.totalAmount)}</div>
+          <div class="summary">Margin (%): ${esc(String(meta.discount))}</div>
+          <div class="summary">Final Amount: ${fmtINR(meta.finalAmount)}</div>
         </div>
       </body>
     </html>`;
+  }
+
+  /** ========== PRINT BILL ========== */
+  async printBill(): Promise<void> {
+    if (this.isPrinting) return;
+
+    // Show confirmation before proceeding
+    const confirmed = confirm("Are you sure you want to print this bill?");
+    if (!confirmed) return;
+
+    this.isPrinting = true;
+
+    try {
+      const validItems = this.billItems
+        .filter(i => i.productId !== null && i.quantity > 0 && i.price > 0)
+        .map(i => ({
+          ...i,
+          productName:
+            i.productName ||
+            (() => {
+              const prod = this.products.find(p => p.id === i.productId);
+              return prod ? prod.name + (prod.units ? ' ' + prod.units : '') : '(Unknown)';
+            })()
+        }));
+
+      if (validItems.length === 0) {
+        alert('No valid items to print. Please check quantity and price fields.');
+        return;
+      }
+
+      const totalAmount = validItems.reduce(
+        (acc, it) => acc + (it.quantity || 0) * (it.price || 0),
+        0
+      );
+      const discountAmount = totalAmount * (this.discount / 100);
+      const finalAmount = totalAmount - discountAmount;
+
+      // Build base HTML
+      let html = this.buildPrintHtml(validItems, {
+        clientName: this.clientName,
+        address: this.address,
+        billNumber: this.billNumber,
+        billDate: this.billDate,
+        discount: this.discount,
+        totalAmount,
+        finalAmount,
+      });
+
+      // ✅ Ask for number of copies (Cancel -> abort)
+      const copiesStr = prompt('How many copies to print?', '1');
+      if (copiesStr === null) return; // user cancelled prompt
+
+      const parsed = parseInt(copiesStr, 10);
+      const copies = Number.isFinite(parsed) ? Math.max(1, Math.min(10, parsed)) : 1;
+
+      if (copies > 1) {
+        html = this.duplicatePages(html, copies);
+      }
+
+      const dataUrl = this.htmlToDataUrl(html);
+      const el = (window as any).electron;
+
+      if (el?.printCanonA4) {
+        const res = await el.printCanonA4(dataUrl, { landscape: false });
+        if (!res?.ok) {
+          console.error('Print failed:', res?.error);
+          alert('Print failed: ' + (res?.error || 'Unknown error'));
+        }
+      } else {
+        await this.printHtmlInHiddenIframe(html);
+      }
+    } catch (err: any) {
+      console.error('Print failed:', err);
+      alert('Print failed. ' + (err?.message || 'Please check the printer connection.'));
+    } finally {
+      this.isPrinting = false;
+    }
+  }
+
+  /** Duplicate the printed page N times inside the same print job */
+  private duplicatePages(html: string, copies: number): string {
+    if (!copies || copies <= 1) return html;
+
+    const bodyMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+    if (!bodyMatch) return html;
+
+    // Ensure pagebreak styles exist
+    const headCloseIdx = html.search(/<\/head>/i);
+    const extraStyle = `<style>@media print{.pagebreak{page-break-after:always}.print-copy{break-inside:avoid}}</style>`;
+    const withStyle =
+      headCloseIdx > -1
+        ? html.slice(0, headCloseIdx) + extraStyle + html.slice(headCloseIdx)
+        : html;
+
+    const inner = bodyMatch[1];
+    const repeated = Array.from({ length: copies }, (_, i) =>
+      i < copies - 1
+        ? `<div class="print-copy">${inner}</div><div class="pagebreak"></div>`
+        : `<div class="print-copy">${inner}</div>`
+    ).join("");
+
+    return withStyle.replace(bodyMatch[0], `<body>${repeated}</body>`);
   }
 
   /** ========== EMAIL BILL ========== */

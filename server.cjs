@@ -113,7 +113,8 @@ db.run(`
       address TEXT,
       billNumber TEXT, 
       billDate TEXT, 
-      discount REAL, 
+      discount REAL,
+      discountAmount REAL,
       totalAmount REAL, 
       finalAmount REAL, 
       description TEXT,
@@ -313,20 +314,23 @@ app.post('/api/bills', (req, res) => {
   const b = req.body;
   const query = `
     INSERT INTO bills (
-      clientName, address, billNumber, billDate, discount, totalAmount, finalAmount, description, billItems, billType
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      clientName, address, billNumber, billDate,
+      discount, discountAmount,            -- ← added here
+      totalAmount, finalAmount, description, billItems, billType
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
   const values = [
     b.clientName,
     b.address,
     b.billNumber,
     b.billDate,
-    b.discount,
+    b.discount,                 // percent
+    b.discountAmount ?? null,   // numeric value
     b.totalAmount,
     b.finalAmount,
     b.description || '',
-    JSON.stringify(b.billItems),
-    b.billType || '' // store billType
+    JSON.stringify(b.billItems || []),
+    b.billType || ''
   ];
 
   db.run(query, values, function (err) {
@@ -340,13 +344,14 @@ app.put('/api/bills/:billNumber', (req, res) => {
   const b = req.body;
   const query = `
     UPDATE bills SET
-      clientName = ?, 
-      address = ?, 
-      billDate = ?, 
+      clientName = ?,
+      address = ?,
+      billDate = ?,
       discount = ?, 
-      totalAmount = ?, 
-      finalAmount = ?, 
-      billItems = ?, 
+      discountAmount = ?,          -- ← added here
+      totalAmount = ?,
+      finalAmount = ?,
+      billItems = ?,
       description = ?,
       billType = ?
     WHERE billNumber = ?
@@ -355,7 +360,8 @@ app.put('/api/bills/:billNumber', (req, res) => {
     b.clientName,
     b.address,
     b.billDate,
-    b.discount,
+    b.discount,                 // percent
+    b.discountAmount ?? null,   // numeric value
     b.totalAmount,
     b.finalAmount,
     JSON.stringify(b.billItems || []),

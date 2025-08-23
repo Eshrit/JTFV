@@ -8,10 +8,10 @@
   color: #2c3e50;
 }
 
-/* === HEADER === */
+/* === HEADER (Shop lines) === */
 .top-section {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
 }
 
 .title {
@@ -29,114 +29,103 @@
   margin: 2px 0;
 }
 
-/* === INVOICE INFO (Date - Title - Bill No) === */
-.invoice-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  margin: 20px 0;
-  gap: 12px;
-}
-
+/* === TAX FREE INVOICE (centered) === */
 .invoice-title {
-  flex: 1;
   text-align: center;
-  font-size: 20px;
-  font-weight: bold;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: .3px;
+  margin: 14px 0 10px;
 }
 
-.field-inline {
+/* === TWO-COLUMN ROW: LEFT(Name/Address) | RIGHT(Bill No/Date/Amount) === */
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;   /* left grows, right fixed */
+  align-items: start;
+  gap: 16px 24px;
+  margin-bottom: 12px;
+}
+
+/* Left column: flat lines like NAME : VALUE, ADDRESS : VALUE */
+.left-info .line {
   display: flex;
-  align-items: center;
   gap: 8px;
+  align-items: flex-start;
+  margin-bottom: 8px;
   font-size: 14px;
+}
+
+.left-info label {
+  font-weight: 700;
   white-space: nowrap;
 }
 
-/* === FORM CONTROL === */
+/* Right column: stacked meta, right-aligned */
+.right-meta .meta {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+.right-meta label {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* === FORM CONTROLS (edit mode) === */
 .form-control {
   padding: 6px 10px;
   font-size: 14px;
   border: 1px solid #ccd6dd;
-  border-radius: 6px;
+  border-radius: 4px;
   background: #f7f9fc;
-  transition: border-color 0.3s ease;
 }
 
-.form-control:focus {
-  border-color: #3f51b5;
-  background-color: #ffffff;
+.bill-control { width: 80px; text-align: center; }
+select.form-control.client-select { min-width: 250px; }
+
+textarea.form-control.address-area {
+  width: 280px;        /* 👈 decrease width (adjust as needed) */
+  resize: horizontal;
+  min-height: 40px;    /* slightly taller for readability */
+  line-height: 1.35;
 }
 
-.bill-control {
-  width: 70px;
-}
-
-select.form-control.client-select {
-  width: 250px;
-}
-
-/* === NAME / ADDRESS BLOCK === */
-.horizontal-info {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 20px;
-  margin-bottom: 20px;
-}
-
-.field-row {
-  display: flex;
-  flex: 1;
-  align-items: flex-start;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-
-.field-row label {
-  font-weight: 600;
-  min-width: 80px;
-  margin-top: 6px;
-  white-space: nowrap;
-}
-
-textarea.form-control {
-  resize: vertical;
-  width: 100%;
-}
-
-/* === ADDRESS AREA === */
-.address-area {
-  overflow: hidden;
-  resize: none;
-  min-height: 1.2em;
-  max-height: 300px;
-  line-height: 1.4;
-  font-size: 14px;
-  padding: 6px 10px;
-}
-
-/* === AMOUNT FIELD === */
-.field-row input[type="number"] {
-  max-width: 150px;
-}
-
-/* === SUMMARY BLOCK === */
+/* === SUMMARY (unchanged) === */
 .print-summary-footer {
   margin-top: 30px;
   border-top: 1px solid #e0e0e0;
   padding-top: 20px;
+  font-size: 15px;
 }
 
 .summary {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  font-size: 16px;
-  font-weight: bold;
-  margin-bottom: 12px;
   gap: 12px;
+  margin-bottom: 10px;
+}
+
+.summary label {
+  font-weight: 600;
+  min-width: 130px;
+  text-align: right;
+}
+
+.discount-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.margin-value {
+  font-weight: 600;
+  color: #333;
 }
 
 .summary input.form-control {
@@ -145,7 +134,42 @@ textarea.form-control {
   font-weight: normal;
 }
 
-/* === ACTION BUTTONS === */
+/* === META INFO (unchanged) === */
+/* Right column meta box styling */
+.right-meta .meta {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.right-meta label {
+  font-weight: 600;
+  min-width: 65px;
+  text-align: right;
+}
+
+/* Make inputs consistent with left side controls */
+.right-meta input.form-control,
+.right-meta input[type="date"],
+.right-meta input[type="number"] {
+  padding: 6px 10px;
+  font-size: 14px;
+  border: 1px solid #ccd6dd;
+  border-radius: 4px;
+  background: #f7f9fc;
+  transition: border-color 0.3s ease;
+  width: 140px;   /* fixed size for neatness */
+}
+
+.right-meta input:focus {
+  border-color: #3f51b5;
+  background-color: #ffffff;
+}
+
+/* === ACTION BUTTONS (unchanged) === */
 .actions {
   margin-top: 30px;
   display: flex;
@@ -164,34 +188,29 @@ textarea.form-control {
   transition: all 0.3s ease;
 }
 
-.btn-success {
-  background-color: #28a745;
-  color: #fff;
+.btn-success { background-color: #28a745; color: #fff; }
+.btn-success:hover { background-color: #218838; }
+
+.btn-primary { background-color: #3f51b5; color: #fff; }
+.btn-primary:hover { background-color: #2c3c8f; }
+
+.btn-secondary { background-color: #607d8b; color: #fff; }
+.btn-secondary:hover { background-color: #546e7a; }
+
+/* === PRINT TOGGLE === */
+.print-toggle .print-view { display: none; }
+
+@media print {
+  .no-print { display: none !important; }
+  .print-toggle .no-print { display: none !important; }
+  .print-toggle .print-view { display: inline !important; }
 }
 
-.btn-success:hover {
-  background-color: #218838;
-}
-
-.btn-primary {
-  background-color: #3f51b5;
-  color: #fff;
-}
-
-.btn-primary:hover {
-  background-color: #2c3c8f;
-}
-
-.btn-secondary {
-  background-color: #607d8b;
-  color: #fff;
-}
-
-.btn-secondary:hover {
-  background-color: #546e7a;
-}
-
-/* === PRINT TOGGLE HANDLING === */
-.print-toggle .print-view {
-  display: none;
+/* Optional: small screens */
+@media (max-width: 720px) {
+  .info-grid {
+    grid-template-columns: 1fr; /* stack on mobile */
+  }
+  .right-meta { text-align: left; }
+  .right-meta .meta { justify-content: flex-start; }
 }

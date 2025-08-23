@@ -170,68 +170,6 @@ export class BillsComponent implements OnInit {
     this.finalAmount = this.totalAmount - discountAmount;
   }
 
-  async printBill(): Promise<void> {
-    if (this.isPrinting) return;
-
-    // Show confirmation before proceeding
-    const confirmed = confirm("Are you sure you want to print this bill?");
-    if (!confirmed) return; // stop if user clicks Cancel / No
-  
-    this.isPrinting = true;
-
-    try {
-      const validItems = this.billItems
-        .filter(i => i.productId !== null && i.quantity > 0 && i.price > 0)
-        .map(i => ({
-          ...i,
-          productName:
-            i.productName ||
-            (() => {
-              const prod = this.products.find(p => p.id === i.productId);
-              return prod ? prod.name + (prod.units ? ' ' + prod.units : '') : '(Unknown)';
-            })()
-        }));
-
-      if (validItems.length === 0) {
-        alert('No valid items to print. Please check quantity and price fields.');
-        return;
-      }
-
-      const totalAmount = validItems.reduce((acc, it) => acc + (it.quantity || 0) * (it.price || 0), 0);
-      const discountAmount = totalAmount * (this.discount / 100);
-      const finalAmount = totalAmount - discountAmount;
-
-      const html = this.buildPrintHtml(validItems, {
-        clientName: this.clientName,
-        address: this.address,
-        billNumber: this.billNumber,
-        billDate: this.billDate,
-        discount: this.discount,
-        totalAmount,
-        finalAmount
-      });
-
-      const dataUrl = this.htmlToDataUrl(html);
-
-      const el = (window as any).electron;
-      if (el?.printCanonA4) {
-        const res = await el.printCanonA4(dataUrl, { landscape: false });
-        if (!res?.ok) {
-          console.error('Print failed:', res?.error);
-          alert('Print failed: ' + (res?.error || 'Unknown error'));
-        }
-      } else {
-        // Browser fallback (dev-in-browser)
-        await this.printHtmlInHiddenIframe(html);
-      }
-    } catch (err: any) {
-      console.error('Print failed:', err);
-      alert('Print failed. ' + (err?.message || 'Please check the printer connection.'));
-    } finally {
-      this.isPrinting = false;
-    }
-  }
-
   private buildPrintHtml(
     items: Array<{ productId: number | null; productName: string; quantity: number; price: number; total?: number }>,
     meta: {
@@ -328,6 +266,97 @@ export class BillsComponent implements OnInit {
     setTimeout(() => document.body.removeChild(iframe), 1000);
   }
 
+  async printBill(): Promise<void> {
+    if (this.isPrinting) return;
+
+    const confirmed = confirm("Are you sure you want to print this bill?");
+    if (!confirmed) return;
+
+    this.isPrinting = true;
+
+    try {
+      const validItems = this.billItems
+        .filter(i => i.productId !== null && i.quantity > 0 && i.price > 0)
+        .map(i => ({
+          ...i,
+          productName:
+            i.productName ||
+            (() => {
+              const prod = this.products.find(p => p.id === i.productId);
+              return prod ? prod.name + (prod.units ? ' ' + prod.units : '') : '(Unknown)';
+            })()
+        }));
+
+      if (validItems.length === 0) {
+        alert('No valid items to print. Please check quantity and price fields.');
+        return;
+      }
+
+      const totalAmount = validItems.reduce((acc, it) => acc + (it.quantity || 0) * (it.price || 0), 0);
+      const discountAmount = totalAmount * (this.discount / 100);
+      const finalAmount = totalAmount - discountAmount;
+
+      let html = this.buildPrintHtml(validItems, {
+        clientName: this.clientName,
+        address: this.address,
+        billNumber: this.billNumber,
+        billDate: this.billDate,
+        discount: this.discount,
+        totalAmount,
+        finalAmount
+      });
+
+      // ✅ Ask for number of copies
+      const copiesStr = prompt('How many copies to print?', '1');
+      const copies = Math.max(1, Math.min(10, parseInt(copiesStr || '1', 10)));
+      if (copies > 1) {
+        html = this.duplicatePages(html, copies);
+      }
+
+      const dataUrl = this.htmlToDataUrl(html);
+      const el = (window as any).electron;
+
+      if (el?.printCanonA4) {
+        const res = await el.printCanonA4(dataUrl, { landscape: false });
+        if (!res?.ok) {
+          console.error('Print failed:', res?.error);
+          alert('Print failed: ' + (res?.error || 'Unknown error'));
+        }
+      } else {
+        await this.printHtmlInHiddenIframe(html);
+      }
+    } catch (err: any) {
+      console.error('Print failed:', err);
+      alert('Print failed. ' + (err?.message || 'Please check the printer connection.'));
+    } finally {
+      this.isPrinting = false;
+    }
+  }
+
+/** Duplicate the printed page N times inside the same print job */
+  private duplicatePages(html: string, copies: number): string {
+    if (!copies || copies <= 1) return html;
+
+    const bodyMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+    if (!bodyMatch) return html;
+
+    const headCloseIdx = html.search(/<\/head>/i);
+    const extraStyle = `<style>@media print{.pagebreak{page-break-after:always}.print-copy{break-inside:avoid}}</style>`;
+    const withStyle =
+      headCloseIdx > -1
+        ? html.slice(0, headCloseIdx) + extraStyle + html.slice(headCloseIdx)
+        : html; // fallback if no <head>
+
+    const inner = bodyMatch[1];
+    const repeated = Array.from({ length: copies }, (_, i) =>
+      i < copies - 1
+        ? `<div class="print-copy">${inner}</div><div class="pagebreak"></div>`
+        : `<div class="print-copy">${inner}</div>`
+    ).join('');
+
+    return withStyle.replace(bodyMatch[0], `<body>${repeated}</body>`);
+  }
+  
   private formatDateDDMMYYYY(iso: string): string {
     const d = new Date(iso);
     if (Number.isNaN(d.getTime())) return iso || '';

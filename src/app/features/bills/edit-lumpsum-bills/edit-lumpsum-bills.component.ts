@@ -14,15 +14,16 @@ export class EditLumpsumBillsComponent implements OnInit, AfterViewInit {
 
   clients: any[] = [];
   selectedClient: any = null;
-  clientName = '';
-  address = '';
-  description = '';
-  amount = 0;
-  discount = 0;
-  finalAmount = 0;
-  billNumber = '';
-  billDate = '';
-  manualEmail = '';
+  clientName: string = '';
+  address: string = '';
+  description: string = '';
+  amount: number = 0;
+  discount: number = 0;
+  finalAmount: number = 0;
+  marginValue: number = 0;
+  billNumber: string = '';
+  billDate: string = new Date().toISOString().substring(0, 10);
+  manualEmail: string = '';
 
   private isPrinting = false;
 
@@ -48,20 +49,28 @@ export class EditLumpsumBillsComponent implements OnInit, AfterViewInit {
       this.address = bill.address;
       this.description = bill.description;
       this.amount = bill.totalAmount;
-      this.discount = bill.discount;
-      this.finalAmount = bill.finalAmount;
+      this.discount = bill.discount; // percent
       this.billDate = bill.billDate;
 
+      // Use saved discountAmount if available; otherwise derive it
+      this.marginValue = (typeof bill.discountAmount === 'number')
+        ? bill.discountAmount
+        : ((bill.totalAmount || 0) * (bill.discount || 0)) / 100;
+
+      // Prefer saved finalAmount; otherwise derive it from amount - marginValue
+      this.finalAmount = (typeof bill.finalAmount === 'number')
+        ? bill.finalAmount
+        : (this.amount || 0) - (this.marginValue || 0);
+
       const matchingClient = this.clients.find(c => c.firstName === bill.clientName);
-      if (matchingClient) {
-        this.selectedClient = matchingClient;
-      }
+      if (matchingClient) this.selectedClient = matchingClient;
 
       // Trigger resize after address is loaded
       setTimeout(() => this.autoResize(), 0);
-    });
 
-    this.calculateFinalAmount();
+      // Only recompute if there was no saved discountAmount
+      if (bill.discountAmount == null) this.calculateFinalAmount();
+    });
   }
 
   ngAfterViewInit(): void {
@@ -78,9 +87,13 @@ export class EditLumpsumBillsComponent implements OnInit, AfterViewInit {
     }
   }
 
-  calculateFinalAmount(): void {
-    const discountAmount = this.amount * (this.discount / 100);
-    this.finalAmount = this.amount - discountAmount;
+  calculateFinalAmount() {
+    if (!this.amount) { this.finalAmount = 0; this.marginValue = 0;
+      return;
+    }
+
+    this.marginValue = (this.amount * this.discount) / 100;
+    this.finalAmount = this.amount - this.marginValue;
   }
 
   updateBill(): void {
@@ -89,11 +102,13 @@ export class EditLumpsumBillsComponent implements OnInit, AfterViewInit {
       address: this.address,
       billNumber: this.billNumber,
       billDate: this.billDate,
-      discount: this.discount,
+      discount: this.discount,            // percent (e.g., 15)
+      discountAmount: this.marginValue,   // ← NEW: numeric value (e.g., 185.10)
       totalAmount: this.amount,
       finalAmount: this.finalAmount,
       description: this.description,
-      billItems: []
+      billItems: [],
+      billType: 'lumpsum'
     };
 
     this.billsService.updateBill(this.billNumber, updatedBill).subscribe({
@@ -121,9 +136,14 @@ export class EditLumpsumBillsComponent implements OnInit, AfterViewInit {
         return;
       }
 
+      // Ensure latest final amount is calculated
       this.calculateFinalAmount();
 
-      const html = this.buildPrintHtml({
+      // Ask how many copies
+      const copiesStr = prompt('How many copies to print?', '1');
+      const copies = Math.max(1, Math.min(10, parseInt(copiesStr || '1', 10))); // clamp 1..10
+
+      let html = this.buildPrintHtml({
         clientName: this.clientName || '',
         address: this.address || '',
         billNumber: this.billNumber || '',
@@ -131,8 +151,13 @@ export class EditLumpsumBillsComponent implements OnInit, AfterViewInit {
         description: this.description || '',
         amount: this.amount || 0,
         discount: this.discount || 0,
-        finalAmount: this.finalAmount,
+        finalAmount: this.finalAmount
       });
+
+      // Duplicate the page inside the same job if copies > 1
+      if (copies > 1) {
+        html = this.duplicatePages(html, copies);
+      }
 
       const dataUrl = this.htmlToDataUrl(html);
       const el = (window as any).electron;
@@ -154,6 +179,30 @@ export class EditLumpsumBillsComponent implements OnInit, AfterViewInit {
     } finally {
       this.isPrinting = false;
     }
+  }
+
+  /** Duplicate the printed page N times inside the same print job */
+  private duplicatePages(html: string, copies: number): string {
+    if (!copies || copies <= 1) return html;
+
+    const bodyMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+    if (!bodyMatch) return html;
+
+    const headCloseIdx = html.search(/<\/head>/i);
+    const extraStyle = `<style>@media print{.pagebreak{page-break-after:always}.print-copy{break-inside:avoid}}</style>`;
+    const withStyle =
+      headCloseIdx > -1
+        ? html.slice(0, headCloseIdx) + extraStyle + html.slice(headCloseIdx)
+        : html; // fallback if no <head>
+
+    const inner = bodyMatch[1];
+    const repeated = Array.from({ length: copies }, (_, i) =>
+      i < copies - 1
+        ? `<div class="print-copy">${inner}</div><div class="pagebreak"></div>`
+        : `<div class="print-copy">${inner}</div>`
+    ).join('');
+
+    return withStyle.replace(bodyMatch[0], `<body>${repeated}</body>`);
   }
 
   private async printHtmlInHiddenIframe(html: string): Promise<void> {
@@ -200,6 +249,12 @@ export class EditLumpsumBillsComponent implements OnInit, AfterViewInit {
     }
   }
 
+  private formatDateDDMMYYYY(iso: string): string {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return iso || '';
+    return d.toLocaleDateString('en-GB'); // dd/mm/yyyy
+  }
+
   private buildPrintHtml(meta: {
     clientName: string;
     address: string;
@@ -207,77 +262,239 @@ export class EditLumpsumBillsComponent implements OnInit, AfterViewInit {
     billDate: string;
     description: string;
     amount: number;
-    discount: number;
-    finalAmount: number;
+    discount: number;     // percent
+    finalAmount: number;  // may be precomputed; we also recompute defensively
   }): string {
     const esc = (s: string) =>
       (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    const fmtINR = (n: number) =>
-      new Intl.NumberFormat('en-IN', {
-        style: 'currency',
-        currency: 'INR',
-        maximumFractionDigits: 2
-      }).format(n);
 
-    const dateStr = meta.billDate ? new Date(meta.billDate).toLocaleDateString('en-GB') : '';
+    // Plain number (no currency symbol) in Indian grouping, 2 decimals
+    const fmt = (n: number) =>
+      new Intl.NumberFormat('en-IN', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }).format(isFinite(n as number) ? Number(n) : 0);
+
+    const dateStr = this.formatDateDDMMYYYY(meta.billDate);
+
+    // Compute discount value & grand total (defensive)
+    const totalAmount = Number(meta.amount) || 0;
+    const discountPct = Number(meta.discount) || 0;
+    const discountValue = (totalAmount * discountPct) / 100;
+    const grandTotal =
+      typeof meta.finalAmount === 'number' && isFinite(meta.finalAmount)
+        ? Number(meta.finalAmount)
+        : totalAmount - discountValue;
+
+    const styles = `
+    <style>
+      @page { size: A4; margin: 10mm; }
+      html, body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+      /* Base */
+      .container {
+        max-width: 950px;
+        margin: 0 auto;
+        padding: 40px;
+        font-family: 'Poppins','Segoe UI',Tahoma,sans-serif;
+        background: #ffffff;
+        color: #2c3e50;
+      }
+
+      /* Shop header */
+      .top-section { text-align: center; margin-bottom: 12px; }
+      .title { font-size: 28px; font-weight: bold; color: #333; margin-bottom: 6px; }
+      .address-line,.license-line,.email-line { font-size: 13px; color: #546e7a; margin: 2px 0; }
+
+      /* TAX FREE INVOICE */
+      .invoice-title {
+        text-align: center;
+        font-size: 18px;
+        font-weight: 700;
+        letter-spacing: .3px;
+        margin: 14px 0 10px;
+      }
+
+      /* Two-column info row */
+      .info-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr; /* instead of 1fr 320px */
+        align-items: start;
+        gap: 16px 24px;
+        margin-bottom: 16px;
+        font-size: 14px;
+      }
+
+      /* Left: NAME / ADDRESS / GST as flat lines */
+      .left-info .line {
+        display: flex;
+        gap: 8px;
+        align-items: flex-start;
+        margin-bottom: 8px;
+      }
+      .left-info label {
+        font-weight: 700;
+        white-space: nowrap;
+      }
+
+      /* Right: BILL NO / DATE / AMOUNT stacked, right-aligned */
+      .right-meta .meta {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 6px;
+      }
+      .right-meta label {
+        font-weight: 700;
+        white-space: nowrap;
+        min-width: 80px;
+        text-align: right;
+      }
+
+      /* Description block (highlighted) */
+      .description-container { text-align: center; margin: 16px 0 22px; }
+      .description-print {
+        display: inline-block;
+        margin: 0 auto;
+        padding: 8px 14px;
+        border: 1px solid #d8d8d8;
+        border-radius: 6px;
+        background: #f5f5f5;
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 1.45;
+        max-width: 85%;
+        white-space: pre-line;
+        word-break: break-word;
+        text-align: center;
+        color: #2c3e50;
+      }
+
+      /* Summary footer */
+      .print-summary-footer {
+        margin-top: 30px;
+        border-top: 1px solid #e0e0e0;
+        padding-top: 20px;
+        font-size: 15px;
+      }
+      .summary {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 10px;
+      }
+      .summary label {
+        font-weight: 600;
+        min-width: 150px;
+        text-align: right;
+      }
+      .discount-line {
+        display: inline-flex;
+        gap: 10px;
+        align-items: baseline;
+      }
+      /* Highlight the Discount (Margin %) row */
+      .highlight-value {
+        background: #f5f5f5;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-weight: 600;
+        color: #2c3e50;
+      }
+
+      /* Show only text in print (keep consistent with app) */
+      .print-toggle input, .print-toggle textarea, .print-toggle select { display: none !important; }
+      .print-toggle .print-view { display: inline !important; }
+    </style>`;
 
     return `
     <!doctype html>
     <html>
       <head>
         <meta charset="utf-8"/>
-        <title>Invoice ${esc(meta.billNumber)}</title>
-        <style>
-          @page { size: A4; margin: 10mm; }
-          html, body { -webkit-print-color-adjust: exact; print-color-adjust: exact; font-family: 'Poppins','Segoe UI',sans-serif; }
-
-          .container { max-width: 950px; margin: 0 auto; padding: 40px; background: #fff; color: #2c3e50; }
-
-          .top-section { text-align: center; margin-bottom: 20px; }
-          .title { font-size: 28px; font-weight: bold; margin-bottom: 6px; }
-          .address-line,.license-line,.email-line { font-size: 13px; margin: 2px 0; color: #546e7a; }
-
-          .invoice-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin: 20px 0; }
-          .invoice-title { flex: 1; text-align: center; font-size: 20px; font-weight: bold; }
-
-          .horizontal-info { display: flex; justify-content: space-between; gap: 20px; margin-bottom: 20px; }
-          .field-row { display: flex; gap: 10px; }
-          .field-row label { font-weight: 600; white-space: nowrap; }
-
-          .description-container { text-align: center; margin: 16px 0 22px; }
-          .description-print { font-size: 13px; line-height: 1.45; max-width: 85%; margin: auto; white-space: pre-line; word-break: break-word; }
-
-          .print-summary-footer { margin-top: 30px; border-top: 1px solid #e0e0e0; padding-top: 20px; }
-          .summary { display: flex; justify-content: flex-end; font-size: 16px; font-weight: bold; margin-bottom: 12px; gap: 12px; }
-        </style>
+        <title>Lumpsum Invoice ${esc(meta.billNumber)}</title>
+        ${styles}
       </head>
       <body>
         <div class="container">
+          <!-- Shop Header -->
           <div class="top-section">
             <h2 class="title">J.T. Fruits &amp; Vegetables</h2>
             <div class="address-line">Shop No. 31-32, Bldg No. 27, EMP Op Jogers Park, Thakur Village, Kandivali(E), Mumbai 400101</div>
             <div class="license-line">PAN: AAJFJ0258J | FSS LICENSE ACT 2006 LICENSE NO: 11517011000128</div>
             <div class="email-line">Email: jkumarshahu5@gmail.com</div>
-            <div class="invoice-top">
-              <div>Date: ${esc(dateStr)}</div>
-              <div class="invoice-title">TAX FREE INVOICE</div>
-              <div>Bill No: ${esc(meta.billNumber)}</div>
+          </div>
+
+          <!-- Title -->
+          <h3 class="invoice-title">TAX FREE INVOICE</h3>
+
+          <!-- Two-column info row -->
+          <div class="info-grid">
+            <!-- LEFT: Name & Address & GST -->
+            <div class="left-info">
+              <div class="line">
+                <label>NAME :</label>
+                <span>${esc(meta.clientName)}</span>
+              </div>
+              <div class="line">
+                <label>ADDRESS :</label>
+                <span style="white-space: pre-line;">${esc(meta.address)}</span>
+              </div>
+              <div class="line">
+                <label>GST No :</label>
+                <span>27AACCA8432HIZQ</span>
+              </div>
+            </div>
+
+            <!-- RIGHT: Bill No / Date / Amount -->
+            <div class="right-meta">
+              <div class="meta">
+                <label>BILL NO :</label>
+                <span>${esc(meta.billNumber)}</span>
+              </div>
+              <div class="meta">
+                <label>DATE :</label>
+                <span>${esc(dateStr)}</span>
+              </div>
+              <div class="meta">
+                <label>AMOUNT :</label>
+                <span>${fmt(totalAmount)}</span>
+              </div>
             </div>
           </div>
 
-          <div class="horizontal-info">
-            <div class="field-row"><label>Name:</label> <span>${esc(meta.clientName)}</span></div>
-            <div class="field-row"><label>Address:</label> <span style="white-space: pre-line;">${esc(meta.address)}</span></div>
-          </div>
-
+          <!-- Description (highlighted) -->
           <div class="description-container">
             <div class="description-print">${esc(meta.description)}</div>
           </div>
 
+          <!-- Summary -->
           <div class="print-summary-footer">
-            <div class="summary"><label>Total Amount:</label> <div>${fmtINR(meta.amount)}</div></div>
-            <div class="summary"><label>Margin (%):</label> <div>${esc(String(meta.discount))}</div></div>
-            <div class="summary"><label>Final Amount:</label> <div>${fmtINR(meta.finalAmount)}</div></div>
+            <div class="summary">
+              <label>Total Amount :</label>
+              <div>${fmt(totalAmount)}</div>
+            </div>
+
+            <div class="summary">
+              <label>Discount :</label>
+              <div class="discount-line">
+                <!-- ✅ Only percentage highlighted -->
+                <span class="highlight-value">${fmt(discountPct)} %</span>
+                <span>${fmt(discountValue)}</span>
+              </div>
+            </div>
+
+            <div class="summary">
+              <label>Grand Total :</label>
+              <div>${fmt(grandTotal)}</div>
+            </div>
+
+            <!-- Signature -->
+            <div style="text-align:right; margin-top:50px; font-weight:600;">
+              J.T. Fruits &amp; Vegetables
+            </div>
           </div>
         </div>
       </body>
@@ -315,14 +532,15 @@ export class EditLumpsumBillsComponent implements OnInit, AfterViewInit {
         address: this.address,
         billNumber: this.billNumber,
         billDate: this.billDate,
-        discount: this.discount,
+        discount: this.discount,            // percent
+        discountAmount: this.marginValue,   // ← NEW
         totalAmount: this.amount,
         finalAmount: this.finalAmount,
         description: this.description,
-        billItems: [],              // no line items for lumpsum
+        billItems: [],
         email: this.manualEmail,
-        billType: 'lumpsum',        // optional flag
-        pdfHtml                     // send print HTML to server for PDF rendering
+        billType: 'lumpsum',
+        pdfHtml
       };
 
       this.billsService.sendBillByEmail(billData).subscribe({
