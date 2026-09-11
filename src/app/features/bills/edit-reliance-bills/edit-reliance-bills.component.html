@@ -62,8 +62,8 @@
         <th style="width:48px;">#</th>
         <th>Item Name</th>
         <th style="width:100px;">Quantity</th>
-        <th style="width:130px;">Unit Price</th>
         <th style="width:140px;">Amount</th>
+        <th style="width:130px;">Unit Price</th>
       </tr>
     </thead>
 
@@ -92,14 +92,15 @@
         </td>
 
         <td>
+          <input #amountInput class="form-control" type="number" step="0.01" [(ngModel)]="item.total"
+            (input)="onSalesAmountInput(i)" (keydown)="onAmountTabKey($event, i, billItems.length)" />
+        </td>
+
+        <td>
           <input #priceInput class="form-control" type="number" [(ngModel)]="item.price" (input)="calculateRowTotal(i)"
             (keydown)="onPriceKeydown($event, i)" />
         </td>
 
-        <td>
-          <input class="form-control" type="number" step="0.01" [(ngModel)]="item.total"
-            (input)="onSalesAmountInput(i)" />
-        </td>
       </tr>
     </tbody>
 
@@ -107,8 +108,8 @@
       <tr class="total-row">
         <td colspan="2" class="left"><strong>Total</strong></td>
         <td><strong>{{ totalQuantity }}</strong></td>
-        <td><strong>₹ {{ totalItemPrice | number:'1.2-2' }}</strong></td>
         <td><strong>₹ {{ totalAmount | number:'1.2-2' }}</strong></td>
+        <td><strong>₹ {{ totalItemPrice | number:'1.2-2' }}</strong></td>
       </tr>
     </tfoot>
   </table>

@@ -626,6 +626,50 @@ export class RelianceBillsComponent implements OnInit, OnDestroy {
 
   /* ---- Actions ---- */
 
+  onAmountTabKey(event: KeyboardEvent, currentRowIndex: number, totalRows: number): void {
+    if (event.key === 'Tab' && !event.shiftKey) {
+      // Prevent default tab behavior
+      event.preventDefault();
+
+      // If not the last row, focus the next row's product input
+      if (currentRowIndex < totalRows - 1) {
+        const nextRowProductInput = document.querySelector(
+          `input[name="productSearch${currentRowIndex + 1}"]`
+        ) as HTMLInputElement;
+
+        if (nextRowProductInput) {
+          setTimeout(() => nextRowProductInput.focus(), 0);
+        }
+      } else {
+        // If last row, create a new row and focus its product field
+        this.addNewBillItem();
+
+        // Focus the new row's product input after it's rendered
+        setTimeout(() => {
+          const newRowProductInput = document.querySelector(
+            `input[name="productSearch${currentRowIndex + 1}"]`
+          ) as HTMLInputElement;
+
+          if (newRowProductInput) {
+            newRowProductInput.focus();
+          }
+        }, 100);
+      }
+    }
+  }
+
+  addNewBillItem(): void {
+    this.billItems.push({
+      searchText: '',
+      filteredProducts: [],
+      quantity: 0,
+      price: 0,
+      total: 0,
+      productId: null,
+      productName: ''
+    });
+  }
+
   async printBill(): Promise<void> {
     if (this.isPrinting) return;
 
